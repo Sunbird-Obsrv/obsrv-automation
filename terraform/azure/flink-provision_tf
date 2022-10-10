@@ -7,7 +7,7 @@ resource "helm_release" "flink" {
   wait_for_jobs    = true
   
   values = [
-    templatefile("../../pipeline_jobs/values.yaml",
+    templatefile("var.FLINK_VALUES_PATH",
       {
         kafka-broker = data.kubernetes_service.kafka.status.0.load_balancer.0.ingress.0.ip
         input_topic = "dev.telemetry.ingest"

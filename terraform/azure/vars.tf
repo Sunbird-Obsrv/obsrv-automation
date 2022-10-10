@@ -9,6 +9,7 @@ variable "NODE_COUNT"{
 default = 4
 }
 
+
 variable "KUBE_CONFIG_FILENAME" {
   description = "Druid Instance Running Namespace"
   default     = "../aks.yaml"
@@ -24,6 +25,10 @@ variable "FLINK_NAMESPACE" {
   default     = "flink-obsrv"
 }
 
+variable "FLINK_VALUES_PATH"{
+default = "../../helm_charts/pipeline_jobs/values.yaml"
+
+}
 variable "DRUID_CLUSTER_CHART" {
   description = "Druid Instance Running Namespace"
   default     = "../../helm_charts/druid-cluster"
