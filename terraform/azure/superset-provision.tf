@@ -7,7 +7,7 @@ resource "helm_release" "obsrv_superset" {
   depends_on       = [helm_release.obs_druid_cluster]
   wait_for_jobs    = true
   values           = [
-    templatefile("../../helm_charts/superset-helm/values.yaml",
+    templatefile("var.SUPERSET_VALUES_PATH",
       {
 #        rds_host                 = azurerm_postgresql_server.postgres.fqdn,
 #        rds_superset_db_name     = var.SUPERSET_RDS_DB_NAME

@@ -1,12 +1,12 @@
 resource "azurerm_kubernetes_cluster" "aks" {
-  name                = "obsrv-aks"
+  name                = "obsrv-kubernets-cluster"
   location            = "${var.location}" 
   resource_group_name = data.azurerm_resource_group.rg.name
   dns_prefix          = "obsrvaks"
 
   default_node_pool {
     name       = "aksnodes"
-    node_count = 4
+    node_count = var.NODE_COUNT
     vm_size    = "Standard_B4ms"
   }
 
@@ -28,12 +28,6 @@ output "kube_config" {
   value = "${azurerm_kubernetes_cluster.aks.kube_config_raw}"
    sensitive = true
 }
-
-#resource "local_file" "kube-config" {
-#    content  = azurerm_kubernetes_cluster.aks.kube_config_raw
-#    filename = var.KUBE_CONFIG_PATH
-#    depends_on = [azurerm_kubernetes_cluster.aks]
-#}
 
 
 resource "local_file" "kubeconfig" {

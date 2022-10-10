@@ -10,8 +10,8 @@ resource "azurerm_postgresql_server" "postgres" {
   geo_redundant_backup_enabled = false
   auto_grow_enabled            = true
 
-  administrator_login          = "druid"
-  administrator_login_password = "SanK@2022"
+  administrator_login          = var.POSTGRES_ADMIN_NAME
+  administrator_login_password = var.POSTGRES_ADMIN_PASSWORD
   version                      = "11"
   ssl_enforcement_enabled      = true
   depends_on = [azurerm_kubernetes_cluster.aks]

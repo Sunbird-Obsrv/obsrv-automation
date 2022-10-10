@@ -5,6 +5,10 @@ variable "RESOURCE_GROUP" {
 default = "Obsrv-testing"
 }
 
+variable "NODE_COUNT"{
+default = 4
+}
+
 variable "KUBE_CONFIG_FILENAME" {
   description = "Druid Instance Running Namespace"
   default     = "../aks.yaml"
@@ -17,12 +21,20 @@ variable "DRUID_NAMESPACE" {
 
 variable "FLINK_NAMESPACE" {
   description = "Druid Instance Running Namespace"
-  default     = "flink-dev"
+  default     = "flink-obsrv"
 }
 
 variable "DRUID_CLUSTER_CHART" {
   description = "Druid Instance Running Namespace"
-  default     = "../druid-cluster"
+  default     = "../../helm_charts/druid-cluster"
+}
+
+variable "DRUID_CLUSTER_VALUES" {
+default = "../../helm_charts/druid-cluster/values.yaml"
+}
+
+variable "DRUID_OPERATOR_VALUES"{
+default = "../../helm_charts/druid-operator/values.yaml"
 }
 
 variable "FLINK_CHART" {
@@ -35,12 +47,14 @@ variable "DRUID_OPERATOR_CHART" {
   default     = "../../helm_charts/druid-operator"
 }
 
-variable "NAME_INGESTION_SPEC"{
+variable "NAME_TELEMETRY_EVENTS"{
+  description = "Name of sample telemetry events"
   default     = "2020-06-04-1591233567703.json.gz"
 }
 
-variable "PATH_INGESTION_SPEC"{
-  default     = "../2020-06-04-1591233567703.json.gz"
+variable "PATH_TELEMETRY_EVENTS"{
+description = "Path of sample telemetry events"
+  default     = "../../../2020-06-04-1591233567703.json.gz"
 }
 
 variable "KAFKA_CHART" {
@@ -48,21 +62,23 @@ variable "KAFKA_CHART" {
   default     = "../../helm_charts/kafka"
 }
 
-variable "STAGE" {
-  description = "Deployment Stage"
-  default     = "dev"
+variable "POSTGRES_ADMIN_NAME" {
+default = "druid"
 }
 
+variable "POSTGRES_ADMIN_PASSWORD" {
+default = "SANK@2022"
+}
 variable "STORAGE_ACCOUNT" {
   description = "Deployment Stage"
-  default     = "obsrvacc"
+  default     = "obsrv-storage-acc"
 }
 
 
 variable "KUBE_CONFIG_PATH" {
   description = "Path of the kubeconfig file"
   type        = string
-  default     = "~/z/aks.yaml"
+  default     = "../aks.yaml"
 }
 
 variable "DRUID_RDS_DB_NAME" {
@@ -173,4 +189,12 @@ variable "SUPERSET_RDS_PORT" {
 variable "KAFKA_NAMESPACE" {
   description = "KAFKA Instance Running Namespace"
   default     = "kafka"
+}
+
+variable "KAFKA_VALUES_PATH"{
+  default = "../../helm_charts/kafka/values.yaml"
+}
+
+variable "SUPERSET_VALUES_PATH"{
+  default = "../../helm_charts/superset-helm/values.yaml"
 }

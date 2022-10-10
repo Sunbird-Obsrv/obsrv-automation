@@ -19,17 +19,16 @@ resource "helm_release" "obs_druid_cluster" {
   wait_for_jobs    = true
   
   values = [
-    templatefile("../../helm_charts/druid-cluster/values.yaml",
+    templatefile("var.DRUID_CLUSTER_VALUES",
       {
         end_point  = azurerm_postgresql_server.postgres.fqdn,
         druid_namespace = var.DRUID_NAMESPACE
         druid_user      = "druid@postgresql-server-obsrv" 
         druid_password  = azurerm_postgresql_server.postgres.administrator_login_password
         azure_storage_container = var.DRUID_DEEP_STORAGE_CONTAINER
-        deployment_stage = var.STAGE
         druid_worker_capacity = var.DRUID_MIDDLE_MANAGER_WORKER_NODES
         azure_storage_account = var.STORAGE_ACCOUNT
-        azure_storage_key = azurerm_storage_account.obsrv-sa.primary_access_key 
+        azure_storage_key = azurerm_storage_account.obsrv-storage.primary_access_key 
       }
     )
   ]
