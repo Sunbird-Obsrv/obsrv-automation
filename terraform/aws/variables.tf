@@ -49,13 +49,29 @@ variable "dataset_api_image_tag" {
 variable "flink_container_registry" {
   type        = string
   description = "Container registry. For example docker.io/obsrv"
-  default     = "sanketikahub/obsrv-core"
+  default     = "sanketikahub"
 }
 
 variable "flink_image_tag" {
    type        = string
    description = "Flink kubernetes service name."
-   default     = "release-0.5.0_RC10"
+   default     = "default"
+}
+
+variable "flink_image_map" {
+  description = "Create release names"
+  type        = map(string)
+  default = {
+    merged-pipeline = "merged-pipeline"
+    unified-pipeline = "unified-pipeline"
+    extractor       = "extractor"
+    preprocessor    = "preprocessor"
+    denormalizer    = "denormalizer"
+    transformer     = "transformer"
+    druid-router    = "druid-router"
+  }
+}
+
 }
 
 variable "storage_class" {

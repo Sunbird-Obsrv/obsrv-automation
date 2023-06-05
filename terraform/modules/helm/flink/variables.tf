@@ -7,12 +7,14 @@ variable "building_block" {
   type        = string
   description = "Building block name. All resources will be prefixed with this value."
 }
+# *** changed this to release map.
+# variable "flink_release_name" {
+#   type        = string
+#   description = "Flink helm release name."
+#   default     = "merged-pipeline"
+# }
+# *** changed this to release map.
 
-variable "flink_sa_release_name" {
-  type        = string
-  description = "Flink helm release name."
-  default     = "flink"
-}
 
 variable "flink_namespace" {
   type        = string
@@ -30,11 +32,17 @@ variable "flink_chart_path" {
   description = "Flink chart path."
   default     = "flink-helm-chart"
 }
-
-variable "flink_release_name" {
+variable "flink_release_map" {
   description = "Create release names"
-  type        = list(string)
-  default     = [ "merged-pipeline","master-data-processor"]
+  type        = map(string)
+  default = {
+    merged-pipeline = "merged-pipeline"
+    extractor       = "extractor"
+    preprocessor    = "preprocessor"
+    denormalizer    = "denormalizer"
+    transformer     = "transformer"
+    druid-router    = "druid-router"
+  }
 }
 
 variable "flink_chart_install_timeout" {
@@ -60,11 +68,15 @@ variable "flink_custom_values_yaml" {
   description = "Flink chart values.yaml path."
   default     = "flink.yaml.tfpl"
 }
-
 variable "flink_custom_values_yaml_sa" {
   type        = string
   description = "Flink chart values.yaml path."
   default     = "flink.yaml.tfpl-sa"
+}
+variable "flink_sa_release_name" {
+  type        = string
+  description = "Flink helm release name."
+  default     = "flink"
 }
 
 variable "flink_kubernetes_service_name" {
@@ -76,6 +88,19 @@ variable "flink_kubernetes_service_name" {
 variable "flink_container_registry" {
   type        = string
   description = "Container registry. For example docker.io/obsrv"
+}
+
+variable "flink_image_map" {
+  type        = map(string)
+  description = "Container registry. For example docker.io/obsrv"
+  default = {
+    merged-pipeline = "merged-pipeline"
+    extractor       = "extractor"
+    preprocessor    = "preprocessor"
+    denormalizer    = "denormalizer"
+    transformer     = "transformer"
+    druid-router    = "druid-router"
+  }
 }
 
 variable "flink_image_tag" {
