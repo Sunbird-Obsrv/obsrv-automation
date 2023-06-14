@@ -162,6 +162,18 @@ variable "kafka_zookeeper_ip" {
   default     = "kafka-zookeeper-headless.kafka.svc.cluster.local:2181"
 }
 
+variable "cloud_store_provider" {
+  type        = string
+  description = "Cloud storage provider"
+  default     = "S3" # Can be one of S3, GS, Swift or Azure
+}
+
+variable "upload_manager" {
+  type        = string
+  description = "Upload manager Class"
+  default     = "com.pinterest.secor.uploader.S3UploadManager"
+}
+
 variable "cloud_storage_bucket" {
   type        = string
   description = "Cloud storage bucket"

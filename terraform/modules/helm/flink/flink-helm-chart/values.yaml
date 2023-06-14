@@ -43,6 +43,19 @@ s3_path_style_access: ""
 azure_account: ""
 azure_secret: ""
 
+# Google Cloud Storage Service Account JSON Path
+google_service_account_key_path: ""
+
+dataset_registry: |
+  postgres {
+    host = postgresql.postgresql.svc.cluster.local
+    port = 5432
+    maxConnections = 2
+    user = "flink"
+    password = "flink"
+    database = "flink"
+  }
+
 log4j_console_properties: |
   # This affects logging for both user code and Flink
   rootLogger.level = INFO
