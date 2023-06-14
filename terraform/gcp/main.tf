@@ -355,8 +355,9 @@ module "flink" {
   env                            = var.env
   building_block                 = var.building_block
   flink_container_registry       = var.flink_container_registry
-  flink_release_name             = var.flink_release_name
-  flink_image_name               = var.flink_image_name
+  flink_merged_pipeline_release_names = var.flink_merged_pipeline_release_names
+  flink_release_names              = var.flink_release_names
+  merged_pipeline_enabled        = var.merged_pipeline_enabled
   flink_image_tag                = var.flink_image_tag
   flink_checkpoint_store_type    = var.flink_checkpoint_store_type
   flink_chart_depends_on         = [ module.kafka, module.redis, module.postgresql ]
@@ -369,6 +370,7 @@ module "flink" {
   flink_sa_annotations           = "iam.gke.io/gcp-service-account: ${var.building_block}-${var.flink_sa_iam_role_name}@${var.project}.iam.gserviceaccount.com"
   flink_namespace                = var.flink_namespace
   depends_on                     = [ module.flink_sa_iam_role ]
+  postgresql_service_name        = module.postgresql.postgresql_service_name
 }
 
 module "druid_operator" {

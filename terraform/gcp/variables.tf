@@ -220,10 +220,35 @@ variable "flink_image_tag" {
   default     = "1.0.0"
 }
 
-variable "flink_release_name" {
-  type        = list(string)
-  description = "Flink helm release name."
-  default     = [ "merged-pipeline","master-data-processor" ]
+variable "flink_release_names" {
+  description = "Create release names"
+  type        = map(string)
+  default = {
+    extractor       = "sb-obsrv-extractor"
+    preprocessor    = "sb-obsrv-preprocessor"
+    denormalizer    = "sb-obsrv-denormalizer"
+    transformer     = "sb-obsrv-transformer"
+    druid-router    = "sb-obsrv-druid-router"
+    master-data-processor = "sb-obsrv-master-data-processor"
+  }
+}
+variable "flink_merged_pipeline_release_names" {
+  description = "Create release names"
+  type        = map(string)
+  default = {
+    merged-pipeline = "sb-obsrv-merged-pipeline"
+    master-data-processor = "sb-obsrv-master-data-processor"
+  }
+}
+variable "merged_pipeline_enabled" {
+  description = "Toggle to deploy merged pipeline"
+  type = bool
+  default = true
+}
+variable "postgresql_service_name" {
+  type        = string
+  description = "Postgresql service name."
+  default = "postgresql.postgresql"
 }
 
 variable "dataset_api_sa_iam_role_name" {
