@@ -97,8 +97,10 @@ spec:
           - key: log4j_console_properties
             path: log4j-console.properties
       restartPolicy: OnFailure
+{{- if ne .Values.image.imagePullSecrets "" }}
       imagePullSecrets:
       - name: {{ .Values.image.imagePullSecrets }}
+{{- end }}
       serviceAccount: {{ .Release.Namespace }}-sa
       containers:
       - name: {{ .Release.Name }}-jobmanager
@@ -191,8 +193,10 @@ spec:
             path: base-config.conf
           - key: {{ .Release.Name }}
             path: {{ .Release.Name }}.conf
+{{- if ne .Values.image.imagePullSecrets "" }}
       imagePullSecrets:
       - name: {{ .Values.image.imagePullSecrets }}
+{{- end }}
       serviceAccount: {{ .Release.Namespace }}-sa
       containers:
       - name: {{ .Release.Name }}-taskmanager

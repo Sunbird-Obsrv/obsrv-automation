@@ -73,17 +73,19 @@ variable "dataset_api_chart_depends_on" {
 variable "dataset_api_container_registry" {
   type        = string
   description = "Container registry. For example docker.io/obsrv"
+  default     = "sunbird"
 }
 
 variable "dataset_api_image_name" {
   type        = string
   description = "Dataset api image name."
-  default     = "obsrv-api-service"
+  default     = "sb-obsrv-api-service"
 }
 
 variable "dataset_api_image_tag" {
   type        = string
-  description = "Dataset api image tag."
+  description = "Dataset api image tag"
+  default     = "1.0.0"
 }
 
 variable "dataset_api_sa_annotations" {
@@ -102,10 +104,4 @@ variable "redis_release_name" {
   type        = string
   description = "Release name for Redis installation."
   default     = "obsrv-redis"
-}
-
-variable "s3_bucket" {
-  type        = string
-  description = "S3 bucket name for dataset api exhaust."
-  default     = ""
 }

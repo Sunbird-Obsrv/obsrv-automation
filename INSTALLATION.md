@@ -39,27 +39,17 @@ Prerequisites:
     export AWS_TERRAFORM_BACKEND_BUCKET_NAME=mybucket
     export AWS_TERRAFORM_BACKEND_BUCKET_REGION=myregion
     ```
-
 #### Steps:
 * Execute the below steps in the same terminal session:
     ```
-    export KUBE_CONFIG_PATH=~/.kube/config
     cd terraform/aws
     terragrunt init
     terragrunt plan
-    terragrunt apply -target=module.eks
-    terragrunt apply -target=module.get_kubeconfig -auto-approve
+    terragrunt apply
+    export KUBE_CONFIG_PATH=./{cluster-name}.yaml
     terragrunt apply
     ```
-The installer will ask for user inputs twice:
- - Before creating the EKS cluster
- - Before creating rest of the components
-
-#### Tip:
-Add `-auto-approve` to the above `terragrunt` command to install without providing user inputs as shown below
-```
-terragrunt apply -target=module.eks -auto-approve && terragrunt apply -target=module.get_kubeconfig -auto-approve && terragrunt apply -auto-approve
-```
+Note: the first `terragrunt apply` command will build the cluster and then fail as it is unable to read the newly created kube config file. This file will get created in the present working directory and named after the cluster. Hence, you will need to export this variable and terragrunt apply again  
 
 **Azure**
 ### Prerequisites:
