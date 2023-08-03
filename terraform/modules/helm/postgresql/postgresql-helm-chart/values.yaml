@@ -343,7 +343,7 @@ primary:
       02_create_druid_raw_db.sql: |
         CREATE DATABASE druid_raw;
       03_create_druid_raw_user.sql: |
-        CREATE USER druid_raw WITH ENCRYPTED PASSWORD 'druid_raw';
+        CREATE USER druid_raw WITH ENCRYPTED PASSWORD 'druidraw123';
         GRANT ALL PRIVILEGES ON DATABASE druid_raw TO druid_raw;
       04_create_obsrv_db.sql: |
         CREATE DATABASE obsrv;
@@ -709,7 +709,9 @@ primary:
   ## @param primary.resources.requests.cpu The requested cpu for the PostgreSQL Primary containers
   ##
   resources:
-    limits: {}
+    limits: 
+      cpu: 250m
+      memory: 512Mi
     requests:
       memory: 256Mi
       cpu: 250m
@@ -1046,7 +1048,9 @@ readReplicas:
   ## @param readReplicas.resources.requests.cpu The requested cpu for the PostgreSQL read only containers
   ##
   resources:
-    limits: {}
+    limits: 
+      cpu: 250m
+      memory: 512Mi
     requests:
       memory: 256Mi
       cpu: 250m

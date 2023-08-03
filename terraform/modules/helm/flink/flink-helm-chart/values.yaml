@@ -1,3 +1,7 @@
+# Values to be passed before installing this helm chart - 
+#   1.Container name where all the checkpoints are stored L97 (flink container name)
+#   2.Environment which you are installing L95 by default its 'dev'
+#   3.Checkpoint store type s3
 namespace: "flink"
 imagepullsecrets: ""
 image:
@@ -89,10 +93,10 @@ log4j_console_properties: |
 
 base_config: |
   job {
-    env = "sb-dev"
+    env = "dev"
     enable.distributed.checkpointing = true
     statebackend {
-      base.url = "s3://checkpoint-obsrv-sb-dev-165052186109"
+      base.url = "s3://<flink container name>"
     }
   }
   kafka {
