@@ -1,11 +1,11 @@
-# Values to be passed to run this helm chart -
-#   1.Cloud storage provider s3.
-#   2.Storage Class by default its gp2
-#   3.Environment 
-#   4.Topic name
-#   5.Consumer group
-#   6.Cloud storage bucket
 cloud_store_provider: "s3"
+gs_path: ""
+gs_bucket: ""
+azure_account_name: ""
+azure_account_key: ""
+azure_container_name: ""
+aws_access_key: ""
+aws_secret_key: ""
 upload_manager: "com.pinterest.secor.uploader.S3UploadManager"
 cloud_storage_bucket: ""
 namespace: "secor"

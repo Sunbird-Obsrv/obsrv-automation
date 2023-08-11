@@ -32,6 +32,9 @@ druid_storage_directory: "/data"
 s3_access_key: ""
 s3_secret_key: ""
 s3_bucket: "" # s3 container name
+druid_storage_baseKey: druid/segments
+druid_s3_endpoint_url: ""
+druid_s3_endpoint_signingRegion: ""
 
 # Azure Container Details
 azure_storage_account_name: ""
@@ -46,6 +49,7 @@ gcs_bucket: ""
 druid_indexer_logs_type: "s3"
 druid_indexer_logs_container: ""
 druid_indexer_logs_prefix: "backups/druid/druid-task-logs"
+druid_indexer_logs_directory: "backups/druid/druid-task-logs"
 
 # Service discovery
 druid_selectors_indexing_serviceName: druid/overlord
