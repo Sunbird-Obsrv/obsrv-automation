@@ -8,7 +8,7 @@ credentials:
 configuration:
   provider: "aws"
   backupStorageLocation:
-    bucket: "" # Bucket name where the backups are stored.
+    bucket: "velero-bucket" # Bucket name where the backups are stored.
     config:
       region: "us-east-2"
   volumeSnapshotLocation:

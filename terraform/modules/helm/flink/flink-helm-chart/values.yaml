@@ -95,7 +95,7 @@ base_config: |
     env = "dev"
     enable.distributed.checkpointing = true
     statebackend {
-      base.url = "s3://<flink container name>"
+      base.url = "s3://flink-bucket"
     }
   }
   kafka {
