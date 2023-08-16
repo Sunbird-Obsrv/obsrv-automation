@@ -250,3 +250,11 @@ module "web_console" {
   web_console_image_repository     = var.web_console_image_repository
   web_console_image_tag            = var.web_console_image_tag
 }
+
+module "setup_sb_datasets" {
+  source                            = "../modules/helm/setup_sb_datasets"
+  env                               = var.env
+  building_block                    = var.building_block
+  setup_sb_datasets_enabled         = var.setup_sb_datasets_enabled
+  submit_ingestion_chart_depends_on = [module.kafka, module.druid_raw_cluster, module.postgresql]
+}

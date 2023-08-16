@@ -1,5 +1,0 @@
-apiVersion: v2
-appVersion: 13.10.0
-description: postgresql client
-name: postgresql-client
-version: 1.0.0

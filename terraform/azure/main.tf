@@ -180,3 +180,11 @@ module "alert_rules" {
   building_block               = var.building_block
   alertrules_chart_depends_on  = [module.monitoring]
 }
+
+module "setup_sb_datasets" {
+  source                            = "../modules/helm/setup_sb_datasets"
+  env                               = var.env
+  building_block                    = var.building_block
+  setup_sb_datasets_enabled         = var.setup_sb_datasets_enabled
+  submit_ingestion_chart_depends_on = [module.kafka, module.druid_raw_cluster, module.postgresql]
+}

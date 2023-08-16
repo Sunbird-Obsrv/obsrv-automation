@@ -122,3 +122,9 @@ variable "postgresql_service_name" {
   type        = string
   description = "Postgresql service name."
 }
+
+variable "setup_sb_datasets_enabled" {
+  type        = bool
+  description = "Toggle for the activation of default datasets creation during deployment"
+  default     = false
+}
