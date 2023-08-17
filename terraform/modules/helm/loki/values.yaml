@@ -1,6 +1,6 @@
 loki:
   auth_enabled: false
-  
+
   limits_config:
     enforce_metric_name: false
     reject_old_samples: true
@@ -11,22 +11,73 @@ loki:
 compactor:
   retention_enabled: true
   working_directory: /var/loki/compactor/retention
+test:
+  enabled: false
 minio:
   enabled: true
+  resources:
+    limits: 
+      cpu: 100m
+      memory: 256Mi
+    requests: 
+      cpu: 100m
+      memory: 128Mi
   metrics:
     serviceMonitor:
       enabled: true
       includeNode: true
       additionalLabels:
         release: monitoring
+grafana-agent-operator:
+  resources:
+    limits:
+      cpu: 100m
+      memory: 256Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
 monitoring:
   dashboards:
     namespace: "monitoring"
+  selfMonitoring:
+    enabled: false
+  lokiCanary:
+      enabled: false
+    resources:
+      limits: 
+        cpu: 100m
+        memory: 256Mi
+      requests: 
+        cpu: 100m
+        memory: 128Mi
   serviceMonitor:
     labels:
       release: monitoring
-      
+gateway:
+  resources:
+    limits: 
+      cpu: 100m
+      memory: 512Mi
+    requests: 
+      cpu: 100m
+      memory: 256Mi 
 read:
   affinity: {}
+  replicas: 1
+  resources:
+    limits: 
+      cpu: 100m
+      memory: 1024Mi
+    requests: 
+      cpu: 100m
+      memory: 512Mi
 write:
   affinity: {}
+  replicas: 1
+  resources:
+    limits: 
+      cpu: 100m
+      memory: 1024Mi
+    requests: 
+      cpu: 100m
+      memory: 512Mi

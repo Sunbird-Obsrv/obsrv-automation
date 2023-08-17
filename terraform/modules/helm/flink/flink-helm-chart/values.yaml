@@ -37,7 +37,6 @@ checkpoint_store_type: "s3"
 s3_access_key: ""
 s3_secret_key: ""
 s3_endpoint: ""
-s3_path_style_access: ""
 
 # Azure Container Details
 azure_account: ""
@@ -89,10 +88,10 @@ log4j_console_properties: |
 
 base_config: |
   job {
-    env = "sb-dev"
+    env = "dev"
     enable.distributed.checkpointing = true
     statebackend {
-      base.url = "s3://checkpoint-obsrv-sb-dev-165052186109"
+      base.url = "s3://flink-bucket"
     }
   }
   kafka {

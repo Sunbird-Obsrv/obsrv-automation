@@ -121,4 +121,5 @@ variable "merged_pipeline_enabled" {
 variable "postgresql_service_name" {
   type        = string
   description = "Postgresql service name."
+  default = "postgresql.postgresql"
 }
