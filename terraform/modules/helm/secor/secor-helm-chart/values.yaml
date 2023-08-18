@@ -1,7 +1,6 @@
 cloud_store_provider: "S3" # Type of cloud storage provider S3, GS, Azure
 azure_account_name: "" # AZURE access key
 azure_account_key: "" # AZURE secret key
-azure_container_name: "" # blob storage name
 aws_access_key: "" # AWS access key
 aws_secret_key: "" # AWS secret key
 gs_credentials_path: "" # Credentials path where access token and secrets are stored.

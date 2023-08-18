@@ -31,7 +31,7 @@ druid_storage_directory: "/data"
 # AWS S3 Details
 s3_access_key: ""
 s3_secret_key: ""
-s3_bucket: "demo-bucket" # s3 container name
+s3_bucket: "" # s3 container name
 druid_storage_baseKey: druid/segments
 druid_s3_endpoint_url: ""
 druid_s3_endpoint_signingRegion: ""
@@ -366,7 +366,7 @@ serviceAccount:
   # Annotations to add to the service account
   annotations: 
     serviceAccountName: "" 
-    eks.amazonaws.com/role-arn: "arn:aws:iam::012345678901:role/dev-obsrv-demo-druid-raw-sa-iam-role" # service account role arn
+    eks.amazonaws.com/role-arn: "" # service account role arn
   # The name of the service account to use.
   # If not set and create is true, a name is generated using the fullname template
   name: druid-raw-sa
