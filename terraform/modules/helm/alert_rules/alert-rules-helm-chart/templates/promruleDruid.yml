@@ -24,4 +24,3 @@ spec:
         message: Health alert for druid.
         job_id: Druid
         alertname: Druid health
-      

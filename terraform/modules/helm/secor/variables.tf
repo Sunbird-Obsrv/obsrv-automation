@@ -17,7 +17,7 @@ variable "secor_release_name" {
 variable "secor_image_tag" {
   type        = string
   description = "secor image version"
-  default     = "0.29.11-java-11"
+  default     = "0.29.16-java-11-gs"
 }
 
 variable "jobs" {
@@ -37,7 +37,7 @@ variable "jobs" {
 variable "secor_image_repository" {
   type        = string
   description = "secor image version"
-  default     = "sunbird/secor"
+  default     = "sanketikahub/secor"
 }
 
 variable "secor_namespace" {
@@ -162,6 +162,18 @@ variable "kafka_zookeeper_ip" {
   default     = "kafka-zookeeper-headless.kafka.svc.cluster.local:2181"
 }
 
+variable "cloud_store_provider" {
+  type        = string
+  description = "Cloud storage provider"
+  default     = "S3" # Can be one of S3, GS, Swift or Azure
+}
+
+variable "upload_manager" {
+  type        = string
+  description = "Upload manager Class"
+  default     = "com.pinterest.secor.uploader.S3UploadManager"
+}
+
 variable "cloud_storage_bucket" {
   type        = string
   description = "Cloud storage bucket"
@@ -186,7 +198,7 @@ variable "region" {
   default     = "us-east-2"
 }
 
-variable "storage_class" {
+variable "kubernetes_storage_class" {
   type        = string
   description = "Storage Class"
 }

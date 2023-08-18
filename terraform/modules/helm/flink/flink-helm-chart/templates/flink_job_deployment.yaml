@@ -101,8 +101,9 @@ spec:
       imagePullSecrets:
       - name: {{ .Values.image.imagePullSecrets }}
 {{- end }}
-
+    {{- if .Values.serviceAccount.create }}
       serviceAccount: {{ .Release.Namespace }}-sa
+    {{- end }}
       containers:
       - name: {{ .Release.Name }}-jobmanager
         image: "{{ .Values.image.registry }}/{{ .Values.image.repository }}:{{ .Values.image.tag }}"
