@@ -10,16 +10,16 @@ provider "oci" {
   alias = "oke"
 }
 
-resource "oci_identity_compartment" "example" {
+resource "oci_identity_compartment" "obsrv_env" {
   compartment_id = var.compartment_id
-  description    = "example"
-  name           = "example"
+  description    = "obsrv_env"
+  name           = "obsrv_env"
 }
 
-resource "oci_containerengine_cluster" "example" {
+resource "oci_containerengine_cluster" "obsrv_env" {
   provider           = oci.oke
-  compartment_id     = oci_identity_compartment.example.id
-  name               = "example"
+  compartment_id     = oci_identity_compartment.obsrv_env.id
+  name               = "obsrv_env"
   kubernetes_version = "v1.27.2"
   vcn_id             = module.vcn.vcn_id
 }
@@ -28,10 +28,10 @@ data "oci_identity_availability_domains" "available_availability_domains" {
   compartment_id = var.compartment_id
 }
 
-resource "oci_containerengine_node_pool" "default" {
-  name           = "default"
+resource "oci_containerengine_node_pool" "obsrv_np" {
+  name           = "obsrv_np"
   compartment_id = var.compartment_id
-  cluster_id     = oci_containerengine_cluster.example.id
+  cluster_id     = oci_containerengine_cluster.obsrv_env.id
   node_shape     = "VM.Standard.E3.Flex"
   node_shape_config {
     memory_in_gbs = 32

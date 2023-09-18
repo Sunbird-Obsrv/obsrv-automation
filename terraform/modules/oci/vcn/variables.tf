@@ -1,11 +1,6 @@
-variable "compartment_id" {}
-variable "tenancy_ocid" {}
-variable "user_ocid" {}
-variable "private_key_path" {}
-variable "fingerprint" {}
-variable "region" {}
-variable "image_id" {}
-variable "source_id" {}
-variable "subnet_id" {}
-variable "ssh_authorized_keys" {}
-variable "ssh_private_key" {}
+variable "compartment_id" {
+    description = "Compartment created on OCI same as that of IAM in AWS"
+}
+variable "region" {
+    description = "Region in which you want you infrastruture to be created"
+}
