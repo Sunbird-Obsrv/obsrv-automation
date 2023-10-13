@@ -178,3 +178,8 @@ variable "merged_pipeline_enabled" {
   description = "Toggle to enable merged pipeline"
   type = bool
 }
+
+variable "is_sunbird_release" {
+  type        = bool
+  description = "Toggle for the activation of kafka connector during deployment"
+}

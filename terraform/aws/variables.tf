@@ -128,3 +128,9 @@ variable "setup_sb_datasets_enabled" {
   description = "Toggle for the activation of default datasets creation during deployment"
   default     = false
 }
+
+variable "is_sunbird_release" {
+  type        = bool
+  description = "Toggle for the activation of kafka connector during deployment"
+  default     = true
+}
