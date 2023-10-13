@@ -1,0 +1,20 @@
+namespace: ${setup_sb_datasets_namespace}
+
+image:
+  repository: docker.io/bitnami/postgresql
+  tag: 11.11.0-debian-10-r31
+  pullPolicy: IfNotPresent
+
+environment: ${env}
+
+desktop_pdata_id: ${env}.sunbird.desktop
+
+env:
+  druid_router_host: "${druid_cluster_release_name}-routers.${druid_cluster_namespace}.svc.cluster.local:8888"
+  supervisor_path: "druid/indexer/v1/supervisor"
+  bootstrap_servers: ${kafka_brokers}
+  pg_host:  ${postgres_host}
+  pg_port: ${postgres_port}
+  pg_user:  ${postgres_user} 
+  pg_pass:  ${postgres_paswd}
+  pg_dbname:  ${postgres_db}

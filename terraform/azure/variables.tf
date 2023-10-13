@@ -51,3 +51,15 @@ variable "flink_image_tag" {
    description = "Flink kubernetes service name."
    default     = "1.0.0"
 }
+
+variable "setup_sb_datasets_enabled" {
+  type        = bool
+  description = "Toggle for the activation of default datasets creation during deployment"
+  default     = false
+}
+
+variable "is_sunbird_release" {
+  type        = bool
+  description = "Toggle for the activation of kafka connector during deployment"
+  default     = true
+}

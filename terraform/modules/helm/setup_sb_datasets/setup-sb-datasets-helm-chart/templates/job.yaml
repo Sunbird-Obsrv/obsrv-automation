@@ -1,0 +1,103 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .Release.Name }}
+  namespace: {{ .Values.namespace }}
+spec:
+  template:
+    metadata:
+      name: {{ .Release.Name }}
+    spec:
+      restartPolicy: OnFailure
+      initContainers:
+      - name: pgcheck
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        env:
+        - name: PG_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: {{ .Release.Name }}-cm
+              key: pg_host
+        - name: PG_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: {{ .Release.Name }}-cm
+              key: pg_port
+        - name: PG_USER
+          valueFrom:
+            configMapKeyRef:
+              name: {{ .Release.Name }}-cm
+              key: pg_user
+        - name: PGPASSWORD
+          valueFrom:
+            configMapKeyRef:
+              name: {{ .Release.Name }}-cm
+              key: pg_pass
+        command:
+        - /bin/sh
+        args:
+        - -ecx
+        - while ! pg_isready -U "${PG_USER}" --host "${PG_HOST}" --port "${PG_PORT}"; do sleep 1; done
+      containers:
+      - name: {{ .Release.Name }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        env:
+        - name: PG_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: {{ .Release.Name }}-cm
+              key: pg_host
+        - name: PG_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: {{ .Release.Name }}-cm
+              key: pg_port
+        - name: PG_USER
+          valueFrom:
+            configMapKeyRef:
+              name: {{ .Release.Name }}-cm
+              key: pg_user
+        - name: PG_DBNAME
+          valueFrom:
+            configMapKeyRef:
+              name: {{ .Release.Name }}-cm
+              key: pg_dbname
+        - name: PGPASSWORD
+          valueFrom:
+            configMapKeyRef:
+              name: {{ .Release.Name }}-cm
+              key: pg_pass
+        - name: SQL_SCRIPT
+          valueFrom:
+            configMapKeyRef:
+              name: {{ .Release.Name }}-cm
+              key: sql_script
+        command:
+        - /bin/sh
+        args:
+        - -ecx
+        - psql -U "${PG_USER}" --host "${PG_HOST}" --port "${PG_PORT}" --dbname "${PG_DBNAME}" --command  "${SQL_SCRIPT}"
+      - name: druid
+        image: "ubuntu:20.04"
+        command: 
+          - sh
+          - -c
+          - |
+            apt-get update &&
+            apt-get install -y curl &&
+            BASE_URL="http://{{ .Values.env.druid_router_host }}/{{ .Values.env.supervisor_path }}" &&
+            for spec in /etc/ingestion-spec/*.json; do
+              curl -XPOST -H 'Content-Type: application/json' -d @"$spec" "$BASE_URL"
+            done
+        env:
+          - name: DRUID_ROUTER_HOST
+            value: {{ .Values.env.druid_router_host }}
+          - name: SUPERVISOR_PATH
+            value: {{ .Values.env.supervisor_path }}
+        volumeMounts:
+          - name: config-volume
+            mountPath: /etc/ingestion-spec
+      volumes:
+        - name: config-volume
+          configMap:  
+            name: {{ .Release.Name }}-cm

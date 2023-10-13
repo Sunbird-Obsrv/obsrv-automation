@@ -130,6 +130,7 @@ module "flink" {
   flink_merged_pipeline_release_names = var.flink_merged_pipeline_release_names
   flink_release_names              = var.flink_release_names
   merged_pipeline_enabled        = var.merged_pipeline_enabled
+  is_sunbird_release             = var.is_sunbird_release
   # s3_access_key                  = module.iam.s3_access_key
   # s3_secret_key                  = module.iam.s3_secret_key
   flink_checkpoint_store_type    = var.flink_checkpoint_store_type
@@ -249,4 +250,12 @@ module "web_console" {
   depends_on                       = [module.eks]
   web_console_image_repository     = var.web_console_image_repository
   web_console_image_tag            = var.web_console_image_tag
+}
+
+module "setup_sb_datasets" {
+  source                            = "../modules/helm/setup_sb_datasets"
+  env                               = var.env
+  building_block                    = var.building_block
+  setup_sb_datasets_enabled         = var.setup_sb_datasets_enabled
+  submit_ingestion_chart_depends_on = [module.kafka, module.druid_raw_cluster, module.postgresql]
 }

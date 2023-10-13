@@ -100,6 +100,7 @@ module "flink" {
   env                            = var.env
   building_block                 = var.building_block
   flink_container_registry       = var.flink_container_registry
+  is_sunbird_release             = var.is_sunbird_release
   flink_image_tag                = var.flink_image_tag
   azure_storage_account_name     = module.storage.azurerm_storage_account_name
   azure_storage_account_key      = module.storage.azurerm_storage_account_key
@@ -179,4 +180,12 @@ module "alert_rules" {
   env                          = var.env
   building_block               = var.building_block
   alertrules_chart_depends_on  = [module.monitoring]
+}
+
+module "setup_sb_datasets" {
+  source                            = "../modules/helm/setup_sb_datasets"
+  env                               = var.env
+  building_block                    = var.building_block
+  setup_sb_datasets_enabled         = var.setup_sb_datasets_enabled
+  submit_ingestion_chart_depends_on = [module.kafka, module.druid_raw_cluster, module.postgresql]
 }

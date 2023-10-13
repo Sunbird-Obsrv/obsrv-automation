@@ -1,0 +1,6 @@
+apiVersion: v2
+type: application
+appVersion: 1.16.0
+description: A helm chart to create default datasets and datasources for obsrv
+name: create-defaults
+version: 1.0.0
