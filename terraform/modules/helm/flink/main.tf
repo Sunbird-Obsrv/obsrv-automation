@@ -20,7 +20,9 @@ resource "helm_release" "flink_sa" {
 }
 
 resource "helm_release" "flink" {
-    for_each         = contains([var.merged_pipeline_enabled], true ) ? var.flink_merged_pipeline_release_names : var.flink_release_names
+    flink_merged_pipeline_release_names = var.is_sunbird_release ? merge(var.flink_merged_pipeline_release_names, { "kafka-connector" = "sb-obsrv-kafka-connector" }) : var.flink_merged_pipeline_release_names
+    flink_release_names  = var.is_sunbird_release ? merge(var.flink_release_names, { "kafka-connector" = "sb-obsrv-kafka-connector" }) : var.flink_release_names
+    for_each         = contains([var.merged_pipeline_enabled], true ) ? flink_merged_pipeline_release_names : flink_release_names
     name             = each.key
     chart            = "${path.module}/${var.flink_chart_path}"
     namespace        = var.flink_namespace

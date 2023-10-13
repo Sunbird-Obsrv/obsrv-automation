@@ -100,6 +100,7 @@ module "flink" {
   env                            = var.env
   building_block                 = var.building_block
   flink_container_registry       = var.flink_container_registry
+  is_sunbird_release             = var.is_sunbird_release
   flink_image_tag                = var.flink_image_tag
   azure_storage_account_name     = module.storage.azurerm_storage_account_name
   azure_storage_account_key      = module.storage.azurerm_storage_account_key
