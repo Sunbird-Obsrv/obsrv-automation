@@ -39,7 +39,6 @@ Prerequisites:
     export AWS_TERRAFORM_BACKEND_BUCKET_NAME=mybucket
     export AWS_TERRAFORM_BACKEND_BUCKET_REGION=myregion
     ```
-
 #### Steps:
 * Execute the below steps in the same terminal session:
     ```
@@ -60,7 +59,6 @@ Add `-auto-approve` to the above `terragrunt` command to install without providi
 ```
 terragrunt apply -target=module.eks -auto-approve && terragrunt apply -target=module.get_kubeconfig -auto-approve && terragrunt apply -auto-approve
 ```
-
 **Azure**
 ### Prerequisites:
 * Log into your cloud environment in your terminal. Please see [Sign in with Azure CLI](https://learn.microsoft.com/en-us/cli/azure/authenticate-azure-cli) for reference.
