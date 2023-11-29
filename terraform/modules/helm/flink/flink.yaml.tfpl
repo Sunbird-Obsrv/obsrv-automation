@@ -1,3 +1,4 @@
+namespace: ${flink_namespace}
 checkpoint_store_type: ${checkpoint_store_type}
 s3_access_key: ${s3_access_key}
 s3_secret_key: ${s3_secret_key}
@@ -11,8 +12,8 @@ image:
 
 base_config: |
   job {
-    env = "dev"
-    enable.distributed.checkpointing = false
+    env = "${env}"
+    enable.distributed.checkpointing = true
     statebackend {
       base.url = "${checkpoint_base_url}"
     }

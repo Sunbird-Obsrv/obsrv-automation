@@ -42,14 +42,23 @@ Prerequisites:
 #### Steps:
 * Execute the below steps in the same terminal session:
     ```
+    export KUBE_CONFIG_PATH=~/.kube/config
     cd terraform/aws
     terragrunt init
     terragrunt plan
-    terragrunt apply
-    export KUBE_CONFIG_PATH=./{cluster-name}.yaml
+    terragrunt apply -target=module.eks
+    terragrunt apply -target=module.get_kubeconfig -auto-approve
     terragrunt apply
     ```
-Note: the first `terragrunt apply` command will build the cluster and then fail as it is unable to read the newly created kube config file. This file will get created in the present working directory and named after the cluster. Hence, you will need to export this variable and terragrunt apply again  
+The installer will ask for user inputs twice:
+ - Before creating the EKS cluster
+ - Before creating rest of the components
+
+#### Tip:
+Add `-auto-approve` to the above `terragrunt` command to install without providing user inputs as shown below
+```
+terragrunt apply -target=module.eks -auto-approve && terragrunt apply -target=module.get_kubeconfig -auto-approve && terragrunt apply -auto-approve
+```
 **Azure**
 ### Prerequisites:
 * Log into your cloud environment in your terminal. Please see [Sign in with Azure CLI](https://learn.microsoft.com/en-us/cli/azure/authenticate-azure-cli) for reference.
@@ -139,13 +148,6 @@ We will explore a few use cases of Dataset Creation, Data Ingestion and Data Que
     ```
 ## Data Ingestion
 - To ingest the data in Druid, you will need to create it's ingestion spec. For reference, please see [Apache Kafka ingestion](https://druid.apache.org/docs/latest/development/extensions-core/kafka-ingestion.html) for detailed instructions and examples.
-
-Please ensure below points while creating a datasource
-
- > 1. Make sure that the datasource name within the `ingestion_spec` object matches the value of the `datasource_ref` property.
- 
- > 2. Ensure that the topic name in the `ioconfig` object of the ingestion spec is the same as the topic name in the dataset request's `router_config`.
-
 - Create a Datasource based on the Dataset:   
     **End Point**: `/obsrv/v1/datasources`  
     **Method**: `POST`  

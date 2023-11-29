@@ -64,7 +64,7 @@ variable "postgresql_admin_password" {
 
 variable "postgresql_obsrv_username" {
   type        = string
-  description = "Postgresql obsrv username."
+  description = "Postgresql obsrv user username."
   default     = "obsrv"
 }
 
@@ -88,13 +88,13 @@ variable "postgresql_druid_database" {
 
 variable "postgresql_druid_user_name" {
   type        = string
-  description = "Postgresql database name."
+  description = "Postgresql druid user username."
   default   = "druid_raw"
 }
 
 variable "postgresql_druid_user_password" {
   type        = string
-  description = "Postgresql database name."
+  description = "Postgresql druid user password."
   default   = "druid_raw"
 }
 
@@ -116,20 +116,8 @@ variable "postgresql_image_tag" {
   default = "14.5.0-debian-11-r14"
 }
 
-variable "postgresql_flink_user_password" {
-  type        = string
-  description = "Postgresql flink user password."
-  default   = "flink123"
-}
-
 variable "postgresql_druid_raw_user_password" {
   type        = string
   description = "Postgresql druid user password."
   default   = "druidraw123"
-}
-
-variable "postgresql_dataset_api_user_password" {
-  type        = string
-  description = "Postgresql dataset api user password."
-  default   = "datasetapi123"
 }

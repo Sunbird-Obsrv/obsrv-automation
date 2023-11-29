@@ -84,7 +84,7 @@ variable "dataset_api_image_name" {
 
 variable "dataset_api_image_tag" {
   type        = string
-  description = "Dataset api image tag"
+  description = "Dataset api image tag."
   default     = "1.0.0"
 }
 
@@ -104,4 +104,10 @@ variable "redis_release_name" {
   type        = string
   description = "Release name for Redis installation."
   default     = "obsrv-redis"
+}
+
+variable "s3_bucket" {
+  type        = string
+  description = "S3 bucket name for dataset api exhaust."
+  default     = ""
 }

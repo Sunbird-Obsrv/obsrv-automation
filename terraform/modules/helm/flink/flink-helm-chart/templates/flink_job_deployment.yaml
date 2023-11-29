@@ -7,6 +7,7 @@ metadata:
   labels:
     app: flink
     component: {{ .Release.Name }}-jobmanager
+    system.processing: "true"
 spec:
   type: ClusterIP
   ports:
@@ -23,6 +24,7 @@ spec:
   selector:
     app: flink
     component: {{ .Release.Name }}-jobmanager
+    system.processing: "true"
 ---
 apiVersion: v1
 kind: Service
@@ -59,6 +61,7 @@ metadata:
   labels:
     app: flink
     component: {{ .Release.Name }}-taskmanager
+    system.processing: "true"
 spec:
   type: ClusterIP
   ports:
@@ -68,17 +71,22 @@ spec:
     app: flink
     component: {{ .Release.Name }}-taskmanager
 ---
-apiVersion: batch/v1
-kind: Job
+apiVersion: apps/v1
+kind: Deployment
 metadata:
   name: {{ .Release.Name }}-jobmanager
   namespace: {{ .Release.Namespace }}
 spec:
+  selector:
+    matchLabels:
+      app: flink
+      component: {{ .Release.Name }}-jobmanager
   template:
     metadata:
       labels:
         app: flink
         component: {{ .Release.Name }}-jobmanager
+        system.processing: "true"
       annotations:
         prometheus.io/scrape: 'true'
         prometheus.io/port: "{{ .Values.jobmanager.prom_port }}"
@@ -97,32 +105,35 @@ spec:
           - key: log4j_console_properties
             path: log4j-console.properties
       restartPolicy: OnFailure
-{{- if ne .Values.image.imagePullSecrets "" }}
       imagePullSecrets:
       - name: {{ .Values.image.imagePullSecrets }}
-{{- end }}
-
       serviceAccount: {{ .Release.Namespace }}-sa
       containers:
       - name: {{ .Release.Name }}-jobmanager
         image: "{{ .Values.image.registry }}/{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         resources:
           requests:
-            cpu: "{{ .Values.jobmanager.cpu_requests }}"
+              cpu: "{{ .Values.jobmanager.cpu_requests }}"
+              memory: "{{ .Values.jobmanager.memory_requests }}"
           limits:
             cpu: "{{ .Values.jobmanager.cpu_limits }}"
+            memory: "{{ .Values.jobmanager.memory_limits }}"
         workingDir: /opt/flink
         command: ["/opt/flink/bin/standalone-job.sh"]
         args: ["start-foreground",
 {{- if eq .Values.checkpoint_store_type "azure" }}
           "-Dfs.azure.account.key.{{ .Values.azure_account }}.blob.core.windows.net={{ .Values.azure_secret }}",
 {{- end }}
-{{- if eq .Values.checkpoint_store_type "s3" }}
-          "-Ds3.access-key={{ .Values.s3_access_key }}",
-          "-Ds3.secret-key={{ .Values.s3_secret_key }}",
-          "-Ds3.endpoint={{ .Values.s3_endpoint }}",
-          "-Ds3.path.style.access={{ .Values.s3_path_style_access }}",
+# Required only if keys are being used, for service accounts these should be disabled
+# {{- if eq .Values.checkpoint_store_type "s3" }}
+#           "-Ds3.access-key={{ .Values.s3_access_key }}",
+#           "-Ds3.secret-key={{ .Values.s3_secret_key }}",
+#           "-Ds3.endpoint={{ .Values.s3_endpoint }}",
+#           "-Ds3.path.style.access={{ .Values.s3_path_style_access }}",
+# {{- end }}
+{{- if eq .Values.checkpoint_store_type "gcs" }}
+          "-Dgoogle.cloud.auth.service.account.enable=true",
 {{- end }}
 {{- $release_name := .Release.Name }}
                "--job-classname={{ (index .Values $release_name).job_classname }}",
@@ -158,7 +169,6 @@ spec:
         - name: flink-config-volume
           mountPath: /opt/flink/conf/log4j-console.properties
           subPath: log4j-console.properties
-
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -169,13 +179,14 @@ spec:
   replicas: {{ .Values.taskmanager.replicas }}
   selector:
     matchLabels:
-      app: {{ .Release.Name }}-taskmanager
-      # component: {{ .Release.Name }}-taskmanager
+      app: flink
+      component: {{ .Release.Name }}-taskmanager
   template:
     metadata:
       labels:
-        app: {{ .Release.Name }}-taskmanager
-        # component: {{ .Release.Name }}-taskmanager
+        system.processing: "true"
+        app: flink
+        component: {{ .Release.Name }}-taskmanager
     spec:
       volumes:
       - name: flink-config-volume
@@ -190,31 +201,35 @@ spec:
             path: base-config.conf
           - key: {{ .Release.Name }}
             path: {{ .Release.Name }}.conf
-{{- if ne .Values.image.imagePullSecrets "" }}
       imagePullSecrets:
       - name: {{ .Values.image.imagePullSecrets }}
-{{- end }}
       serviceAccount: {{ .Release.Namespace }}-sa
       containers:
       - name: {{ .Release.Name }}-taskmanager
         image: "{{ .Values.image.registry }}/{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         resources:
           requests:
-            cpu: "{{ .Values.taskmanager.cpu_requests }}"
+              cpu: "{{ .Values.taskmanager.cpu_requests }}"
+              memory: "{{ .Values.taskmanager.memory_requests }}"
           limits:
             cpu: "{{ .Values.taskmanager.cpu_limits }}"
+            memory: "{{ .Values.taskmanager.memory_limits }}"
         workingDir: {{ .Values.taskmanager.flink_work_dir }}
         command: ["/opt/flink/bin/taskmanager.sh"]
         args: ["start-foreground",
 {{- if eq .Values.checkpoint_store_type "azure" }}
           "-Dfs.azure.account.key.{{ .Values.azure_account }}.blob.core.windows.net={{ .Values.azure_secret }}",
 {{- end }}
-{{- if eq .Values.checkpoint_store_type "s3" }}
-          "-Ds3.access-key={{ .Values.s3_access_key }}",
-          "-Ds3.secret-key={{ .Values.s3_secret_key }}",
-          "-Ds3.endpoint={{ .Values.s3_endpoint }}",
-          "-Ds3.path.style.access={{ .Values.s3_path_style_access }}",
+# Required only if keys are being used, for service accounts these should be disabled
+# {{- if eq .Values.checkpoint_store_type "s3" }}
+#           "-Ds3.access-key={{ .Values.s3_access_key }}",
+#           "-Ds3.secret-key={{ .Values.s3_secret_key }}",
+#           "-Ds3.endpoint={{ .Values.s3_endpoint }}",
+#           "-Ds3.path.style.access={{ .Values.s3_path_style_access }}",
+# {{- end }}
+{{- if eq .Values.checkpoint_store_type "gcs" }}
+          "-Dgoogle.cloud.auth.service.account.enable=true",
 {{- end }}
           "-Dweb.submit.enable=false",
           "-Dmetrics.reporter.prom.class=org.apache.flink.metrics.prometheus.PrometheusReporter",

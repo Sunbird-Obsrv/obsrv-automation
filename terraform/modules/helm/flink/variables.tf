@@ -80,9 +80,11 @@ variable "flink_container_registry" {
   description = "Container registry. For example docker.io/obsrv"
 }
 
+
 variable "flink_image_tag" {
   type        = string
   description = "Flink image tag."
+  default     = "1.1.0"
 }
 
 variable "flink_checkpoint_store_type" {

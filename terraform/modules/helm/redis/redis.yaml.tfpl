@@ -1,3 +1,6 @@
+commonLabels:
+      system.storage: 'true'
+      system.processing: 'true'
 image:
   registry: docker.io
   repository: bitnami/redis
@@ -5,6 +8,7 @@ image:
   digest: ""
   pullPolicy: IfNotPresent
 
+architecture: standalone
 commonConfiguration: |-
   # Enable RDB persistence
   save 300 100
@@ -14,6 +18,9 @@ auth:
 
 master:
   count: 1
+  podLabels:
+      system.storage: 'true'
+      system.processing: 'true'
   ## @param master.configuration Configuration for Redis&reg; master nodes
   ## ref: https://redis.io/topics/config
   ##
@@ -29,13 +36,16 @@ master:
     redis: 6379
   resources:
     limits:
-      cpu: 1
+      cpu: 512m
       memory: 2Gi
     requests:
-      cpu: 1
+      cpu: 512m
       memory: 1Gi
   persistence:
     enabled: true
+    labels:
+      system.storage: 'true'
+      system.processing: 'true'
     path: ${redis_persistence_path}
     subPath: ""
     subPathExpr: ""
@@ -43,9 +53,11 @@ master:
     accessModes:
       - ReadWriteOnce
     size: ${redis_master_persistence_size}
-
 replica:
   replicaCount: 1
+  podLabels:
+      system.storage: 'true'
+      system.processing: 'true'
   ## @param replica.configuration Configuration for Redis&reg; replicas nodes
   ## ref: https://redis.io/topics/config
   ##
@@ -63,6 +75,9 @@ replica:
     redis: 6379
   persistence:
     enabled: true
+    labels:
+      system.storage: 'true'
+      system.processing: 'true'
     path: ${redis_persistence_path}
     subPath: ""
     subPathExpr: ""
@@ -70,4 +85,3 @@ replica:
     accessModes:
       - ReadWriteOnce
     size: ${redis_replica_persistence_size}
-

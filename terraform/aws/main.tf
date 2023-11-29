@@ -23,13 +23,7 @@ provider "aws" {
 provider "helm" {
   alias  = "helm"
   kubernetes {
-    host                   = module.eks.kubernetes_host
-    cluster_ca_certificate = module.eks.kubernetes_ca_certificate
-    exec {
-      api_version = "client.authentication.k8s.io/v1beta1"
-      command     = "aws"
-      args        = ["--region", "${var.region}", "eks", "get-token", "--cluster-name", "${var.building_block}-${var.env}-eks"]
-    }
+    config_path = "~/.kube/config"
   }
 }
 
@@ -45,6 +39,7 @@ module "eks" {
   building_block        = var.building_block
   eks_master_subnet_ids = module.vpc.multi_zone_public_subnets_ids
   eks_nodes_subnet_ids  = module.vpc.single_zone_public_subnets_id
+  depends_on            = [module.vpc]
 }
 
 module "iam" {
@@ -88,9 +83,10 @@ module "superset" {
   postgresql_admin_username         = module.postgresql.postgresql_admin_username
   postgresql_admin_password         = module.postgresql.postgresql_admin_password
   postgresql_superset_user_password = module.postgresql.postgresql_superset_user_password
-  superset_chart_depends_on         = [module.postgresql, module.redis]
+  superset_chart_depends_on         = [module.postgresql_migration, module.redis]
   redis_namespace                   = module.redis.redis_namespace
   redis_release_name                = module.redis.redis_release_name
+  postgresql_service_name           = module.postgresql.postgresql_service_name
 }
 
 module "grafana_configs" {
@@ -104,45 +100,43 @@ module "postgresql" {
   source               = "../modules/helm/postgresql"
   env                  = var.env
   building_block       = var.building_block
-  depends_on           = [module.eks]
+  depends_on           = [module.eks, module.monitoring]
 }
 
 module "redis" {
   source               = "../modules/helm/redis"
   env                  = var.env
   building_block       = var.building_block
-  depends_on           = [module.eks]
+  depends_on           = [module.eks, module.monitoring]
 }
 
 module "kafka" {
   source         = "../modules/helm/kafka"
   env            = var.env
   building_block = var.building_block
-  depends_on     = [module.eks]
+  depends_on     = [module.eks, module.monitoring]
 }
 
 module "flink" {
-  source                         = "../modules/helm/flink"
-  env                            = var.env
-  building_block                 = var.building_block
-  flink_container_registry       = var.flink_container_registry
-  flink_image_tag                = var.flink_image_tag
+  source                              = "../modules/helm/flink"
+  env                                 = var.env
+  building_block                      = var.building_block
+  flink_container_registry            = var.flink_container_registry
+  flink_image_tag                     = var.flink_image_tag
   flink_merged_pipeline_release_names = var.flink_merged_pipeline_release_names
-  flink_release_names              = var.flink_release_names
-  merged_pipeline_enabled        = var.merged_pipeline_enabled
-  # s3_access_key                  = module.iam.s3_access_key
-  # s3_secret_key                  = module.iam.s3_secret_key
-  flink_checkpoint_store_type    = var.flink_checkpoint_store_type
-  flink_chart_depends_on         = [module.kafka, module.postgresql, module.redis]
-  postgresql_obsrv_username      = module.postgresql.postgresql_obsrv_username
-  postgresql_obsrv_user_password = module.postgresql.postgresql_obsrv_user_password
-  postgresql_obsrv_database      = module.postgresql.postgresql_obsrv_database
-  checkpoint_base_url            = "s3://${module.s3.checkpoint_storage_bucket}"
-  redis_namespace                = module.redis.redis_namespace
-  redis_release_name             = module.redis.redis_release_name
-  flink_sa_annotations           = "eks.amazonaws.com/role-arn: ${module.eks.flink_sa_iam_role}"
-  flink_namespace                = module.eks.flink_namespace
-  postgresql_service_name        = module.postgresql.postgresql_service_name
+  flink_release_names                 = var.flink_release_names
+  merged_pipeline_enabled             = var.merged_pipeline_enabled
+  flink_checkpoint_store_type         = var.flink_checkpoint_store_type
+  flink_chart_depends_on              = [module.kafka, module.postgresql_migration, module.redis]
+  postgresql_obsrv_username           = module.postgresql.postgresql_obsrv_username
+  postgresql_obsrv_user_password      = module.postgresql.postgresql_obsrv_user_password
+  postgresql_obsrv_database           = module.postgresql.postgresql_obsrv_database
+  checkpoint_base_url                 = "s3://${module.s3.checkpoint_storage_bucket}"
+  redis_namespace                     = module.redis.redis_namespace
+  redis_release_name                  = module.redis.redis_release_name
+  flink_sa_annotations                = "eks.amazonaws.com/role-arn: ${module.eks.flink_sa_iam_role}"
+  flink_namespace                     = module.eks.flink_namespace
+  postgresql_service_name             = module.postgresql.postgresql_service_name
 }
 
 module "druid_raw_cluster" {
@@ -153,7 +147,7 @@ module "druid_raw_cluster" {
 #  s3_secret_key                      = module.iam.s3_secret_key
   s3_bucket                          = module.s3.s3_bucket
   druid_deepstorage_type             = var.druid_deepstorage_type
-  druid_raw_cluster_chart_depends_on = [module.postgresql, module.druid_operator]
+  druid_raw_cluster_chart_depends_on = [module.postgresql_migration, module.druid_operator]
   kubernetes_storage_class           = var.kubernetes_storage_class
   druid_raw_user_password            = module.postgresql.postgresql_druid_raw_user_password
   druid_raw_sa_annotations           = "eks.amazonaws.com/role-arn: ${module.eks.druid_raw_sa_iam_role}"
@@ -199,10 +193,11 @@ module "dataset_api" {
   postgresql_obsrv_user_password     = module.postgresql.postgresql_obsrv_user_password
   postgresql_obsrv_database          = module.postgresql.postgresql_obsrv_database
   dataset_api_sa_annotations         = "eks.amazonaws.com/role-arn: ${module.eks.dataset_api_sa_annotations}"
-  dataset_api_chart_depends_on       = [module.postgresql, module.kafka]
+  dataset_api_chart_depends_on       = [module.postgresql_migration, module.kafka]
   redis_namespace                    = module.redis.redis_namespace
   redis_release_name                 = module.redis.redis_release_name
   dataset_api_namespace              = module.eks.dataset_api_namespace
+  s3_bucket                          = module.s3.s3_bucket
 }
 
 module "secor" {
@@ -213,7 +208,7 @@ module "secor" {
   secor_chart_depends_on  = [module.kafka]
   secor_namespace         = module.eks.secor_namespace
   cloud_storage_bucket    = module.s3.s3_bucket
-  storage_class           = var.storage_class
+  kubernetes_storage_class = var.kubernetes_storage_class
 }
 
 module "submit_ingestion" {
@@ -246,7 +241,37 @@ module "web_console" {
   env                              = var.env
   building_block                   = var.building_block
   web_console_configs              = var.web_console_configs
-  depends_on                       = [module.eks]
+  depends_on                       = [module.eks, module.monitoring]
   web_console_image_repository     = var.web_console_image_repository
   web_console_image_tag            = var.web_console_image_tag
+}
+
+module "get_kubeconfig" {
+  source         = "../modules/aws/get_kubeconfig"
+  env            = var.env
+  building_block = var.building_block
+}
+
+module "command_service" {
+  source                           = "../modules/helm/command_service"
+  env                              = var.env
+  command_service_chart_depends_on = [module.flink, module.postgresql]
+  command_service_image_tag        = var.command_service_image_tag
+  postgresql_obsrv_username        = module.postgresql.postgresql_obsrv_username
+  postgresql_obsrv_user_password   = module.postgresql.postgresql_obsrv_user_password
+  postgresql_obsrv_database        = module.postgresql.postgresql_obsrv_database
+  flink_namespace                  = module.flink.flink_namespace
+}
+
+module "postgresql_migration" {
+  source                                = "../modules/helm/postgresql_migration"
+  env                                   = var.env
+  building_block                        = var.building_block
+  postgresql_admin_username             = module.postgresql.postgresql_admin_username
+  postgresql_admin_password             = module.postgresql.postgresql_admin_password
+  postgresql_migration_chart_depends_on = [module.postgresql]
+  postgresql_url                        = module.postgresql.postgresql_service_name
+  postgresql_superset_user_password     = module.postgresql.postgresql_superset_user_password
+  postgresql_druid_raw_user_password    = module.postgresql.postgresql_druid_raw_user_password
+  postgresql_obsrv_user_password        = module.postgresql.postgresql_obsrv_user_password
 }

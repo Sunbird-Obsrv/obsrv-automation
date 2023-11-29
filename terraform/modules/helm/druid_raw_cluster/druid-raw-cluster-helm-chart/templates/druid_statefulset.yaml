@@ -30,7 +30,6 @@ spec:
     -server
     -XX:+UseG1GC
     -XX:+ExitOnOutOfMemoryError
-    -XX:MaxDirectMemorySize=10240g
     -Duser.timezone=UTC
     -Dfile.encoding=UTF-8
     -Djava.util.logging.manager=org.apache.logging.log4j.jul.LogManager
@@ -71,21 +70,35 @@ spec:
     druid.s3.accessKey = {{ .Values.s3_access_key }}
     druid.s3.secretKey = {{ .Values.s3_secret_key }}
     druid.storage.bucket={{ .Values.s3_bucket }}
-    druid.storage.baseKey=druid/segments
+    druid.storage.baseKey={{ .Values.druid_storage_baseKey }}
+    druid.s3.endpoint.url={{ .Values.druid_s3_endpoint_url }}
+    druid.s3.endpoint.signingRegion={{ .Values.druid_s3_endpoint_signingRegion }}
     # Azure
     druid.azure.account = {{ .Values.azure_storage_account_name }}
     druid.azure.key = {{ .Values.azure_storage_account_key }}
     druid.azure.container = {{ .Values.azure_storage_container }}
     #druid.storage.storageDirectory = {{ .Values.druid_storage_directory }}
-    #druid.storage.disableAcl=true
+    druid.storage.disableAcl=true
+    # Google Cloud Storage
+    druid.google.bucket = {{ .Values.gcs_bucket }}
+    druid.google.prefix = druid/segments
+
 
     # # Indexing service logs
     # # For local disk (only viable in a cluster if this is a network mount):
     druid.indexer.logs.type={{ .Values.druid_indexer_logs_type }}
-    druid.indexer.logs.container={{ .Values.druid_indexer_logs_container }}
     druid.indexer.logs.prefix={{ .Values.druid_indexer_logs_prefix }}
-    druid.indexer.logs.s3Bucket={{ .Values.druid_indexer_logs_container }}
+    druid.indexer.logs.disableAcl=true
+
+    {{- if eq .Values.druid_deepstorage_type "s3" }}
+    druid.indexer.logs.container={{ .Values.druid_indexer_logs_container }}
+    druid.indexer.logs.s3Bucket={{ .Values.s3_bucket }}
     druid.indexer.logs.s3Prefix= {{ .Values.druid_indexer_logs_prefix }}
+    {{- end }}
+
+    {{- if eq .Values.druid_deepstorage_type "google" }}
+    druid.indexer.logs.bucket={{ .Values.gcs_bucket }}
+    {{- end }}
 
     # Service discovery
     druid.selectors.indexing.serviceName={{ .Values.druid_selectors_indexing_serviceName }}
@@ -126,6 +139,8 @@ spec:
       nodeType: "broker"
       druid.port: {{ .Values.druid_broker_port }}
       nodeConfigMountPath: "/opt/druid/conf/druid/cluster/query/broker"
+      podLabels:
+        system.querying: "true"
       replicas: {{ .Values.druid_broker_replicas }}
       runtime.properties: |
         druid.service={{ .Values.druid_broker_service }}
@@ -175,6 +190,9 @@ spec:
       kind: Deployment
       nodeType: "coordinator"
       druid.port: {{ .Values.druid_coordinator_port }}
+      podLabels:
+        system.querying: "true"
+        system.ingestion: "true"
       nodeConfigMountPath: "/opt/druid/conf/druid/cluster/master/coordinator-overlord"
       replicas: {{ .Values.druid_coordinator_replicas }}
       runtime.properties: |
@@ -207,6 +225,9 @@ spec:
       druid.port: {{ .Values.druid_overlord_port }}
       nodeConfigMountPath: "/opt/druid/conf/druid/cluster/master/coordinator-overlord"
       replicas: {{ .Values.druid_overlord_replicas }}
+      podLabels:
+        system.querying: "true"
+        system.ingestion: "true"
       runtime.properties: |
         druid.service={{ .Values.druid_overlord_service }}
         druid.indexer.queue.startDelay={{ .Values.druid_indexer_queue_startDelay }}
@@ -236,6 +257,8 @@ spec:
       druid.port: {{ .Values.druid_historical_port }}
       nodeConfigMountPath: "/opt/druid/conf/druid/cluster/data/historical"
       replicas: {{ .Values.druid_historical_replicas }}
+      podLabels:
+        system.querying: "true"
       readinessProbe:
         httpGet:
           path: /status/health
@@ -272,6 +295,8 @@ spec:
       volumeClaimTemplates:
         - metadata:
             name: historical-volume
+            labels:
+              system.querying: "true"
           spec:
             storageClassName: "{{- .Values.storageClass }}"
             accessModes:
@@ -355,12 +380,14 @@ spec:
       druid.port: {{ .Values.druid_indexer_port }}
       nodeConfigMountPath: "/opt/druid/conf/druid/cluster/data/indexer"
       replicas: {{ .Values.druid_indexer_replicas }}
+      podLabels:
+        system.ingestion: "true"
       runtime.properties: |
         druid.service={{ .Values.druid_indexer_service }}
         # Number of tasks per indexer
         druid.worker.capacity={{ .Values.druid_indexer_worker_capacity }}
         # Task launch parameters
-        druid.indexer.runner.javaOpts={{ .Values.druid_indexer_runner_javaOpts }}
+        # druid.indexer.runner.javaOpts={{ .Values.druid_indexer_runner_javaOpts }}
         druid.indexer.task.baseTaskDir={{ .Values.druid_indexer_task_baseTaskDir }}
         # Merge jobs
         druid.worker.numConcurrentMerges={{ .Values.druid_indexer_numConcurrentMerges }}
@@ -394,6 +421,8 @@ spec:
       volumeClaimTemplates:
         - metadata:
             name: indexer-volume
+            labels:
+              system.ingestion: "true"
           spec:
             storageClassName: "{{- .Values.storageClass }}"
             accessModes:
@@ -414,6 +443,9 @@ spec:
       druid.port: {{ .Values.druid_router_plaintextPort }}
       nodeConfigMountPath: "/opt/druid/conf/druid/cluster/query/router"
       replicas: {{ .Values.druid_router_replicas }}
+      podLabels:
+        system.querying: "true"
+        system.ingestion: "true"
       services:
         - spec:
             type: ClusterIP

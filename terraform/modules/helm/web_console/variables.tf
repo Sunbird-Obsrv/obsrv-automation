@@ -63,5 +63,11 @@ variable "web_console_image_name" {
 
 variable "web_console_configs" {
   type = map
-  description = "Web console config variables. See below commented code for values that need to be passed" 
+  description = "Web console config variables. See below commented code for values that need to be passed"
+}
+
+variable "web_console_install_timeout" {
+  type        = number
+  description = "Web console chart install timeout."
+  default     = 1200
 }

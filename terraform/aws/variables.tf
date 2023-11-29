@@ -55,13 +55,7 @@ variable "flink_container_registry" {
 variable "flink_image_tag" {
    type        = string
    description = "Flink kubernetes service name."
-   default     = "1.0.0"
-}
-
-variable "storage_class" {
-  type        = string
-  description = "Storage Class"
-  default     = "gp2"
+   default     = "1.1.0"
 }
 
 variable "web_console_configs" {
@@ -76,7 +70,7 @@ variable "web_console_configs" {
     https                              = "false"
     react_app_version                  = "v1.2.0"
     generate_sourcemap                 = "false"
-  } 
+  }
 }
 
 variable "web_console_image_tag" {
@@ -118,7 +112,9 @@ variable "merged_pipeline_enabled" {
   type = bool
   default = true
 }
-variable "postgresql_service_name" {
+
+variable "command_service_image_tag" {
   type        = string
-  description = "Postgresql service name."
+  description = "CommandService image tag."
+  default     = "1.0.0"
 }

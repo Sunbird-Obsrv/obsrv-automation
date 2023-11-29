@@ -32,8 +32,9 @@ fullnameOverride: ""
 clusterDomain: cluster.local
 ## @param commonLabels Labels to add to all deployed objects
 ##
-commonLabels: {}
-  
+commonLabels:
+  system.ingestion: "true"
+  system.processing: "true"
 ## @param commonAnnotations Annotations to add to all deployed objects
 ##
 commonAnnotations: {}
@@ -167,7 +168,7 @@ logSegmentBytes: _1073741824
 logsDirs: /bitnami/kafka/data
 ## @param maxMessageBytes The largest record batch size allowed by Kafka
 ##
-maxMessageBytes: _1000012
+maxMessageBytes: _5000012
 ## @param defaultReplicationFactor Default replication factors for automatically created topics
 ##
 defaultReplicationFactor: 1
@@ -506,8 +507,12 @@ lifecycleHooks: {}
 ## @param resources.requests The requested resources for the container
 ##
 resources:
-  limits: {}
-  requests: {}
+  limits:
+    cpu: 1
+    memory: 2048Mi
+  requests:
+    cpu: 750m
+    memory: 1024Mi
 ## Kafka pods' Security Context
 ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
 ## @param podSecurityContext.enabled Enable security context for the pods
@@ -547,7 +552,9 @@ hostIPC: false
 ## @param podLabels Extra labels for Kafka pods
 ## Ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
 ##
-podLabels: {}
+podLabels:
+  system.ingestion: "true"
+  system.processing: "true"
 ## @param podAnnotations Extra annotations for Kafka pods
 ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
 ##
@@ -1138,8 +1145,12 @@ metrics:
     ## @param metrics.kafka.resources.requests The requested resources for the container
     ##
     resources:
-      limits: {}
-      requests: {}
+      limits:
+        cpu: 100m
+        memory: 512Mi
+      requests:
+        cpu: 100m
+        memory: 256Mi
     ## Kafka exporter pods' Security Context
     ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
     ## @param metrics.kafka.podSecurityContext.enabled Enable security context for the pods
@@ -1171,7 +1182,9 @@ metrics:
     ## @param metrics.kafka.podLabels Extra labels for Kafka exporter pods
     ## Ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
     ##
-    podLabels: {}
+    podLabels:
+      system.ingestion: "true"
+      system.processing: "true"
     ## @param metrics.kafka.podAnnotations Extra annotations for Kafka exporter pods
     ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
     ##
@@ -1360,8 +1373,12 @@ metrics:
     ## @param metrics.jmx.resources.requests The requested resources for the JMX exporter container
     ##
     resources:
-      limits: {}
-      requests: {}
+      limits:
+        cpu: 100m
+        memory: 512Mi
+      requests:
+        cpu: 100m
+        memory: 256Mi
     ## Prometheus JMX exporter service configuration
     ##
     service:
@@ -1608,7 +1625,9 @@ provisioning:
   ## @param provisioning.podLabels Extra labels for Kafka provisioning pods
   ## Ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
   ##
-  podLabels: {}
+  podLabels:
+    system.ingestion: "true"
+    system.processing: "true"
   ## Kafka provisioning pods ServiceAccount
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/
   ##

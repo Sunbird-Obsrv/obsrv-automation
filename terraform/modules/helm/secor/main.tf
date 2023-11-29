@@ -34,6 +34,8 @@ resource "helm_release" "secor" {
   values = [
     templatefile("${path.module}/${var.secor_custom_values_yaml}",
       {
+        cloud_store_provider       = var.cloud_store_provider
+        upload_manager             = var.upload_manager
         deployment_stage           = var.env
         secor_namespace            = var.secor_namespace
         base_path                  = var.secor_backup_basepath
@@ -43,7 +45,7 @@ resource "helm_release" "secor" {
         message_timezone           = var.message_timezone
         parser_timezone            = var.parser_timezone
         image_pull_policy          = var.image_pull_policy
-        storage_class              = var.storage_class
+        storage_class              = var.kubernetes_storage_class
         env                        = var.env
         kafka_broker_host          = var.kafka_broker_ip
         zookeeper_quorum           = var.kafka_zookeeper_ip
@@ -60,6 +62,7 @@ resource "helm_release" "secor" {
         file_size                  = var.secor_backup_max_file_size
         file_age                   = var.secor_backup_interval
         threads                    = var.secor_threads_count
+        parser_timezone            = var.parser_timezone
       }
     )
   ]
