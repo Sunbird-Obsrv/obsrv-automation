@@ -1,9 +1,10 @@
 namespace: "flink"
 imagepullsecrets: ""
 image:
-  registry: sanketikahub
-  repository: merged-pipeline
+  registry: sunbird
+  repository: sb-obsrv-merged-pipeline
   tag: 1.0.0-GA
+
 serviceMonitor:
   enabled: false
 replicaCount: 1
@@ -107,7 +108,7 @@ log4j_console_properties: |
 
 base_config: |
   job {
-    env = "dev"
+    env = "sb-dev"
     enable.distributed.checkpointing = true
     statebackend {
       base.url = "s3://<flink-bucket-name>"

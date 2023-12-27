@@ -199,7 +199,7 @@ variable "kubectl_config_path" {
 variable "dataset_api_container_registry" {
   type        = string
   description = "Container registry. For example docker.io/obsrv"
-  default     = "sanketikahub"
+  default     = "sunbird"
 }
 
 variable "dataset_api_image_tag" {
@@ -211,7 +211,7 @@ variable "dataset_api_image_tag" {
 variable "flink_container_registry" {
   type        = string
   description = "Container registry. For example docker.io/obsrv"
-  default     = "sanketikahub"
+  default     = "sunbird"
 }
 
 variable "flink_release_names" {

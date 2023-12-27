@@ -9,6 +9,7 @@ image:
   repository: ${flink_image_name}
   tag: ${flink_image_tag}
   imagePullSecrets: ""
+
 base_config: |
   job {
     env = "${env}"
