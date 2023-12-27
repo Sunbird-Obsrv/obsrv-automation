@@ -1,19 +1,26 @@
 variable "env" {
   type        = string
   description = "Environment name. All resources will be prefixed with this value."
-  default     = "dev"
 }
 
 variable "building_block" {
   type        = string
   description = "Building block name. All resources will be prefixed with this value."
-  default     = "obsrv"
 }
 
 variable "region" {
   type        = string
   description = "AWS region to create the resources."
-  default     = "us-east-2"
+}
+
+variable "availability_zones" {
+  type        = list(string)
+  description = "AWS Availability Zones."
+}
+
+variable "timezone" {
+  type        = string
+  description = "Timezone property to backup the data"
 }
 
 variable "flink_checkpoint_store_type" {
@@ -43,7 +50,7 @@ variable "dataset_api_container_registry" {
 variable "dataset_api_image_tag" {
   type        = string
   description = "Dataset api image tag."
-  default     = "1.0.0"
+  default     = "1.0.0-GA"
 }
 
 variable "flink_container_registry" {
@@ -55,7 +62,7 @@ variable "flink_container_registry" {
 variable "flink_image_tag" {
    type        = string
    description = "Flink kubernetes service name."
-   default     = "1.1.0"
+   default     = "1.0.0-GA"
 }
 
 variable "web_console_configs" {
@@ -76,7 +83,7 @@ variable "web_console_configs" {
 variable "web_console_image_tag" {
   type        = string
   description = "web console image tag."
-  default = "1.0.0"
+  default = "1.0.0-GA"
 }
 
 variable "web_console_image_repository" {
@@ -89,12 +96,13 @@ variable "flink_release_names" {
   description = "Create release names"
   type        = map(string)
   default = {
-    extractor       = "sb-obsrv-extractor"
-    preprocessor    = "sb-obsrv-preprocessor"
-    denormalizer    = "sb-obsrv-denormalizer"
-    transformer     = "sb-obsrv-transformer"
-    druid-router    = "sb-obsrv-druid-router"
-    master-data-processor = "sb-obsrv-master-data-processor"
+    extractor       = "extractor"
+    preprocessor    = "preprocessor"
+    denormalizer    = "denormalizer"
+    transformer     = "transformer"
+    druid-router    = "druid-router"
+    master-data-processor = "master-data-processor"
+    # kafka-connector = "kafka-connector"
   }
 }
 
@@ -102,8 +110,9 @@ variable "flink_merged_pipeline_release_names" {
   description = "Create release names"
   type        = map(string)
   default = {
-    merged-pipeline = "sb-obsrv-merged-pipeline"
-    master-data-processor = "sb-obsrv-master-data-processor"
+    merged-pipeline = "merged-pipeline"
+    master-data-processor = "master-data-processor"
+    # kafka-connector = "kafka-connector"
   }
 }
 
@@ -116,5 +125,5 @@ variable "merged_pipeline_enabled" {
 variable "command_service_image_tag" {
   type        = string
   description = "CommandService image tag."
-  default     = "1.0.0"
+  default     = "1.0.0-GA"
 }

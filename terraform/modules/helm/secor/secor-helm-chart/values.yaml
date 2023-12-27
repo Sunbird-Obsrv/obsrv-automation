@@ -13,12 +13,11 @@ namespace: "secor"
 storageClass: "gp2"
 secor_env: "sb-dev"
 image_repository: "sunbird/secor"
-region: "us-east-2"
+region: "" # region name to be provided for ex: "us-east-2"
 pullPolicy: "IfNotPresent"
 jvm_memory: 1024m
-image_tag: "0.29.16-java-11-gs"
-message_timezone: "UTC"
-parser_timezone: "Asia/Kolkata"
+image_tag: "1.0.0-GA" # TODO - Update the right version of secor image
+timezone: "UTC"
 secor_jobs:
   ingest-backup:
     replicas: 1
@@ -28,66 +27,6 @@ secor_jobs:
     timestamp_key: "syncts"
     fallback_timestamp_key: ""
     topic: "sb-dev.ingest"
-    kafka_broker_host: "kafka-headless.kafka.svc.cluster.local"
-    zookeeper_quorum: "kafka-zookeeper-headless.kafka.svc.cluster.local:2181"
-    max_file_size: "100000000"
-    max_file_age: "60"
-    partition_prefix_enabled: "false"
-    partition_prefix_key: ""
-    partition_prefix_mapping: "{}"
-    message_channel_identifier: "dataset"
-    output_file_pattern: "{partition}-{currentTimestamp}.json"
-    message_parser: "com.pinterest.secor.parser.ChannelDateMessageParser"
-    storage:
-      size: "1Gi"
-    requests:
-      cpu: "128m"
-      memory: "512Mi"
-    limits:
-      cpu: "128m"
-      memory: "512Mi"
-    lag_threshold_warning: 100000
-    threads: "2"
-    lag_threshold_critical: 200000
-
-  extractor-duplicate-backup:
-    replicas: 1
-    consumer_group: "sb-dev_extractor_duplicate"
-    service_name: "extractor_duplicate"
-    base_path: "telemetry-data/extractor-duplicates"
-    timestamp_key: "syncts"
-    fallback_timestamp_key: ""
-    topic: "sb-dev.extractor.duplicate"
-    kafka_broker_host: "kafka-headless.kafka.svc.cluster.local"
-    zookeeper_quorum: "kafka-zookeeper-headless.kafka.svc.cluster.local:2181"
-    max_file_size: "100000000"
-    max_file_age: "60"
-    partition_prefix_enabled: "false"
-    partition_prefix_key: ""
-    partition_prefix_mapping: "{}"
-    message_channel_identifier: "dataset"
-    output_file_pattern: "{partition}-{currentTimestamp}.json"
-    message_parser: "com.pinterest.secor.parser.ChannelDateMessageParser"
-    storage:
-      size: "1Gi"
-    requests:
-      cpu: "128m"
-      memory: "512Mi"
-    limits:
-      cpu: "128m"
-      memory: "512Mi"
-    lag_threshold_warning: 100000
-    threads: "2"
-    lag_threshold_critical: 200000
-
-  extractor-failed-backup:
-    replicas: 1
-    consumer_group: "sb-dev_extractor_failed"
-    service_name: "extractor_failed"
-    base_path: "telemetry-data/extractor-failed"
-    timestamp_key: "syncts"
-    fallback_timestamp_key: ""
-    topic: "sb-dev.extractor.failed"
     kafka_broker_host: "kafka-headless.kafka.svc.cluster.local"
     zookeeper_quorum: "kafka-zookeeper-headless.kafka.svc.cluster.local:2181"
     max_file_size: "100000000"
@@ -140,66 +79,6 @@ secor_jobs:
     threads: "2"
     lag_threshold_critical: 200000
 
-  failed-backup:
-    replicas: 1
-    consumer_group: "sb-dev_failed"
-    service_name: "failed"
-    base_path: "telemetry-data/failed"
-    timestamp_key: "obsrv_meta.syncts"
-    fallback_timestamp_key: ""
-    topic: "sb-dev.failed"
-    kafka_broker_host: "kafka-headless.kafka.svc.cluster.local"
-    zookeeper_quorum: "kafka-zookeeper-headless.kafka.svc.cluster.local:2181"
-    max_file_size: "100000000"
-    max_file_age: "60"
-    partition_prefix_enabled: "false"
-    partition_prefix_key: ""
-    partition_prefix_mapping: "{}"
-    message_channel_identifier: "dataset"
-    output_file_pattern: "{partition}-{currentTimestamp}.json"
-    message_parser: "com.pinterest.secor.parser.ChannelDateMessageParser"
-    storage:
-      size: "1Gi"
-    requests:
-      cpu: "128m"
-      memory: "512Mi"
-    limits:
-      cpu: "128m"
-      memory: "512Mi"
-    lag_threshold_warning: 100000
-    threads: "2"
-    lag_threshold_critical: 200000
-
-  invalid-backup:
-    replicas: 1
-    consumer_group: "sb-dev_invalid"
-    service_name: "invalid"
-    base_path: "telemetry-data/invalid"
-    timestamp_key: "obsrv_meta.syncts"
-    fallback_timestamp_key: ""
-    topic: "sb-dev.invalid"
-    kafka_broker_host: "kafka-headless.kafka.svc.cluster.local"
-    zookeeper_quorum: "kafka-zookeeper-headless.kafka.svc.cluster.local:2181"
-    max_file_size: "100000000"
-    max_file_age: "60"
-    partition_prefix_enabled: "false"
-    partition_prefix_key: ""
-    partition_prefix_mapping: "{}"
-    message_channel_identifier: "dataset"
-    output_file_pattern: "{partition}-{currentTimestamp}.json"
-    message_parser: "com.pinterest.secor.parser.ChannelDateMessageParser"
-    storage:
-      size: "1Gi"
-    requests:
-      cpu: "128m"
-      memory: "512Mi"
-    limits:
-      cpu: "128m"
-      memory: "512Mi"
-    lag_threshold_warning: 100000
-    threads: "2"
-    lag_threshold_critical: 200000
-
   unique-backup:
     replicas: 1
     consumer_group: "sb-dev_unique"
@@ -230,36 +109,6 @@ secor_jobs:
     threads: "2"
     lag_threshold_critical: 200000
 
-  duplicate-backup:
-    replicas: 1
-    consumer_group: "sb-dev_duplicate"
-    service_name: "duplicate"
-    base_path: "telemetry-data/duplicates"
-    timestamp_key: "obsrv_meta.syncts"
-    fallback_timestamp_key: ""
-    topic: "sb-dev.duplicate"
-    kafka_broker_host: "kafka-headless.kafka.svc.cluster.local"
-    zookeeper_quorum: "kafka-zookeeper-headless.kafka.svc.cluster.local:2181"
-    max_file_size: "100000000"
-    max_file_age: "60"
-    partition_prefix_enabled: "false"
-    partition_prefix_key: ""
-    partition_prefix_mapping: "{}"
-    message_channel_identifier: "dataset"
-    output_file_pattern: "{partition}-{currentTimestamp}.json"
-    message_parser: "com.pinterest.secor.parser.ChannelDateMessageParser"
-    storage:
-      size: "1Gi"
-    requests:
-      cpu: "128m"
-      memory: "512Mi"
-    limits:
-      cpu: "128m"
-      memory: "512Mi"
-    lag_threshold_warning: 100000
-    threads: "2"
-    lag_threshold_critical: 200000
-
   denorm-backup:
     replicas: 1
     consumer_group: "sb-dev_denorm"
@@ -268,36 +117,6 @@ secor_jobs:
     timestamp_key: "obsrv_meta.syncts"
     fallback_timestamp_key: ""
     topic: "sb-dev.denorm"
-    kafka_broker_host: "kafka-headless.kafka.svc.cluster.local"
-    zookeeper_quorum: "kafka-zookeeper-headless.kafka.svc.cluster.local:2181"
-    max_file_size: "100000000"
-    max_file_age: "60"
-    partition_prefix_enabled: "false"
-    partition_prefix_key: ""
-    partition_prefix_mapping: "{}"
-    message_channel_identifier: "dataset"
-    output_file_pattern: "{partition}-{currentTimestamp}.json"
-    message_parser: "com.pinterest.secor.parser.ChannelDateMessageParser"
-    storage:
-      size: "1Gi"
-    requests:
-      cpu: "128m"
-      memory: "512Mi"
-    limits:
-      cpu: "128m"
-      memory: "512Mi"
-    lag_threshold_warning: 100000
-    threads: "2"
-    lag_threshold_critical: 200000
-
-  denorm-failed-backup:
-    replicas: 1
-    consumer_group: "sb-dev_denorm_failed"
-    service_name: "denorm_failed"
-    base_path: "telemetry-data/denorm-failed"
-    timestamp_key: "obsrv_meta.syncts"
-    fallback_timestamp_key: ""
-    topic: "sb-dev.denorm.failed"
     kafka_broker_host: "kafka-headless.kafka.svc.cluster.local"
     zookeeper_quorum: "kafka-zookeeper-headless.kafka.svc.cluster.local:2181"
     max_file_size: "100000000"
@@ -352,12 +171,12 @@ secor_jobs:
 
   system-stats:
     replicas: 1
-    consumer_group: "sb-dev_system_stats"
-    service_name: "system-stats"
-    base_path: "telemetry-data/system-stats"
-    timestamp_key: "obsrv_meta.syncts"
-    fallback_timestamp_key: ""
-    topic: "sb-dev.stats"
+    consumer_group: "sb-dev_system_events"
+    service_name: "system-events"
+    base_path: "telemetry-data/system-events"
+    timestamp_key: "ets"
+    fallback_timestamp_key: "ets"
+    topic: "sb-dev.system.events"
     kafka_broker_host: "kafka-headless.kafka.svc.cluster.local"
     zookeeper_quorum: "kafka-zookeeper-headless.kafka.svc.cluster.local:2181"
     max_file_size: "100000000"
@@ -380,14 +199,14 @@ secor_jobs:
     threads: "2"
     lag_threshold_critical: 200000
 
-  system-events:
+  failed-backup:
     replicas: 1
-    consumer_group: "sb-dev_system_events"
-    service_name: "system-events"
-    base_path: "telemetry-data/system-events"
+    consumer_group: "sb-dev_failed"
+    service_name: "failed"
+    base_path: "telemetry-data/failed"
     timestamp_key: "obsrv_meta.syncts"
     fallback_timestamp_key: ""
-    topic: "sb-dev.system.events"
+    topic: "sb-dev.failed"
     kafka_broker_host: "kafka-headless.kafka.svc.cluster.local"
     zookeeper_quorum: "kafka-zookeeper-headless.kafka.svc.cluster.local:2181"
     max_file_size: "100000000"
@@ -395,7 +214,7 @@ secor_jobs:
     partition_prefix_enabled: "false"
     partition_prefix_key: ""
     partition_prefix_mapping: "{}"
-    message_channel_identifier: "data.dataset"
+    message_channel_identifier: "dataset"
     output_file_pattern: "{partition}-{currentTimestamp}.json"
     message_parser: "com.pinterest.secor.parser.ChannelDateMessageParser"
     storage:
@@ -409,6 +228,36 @@ secor_jobs:
     lag_threshold_warning: 100000
     threads: "2"
     lag_threshold_critical: 200000
+
+  system-telemetry-events:
+    replicas: 1
+    consumer_group: "dev_system_telemetry_events"
+    service_name: "system-telemetry-events"
+    base_path: "telemetry-data/system-telemetry-events"
+    timestamp_key: "ets"
+    fallback_timestamp_key: "ets"
+    topic: "dev.system.telemetry.events"
+    kafka_broker_host: "kafka-headless.kafka.svc.cluster.local"
+    zookeeper_quorum: "kafka-zookeeper-headless.kafka.svc.cluster.local:2181"
+    max_file_size: "100000000"
+    max_file_age: "60"
+    partition_prefix_enabled: "false"
+    partition_prefix_key: ""
+    partition_prefix_mapping: "{}"
+    message_channel_identifier: ""
+    output_file_pattern: "{partition}-{currentTimestamp}.json"
+    message_parser: "com.pinterest.secor.parser.PatternDateMessageParser" 
+    storage:
+      size: "1Gi"
+    requests:
+      cpu: "128m"
+      memory: "512Mi"
+    limits:
+      cpu: "128m"
+      memory: "512Mi"
+    lag_threshold_warning: 100000
+    threads: "2"
+    lag_threshold_critical: 200000  
 
 alertrules:
   enabled: false

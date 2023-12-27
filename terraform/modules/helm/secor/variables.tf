@@ -17,20 +17,17 @@ variable "secor_release_name" {
 variable "secor_image_tag" {
   type        = string
   description = "secor image version"
-  default     = "0.29.16-java-11-gs"
+  default     = "1.0.0-GA"
 }
 
 variable "jobs" {
   description = "Create release names"
   type        = list(string)
   default     = [
-  "ingest-backup", "extractor-duplicate-backup",
-  "extractor-failed-backup", "raw-backup",
-  "failed-backup", "invalid-backup",
-  "unique-backup", "duplicate-backup",
-  "denorm-backup", "denorm-failed-backup",
-  "transform-backup", "system-stats",
-  "system-events"
+  "ingest-backup", "raw-backup",
+  "failed-backup", "unique-backup",
+  "denorm-backup", "transform-backup",
+  "system-events", "system-telemetry-events"
   ]
 }
 
@@ -195,27 +192,16 @@ variable "secor_chart_depends_on" {
 variable "region" {
   type        = string
   description = "AWS region to create the resources."
-  default     = "us-east-2"
 }
 
 variable "kubernetes_storage_class" {
   type        = string
   description = "Storage Class"
 }
-
-variable "message_timezone" {
+variable "timezone" {
   type        = string
-  description = "message timezone"
-  default     = "UTC"
+  description = "Timezone property to backup the data"
 }
-
-variable "parser_timezone" {
-  type        = string
-  description = "parser timezone"
-  default     = "Asia/Kolkata"
-}
-
-
 
 variable "image_pull_policy" {
   type        = string

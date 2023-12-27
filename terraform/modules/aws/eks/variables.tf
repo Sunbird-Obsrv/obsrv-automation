@@ -17,7 +17,6 @@ variable "additional_tags" {
 variable "region" {
   type        = string
   description = "AWS region to create the resources."
-  default     = "us-east-2"
 }
 
 variable "eks_master_role" {
@@ -53,7 +52,7 @@ variable "eks_node_group_instance_type" {
 variable "eks_node_group_capacity_type" {
   type        = string
   description = "EKS node group type. Either SPOT or ON_DEMAND can be used"
-  default     = "SPOT"
+  default     = "ON_DEMAND"
 }
 
 variable "eks_node_group_scaling_config" {
