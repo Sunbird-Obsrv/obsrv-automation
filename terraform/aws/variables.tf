@@ -83,7 +83,7 @@ variable "kubernetes_storage_class" {
 variable "dataset_api_container_registry" {
   type        = string
   description = "Container registry. For example docker.io/obsrv"
-  default     = "sanketikahub"
+  default     = "sunbird"
 }
 
 variable "dataset_api_image_tag" {
@@ -94,7 +94,7 @@ variable "dataset_api_image_tag" {
 variable "flink_container_registry" {
   type        = string
   description = "Container registry. For example docker.io/obsrv"
-  default     = "sanketikahub"
+  default     = "sunbird"
 }
 
 variable "flink_image_tag" {
@@ -125,7 +125,7 @@ variable "web_console_image_tag" {
 variable "web_console_image_repository" {
   type        = string
   description = "Container registry. For example docker.io/obsrv"
-  default     = "sanketikahub"
+  default     = "sunbird"
 }
 
 variable "flink_release_names" {
@@ -138,6 +138,7 @@ variable "flink_release_names" {
     transformer     = "transformer"
     druid-router    = "druid-router"
     master-data-processor = "master-data-processor"
+    # kafka-connector = "kafka-connector"
   }
 }
 
@@ -147,6 +148,7 @@ variable "flink_merged_pipeline_release_names" {
   default = {
     merged-pipeline = "merged-pipeline"
     master-data-processor = "master-data-processor"
+    # kafka-connector = "kafka-connector"
   }
 }
 

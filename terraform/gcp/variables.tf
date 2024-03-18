@@ -319,19 +319,19 @@ variable "web_console_configs" {
 variable "dataset_api_container_registry" {
   type        = string
   description = "Container registry. For example docker.io/obsrv"
-  default     = "sanketikahub"
+  default     = "sunbird"
 }
 
 variable "flink_container_registry" {
   type        = string
   description = "Container registry. For example docker.io/obsrv"
-  default     = "sanketikahub"
+  default     = "sunbird"
 }
 
 variable "web_console_image_repository" {
   type        = string
   description = "Container registry. For example docker.io/obsrv"
-  default     = "sanketikahub"
+  default     = "sunbird"
 }
 
 ## Images

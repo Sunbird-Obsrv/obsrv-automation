@@ -54,7 +54,7 @@ variable "command_service_chart_depends_on" {
 variable "command_service_image_repository" {
   type        = string
   description = "CommandService image name."
-  default     = "sanketikahub/flink-command-service"
+  default     = "sunbird/flink-command-service"
 }
 
 variable "command_service_image_tag" {

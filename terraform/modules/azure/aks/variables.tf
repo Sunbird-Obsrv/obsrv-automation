@@ -34,7 +34,7 @@ variable "aks_nodepool_name" {
 variable "aks_node_count" {
   type        = number
   description = "AKS node count."
-  default     = 4
+  default     = 5
 }
 
 variable "aks_node_size" {
