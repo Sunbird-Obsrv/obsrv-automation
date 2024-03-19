@@ -1,7 +1,7 @@
 namespace: "flink"
 imagepullsecrets: ""
 image:
-  registry: sanketikahub
+  registry: sunbird
   repository: master-data-processor
   tag: release-0.5.0_RC23
 serviceMonitor:

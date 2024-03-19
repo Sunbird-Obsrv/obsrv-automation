@@ -101,7 +101,7 @@ image:
 testFramework:
   enabled: true
   # image: docker.io/bats/bats
-  image: sanketikahub/alpine
+  image: sunbird/alpine
   # tag: "v1.4.1"
   tag: 1.0.0
   imagePullPolicy: IfNotPresent
@@ -1059,7 +1059,7 @@ imageRenderer:
     behavior: {}
   image:
     # image-renderer Image repository
-    repository: docker.io/sanketikahub/grafana-image-renderer
+    repository: docker.io/sunbird/grafana-image-renderer
     # image-renderer Image tag
     tag: 3.8.0
     # image-renderer Image sha (optional)

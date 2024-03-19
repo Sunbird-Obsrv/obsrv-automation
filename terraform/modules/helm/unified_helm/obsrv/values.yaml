@@ -9,18 +9,18 @@ global:
         # tag: 2.0.2
         # digest: sha256:d7b7a53765ace3e906f6e4a2a5c1f203429f49a1c77e323804dd6eae59200cf6
         # image: obsrv-command-service
-        registry: docker.io/sanketikahub
+        registry: docker.io/sunbird
       dataset_api:
         # tag:1.0.2
         # digest: sha256:02e7455eee1194a4fd93cbb8f23e5dc6459a7a001393079358e0a5436f68997d
         digest: 1.0.2-GA
         image: obsrv-api-service
-        registry: docker.io/sanketikahub
+        registry: docker.io/sunbird
       druid_exporter:
         # tag: v0.11
         digest: sha256:fd3ce79c4505b078bd9d382bc3b7c49326f9a13814e6ef30d755a78bf3dc613d
         image: druid-exporter
-        registry: docker.io/sanketikahub
+        registry: docker.io/sunbird
       druid_operator:
         digest: sha256:2991a809adf4905468faeeca7f1d4d822c22957ea1c17b8c50799b40a4c81023
         image: druid-operator
@@ -45,18 +45,18 @@ global:
         # digest: sha256:211bc5b9e335fe0f8c5b8470db45ab2fec40cb0d7f64ad256a8d37a3749842d3
         digest: release-0.5.0_RC27
         image: merged-pipeline
-        registry: docker.io/sanketikahub
+        registry: docker.io/sunbird
       master_data_processor:
         # tag: release-0.5.0_RC27
         # digest: sha256:1a48c84305875b7b806a7042a07e7e70f1c383e1b99094df7d5fc18484f7ea6c
         digest: release-0.5.0_RC27
         image: master-data-processor
-        registry: docker.io/sanketikahub
+        registry: docker.io/sunbird
       kafka:
         # tag: 3.6.0
         digest: sha256:647a79c852a60b9bac1832f24e26c1654a8efcbc4d839f0ae75dc8c60ba03e4a
         image: kafka
-        registry: docker.io/sanketikahub
+        registry: docker.io/sunbird
       # autodiscovery:
       #   # tag: 1.25.12-debian-11-r26
       #   digest: sha256:9774c3452853d3ba9c4744d0acfa36d63f9d87ba7e43fd292caf7dae9115fac4
@@ -66,12 +66,12 @@ global:
         # tag: 1.0.1
         digest: sha256:88c54d4e1328634929cbcc4f0b3cade990b271183b6580d020016683ab86e752
         image: kafka-exporter
-        registry: docker.io/sanketikahub
+        registry: docker.io/sunbird
       jmx_exporter:
         # tag: 1.0.0
         digest: sha256:3b6b7dd0d194939cf463a37a1851bdca610a5aac306cea86c16faf39a2bf8241
         image: jmx-exporter
-        registry: docker.io/sanketikahub
+        registry: docker.io/sunbird
       # bitnami_shell:
       #   # tag: 11-debian-11-r136
       #   digest: sha256:0aa4e2314721a29fa2a8ea0ed901e2db2842c4217fc60ed5700ee62dbcd0fcbc
@@ -86,7 +86,7 @@ global:
       #   # tag: 15.4-alpine
       #   digest: sha256:4acb0925f2de9716f925fedd83580f6dc2f48e32623e598a39896942fe2b3783
       #   image: postgres
-      #   registry: docker.io/sanketikahub
+      #   registry: docker.io/sunbird
       #   # registry: docker.io
       # only for local testing
       postgres:
@@ -98,7 +98,7 @@ global:
         # tag: 1.0.1
         digest: sha256:ca88db0e369a5db389b635fc385147de74df2f1fc4d2194a857fa687e701b1f8
         image: postgres-exporter
-        registry: docker.io/sanketikahub
+        registry: docker.io/sunbird
       # redis:
       #   digest: sha256:017aaf627b7e115f6fb036c6e3360a0de4d83f1d62b315db31e89a0c09a4698e
       #   image: redis
@@ -108,7 +108,7 @@ global:
         # tag: 7.2.2-alpine
         digest: sha256:dbb2b5e28cf1d8b759a39f02479a5c4e03ca5e27d79bf2b20c6f662c57ec814a
         image: redis
-        registry: docker.io/sanketikahub
+        registry: docker.io/sunbird
       # redis_sentinel:
       #   digest: sha256:a0317520a0275f1937a280fec73748b7a7995c17e137dab58b38e4b1fb4dfc15
       #   image: redis-sentinel
@@ -117,12 +117,12 @@ global:
         # tag: 1.0.0
         digest: sha256:75f36755b86359945962164c1963a93d45ee433e14669a23a7ee8661845a2fe0
         image: redis-exporter
-        registry: docker.io/sanketikahub
+        registry: docker.io/sunbird
       secor:
         # tag: 1.0.0-GA
         digest: sha256:90c2fc137cc242e5c08c2460298d8bec00d91aabe81c4a6a9c8f28bc67c602f6
         image: secor
-        registry: docker.io/sanketikahub
+        registry: docker.io/sunbird
       ubuntu:
         digest: sha256:33a5cc25d22c45900796a1aca487ad7a7cb09f09ea00b779e3b2026b4fc2faba
         image: ubuntu
@@ -132,18 +132,18 @@ global:
         digest: sha256:bc9996fb095fe5c313658140fab7f398663205d18894df633830fb5eadb680a4
         image: k8s-sidecar
         #registry: quay.io/kiwigrid
-        registry: docker.io/sanketikahub
+        registry: docker.io/sunbird
       grafana_image_renderer:
         # tag: 3.11.1
         digest: sha256:6d21854e5ad94014426f4f5fe18c1573980aea2718b730793d2e65cf17048e83
         image: grafana-image-renderer
-        registry: docker.io/sanketikahub
+        registry: docker.io/sunbird
       curl:
         # tag: 8.4.0
         digest: sha256:9b8e72d8278b18784f805c5ad3dbf4e57fa6f396475b7cf58a75ad3d8242ec68
         image: curl
         #registry: docker.io/alpine
-        registry: docker.io/sanketikahub
+        registry: docker.io/sunbird
       busybox:
         digest: sha256:95cf004f559831017cdf4628aaf1bb30133677be8702a8c5f2994629f637a209
         image: busybox
@@ -166,12 +166,12 @@ global:
         # tag: main_v1.0.1
         digest: sha256:fe15798ee1eabfc366dd5de79629356f0899fdb021b2274a18f8674e7790e082
         image: alertmanager
-        registry: docker.io/sanketikahub
+        registry: docker.io/sunbird
       prometheus_operator:
         # tag: v0.66.0
         digest: sha256:116bdf06d6070ba9d1988704c30a5dd82bd63aa31603241aafd858389bd5a748
         image: prometheus-operator
-        registry: docker.io/sanketikahub
+        registry: docker.io/sunbird
       prometheus_config_reloader:
         digest: sha256:65dde6b23d0fe81778c2b1027785f2244a71d1702b67f08700b2308c381e5400
         image: prometheus-config-reloader
@@ -202,12 +202,12 @@ global:
         # tag: main
         digest: sha256:533ab218f658aac5b58ab79d6054e89dca60a14f0f1598019b6e38ebaa6181c7
         image: agent-operator
-        registry: docker.io/sanketikahub
+        registry: docker.io/sunbird
       minio:
         # tag: 1.0.1
         digest: sha256:3c32ef6089b3ea230a55f6e7e594aaf47a216cd9b6309f701a5a4facec1b31e8
         image: minio
-        registry: docker.io/sanketikahub
+        registry: docker.io/sunbird
       # kubectl_image:
       #   digest: sha256:9774c3452853d3ba9c4744d0acfa36d63f9d87ba7e43fd292caf7dae9115fac4
       #   image: kubectl
@@ -216,12 +216,12 @@ global:
         # tag: 1.0.0
         digest: sha256:eb0a7c497343851e3e8f15a4f894d87b0b7a0212ae249b735c96679dec6b295e
         image: kubectl
-        registry: docker.io/sanketikahub
+        registry: docker.io/sunbird
       mc_image:
         # tag: 1.0.0
         digest: sha256:3ad2b67ae3f9191745b44133b1a1d1386d9aa081902af47d8c8ea297a49aceaa
         image: minio-client
-        registry: docker.io/sanketikahub
+        registry: docker.io/sunbird
       # enterprise_logs:
       #   digest: sha256:469d8fdb73288d7a3e243c74856f155f8c498c9710102c338758ba431b235ef9
       #   image: enterprise-logs
@@ -239,29 +239,29 @@ global:
         # tag: 1.0.0
         digest: sha256:e9bee1c12811406df9712fbd7383bd0a5afe8e3a7c622716303d63cec9012a2b
         image: loki-canary
-        registry: docker.io/sanketikahub
+        registry: docker.io/sunbird
       loki:
         # tag: 1.0.0
         digest: sha256:6a2ae34b94e5074bde4904dc85c2d9eae6c351dcf0568ff88882a851a0368b18
         image: loki
-        registry: docker.io/sanketikahub
+        registry: docker.io/sunbird
       loki_gateway:
         # tag: 1.25-alpine-1
         digest: sha256:341c4f6f422f1aaec1d0f7fb82f8f82f4618a5e0f8d07b026df5f4e26e24727d
         image: nginx-unprivileged
-        registry: docker.io/sanketikahub
+        registry: docker.io/sunbird
       promtail:
         # tag: main-2327789
         digest: sha256:bab40183b93472314aa7f3f4a6c3c639dda1799664085a7618e026a8dcc95288
         image: promtail
-        registry: docker.io/sanketikahub
+        registry: docker.io/sunbird
       web_console:
         # tag: 1.0.2-alert-desc
         # digest: sha256:be2a77a9b346a3e8946da8df8ec5042112729f5685eb60e34e1448e1a44e184b
         digest: 1.0.0-GA
         image: sb-obsrv-web-console
         # registry: obsrvms.azurecr.io
-        registry: docker.io/sanketikahub
+        registry: docker.io/sunbird
       # superset:
       #   # tag: 2.0.0
       #   digest: sha256:ca32ff641daca7447edfe78345e1abbc3b278895b1d4a245e69e28020e3310b7
@@ -316,7 +316,7 @@ dataset-api:
     POSTGRES_DATABASE: *psql-obsrv-db
     POSTGRES_USERNAME: *psql-obsrv-user
     POSTGRES_PASSWORD: *psql-obsrv-pwd
-  dockerhub: sanketikahub
+  dockerhub: sunbird
   repository: obsrv-api-service
   image_tag: 1.0.1
   imagePullSecrets: ""
@@ -665,7 +665,7 @@ redis-dedup:
       size: 1Gi
     # sidecars:
     #   - name: redis-backup
-    #     image: sanketikahub/redis-backup:0.5
+    #     image: sunbird/redis-backup:0.5
     #     imagePullPolicy: IfNotPresent
     #     volumeMounts:
     #       - mountPath: /data
@@ -786,7 +786,7 @@ redis-denorm:
       size: 2Gi
     # sidecars:
     #   - name: redis-backup
-    #     image: sanketikahub/redis-backup:0.5
+    #     image: sunbird/redis-backup:0.5
     #     imagePullPolicy: IfNotPresent
     #     volumeMounts:
     #       - mountPath: /data
@@ -872,7 +872,7 @@ secor:
   storageClass: *global-k9s-storage-class
   secor_env: *global-env
   region: *global-region
-  image_repository: "sanketikahub/secor"
+  image_repository: "sunbird/secor"
   pullPolicy: "IfNotPresent"
   image_tag: "0.30"
   jvm_memory: "1024m"

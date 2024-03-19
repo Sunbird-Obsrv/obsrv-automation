@@ -246,7 +246,7 @@ spec:
         {{ if .Values.global.azure.images.merged_pipeline }}
         image: "{{ .Values.global.azure.images.merged_pipeline.registry }}/{{ .Values.global.azure.images.merged_pipeline.image }}:{{ .Values.global.azure.images.merged_pipeline.digest }}"
         {{ else }}
-        image: sanketikahub/merged-pipeline:release-0.5.0_RC26
+        image: sunbird/merged-pipeline:release-0.5.0_RC26
         {{ end }}
         imagePullPolicy: IfNotPresent
         name: merged-pipeline-taskmanager
@@ -356,7 +356,7 @@ spec:
         {{ if .Values.global.azure.images.merged_pipeline }}
         image: "{{ .Values.global.azure.images.merged_pipeline.registry }}/{{ .Values.global.azure.images.merged_pipeline.image }}:{{ .Values.global.azure.images.merged_pipeline.digest }}"
         {{ else }}
-        image: sanketikahub/merged-pipeline:release-0.5.0_RC26
+        image: sunbird/merged-pipeline:release-0.5.0_RC26
         {{ end }}
         imagePullPolicy: IfNotPresent
         name: merged-pipeline-jobmanager

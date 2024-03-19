@@ -5,7 +5,7 @@ cpu_limits: 0.5
 memory_requests: 256Mi
 memory_limits: 512Mi
 image:
-  repository: sanketikahub
+  repository: sunbird
   image_name: sb-obsrv-web-console
   tag: "1.0.0-GA"
   pullPolicy: "IfNotPresent"

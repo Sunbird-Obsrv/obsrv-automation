@@ -254,7 +254,7 @@ spec:
         {{ if .Values.global.azure.images.master_data_processor }}
         image: "{{ .Values.global.azure.images.master_data_processor.registry }}/{{ .Values.global.azure.images.master_data_processor.image }}:{{ .Values.global.azure.images.master_data_processor.digest }}"
         {{ else }}
-        image: sanketikahub/master-data-processor:release-0.5.0_RC26
+        image: sunbird/master-data-processor:release-0.5.0_RC26
         {{ end }}
         imagePullPolicy: IfNotPresent
         name: master-data-processor-taskmanager
@@ -362,7 +362,7 @@ spec:
         {{ if .Values.global.azure.images.master_data_processor }}
         image: "{{ .Values.global.azure.images.master_data_processor.registry }}/{{ .Values.global.azure.images.master_data_processor.image }}:{{ .Values.global.azure.images.master_data_processor.digest }}"
         {{ else }}
-        image: sanketikahub/master-data-processor:release-0.5.0_RC26
+        image: sunbird/master-data-processor:release-0.5.0_RC26
         {{ end }}
         imagePullPolicy: IfNotPresent
         name: master-data-processor-jobmanager

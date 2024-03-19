@@ -3,7 +3,7 @@ name: druid-exporter
 namespace: druid-raw
 
 image:
-  name: docker.io/sanketikahub/druid-exporter
+  name: docker.io/sunbird/druid-exporter
   tag: v0.11
   pullPolicy: IfNotPresent
 
