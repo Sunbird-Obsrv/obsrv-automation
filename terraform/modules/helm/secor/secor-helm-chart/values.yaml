@@ -231,12 +231,12 @@ secor_jobs:
 
   system-telemetry-events:
     replicas: 1
-    consumer_group: "dev_system_telemetry_events"
+    consumer_group: "sb-dev_system_telemetry_events"
     service_name: "system-telemetry-events"
     base_path: "telemetry-data/system-telemetry-events"
     timestamp_key: "ets"
     fallback_timestamp_key: "ets"
-    topic: "dev.system.telemetry.events"
+    topic: "sb-dev.system.telemetry.events"
     kafka_broker_host: "kafka-headless.kafka.svc.cluster.local"
     zookeeper_quorum: "kafka-zookeeper-headless.kafka.svc.cluster.local:2181"
     max_file_size: "100000000"

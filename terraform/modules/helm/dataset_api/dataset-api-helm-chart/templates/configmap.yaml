@@ -11,6 +11,7 @@ metadata:
 data:
   system_env: "{{ .Values.SYSTEM_ENV }}"
   telemetry_kafka_compression: "{{.Values.TELEMETRY_KAFKA_COMPRESSION}}"
+  body_parser_limit: "{{ .Values.body_parser_limit }}"
   druid_host: "{{ .Values.druid_service.DRUID_HOST }}"
   druid_port: "{{ .Values.druid_service.DRUID_PORT }}"
   kafka_host: "{{ .Values.kafka_service.KAFKA_HOST }}"
@@ -24,8 +25,6 @@ data:
   postgres_database: "{{ .Values.postgres_service.POSTGRES_DATABASE }}"
   postgres_username: "{{ .Values.postgres_service.POSTGRES_USERNAME }}"
   postgres_password: "{{ .Values.postgres_service.POSTGRES_PASSWORD }}"
-  # redis_host: "{{ .Values.redis_service.REDIS_HOST }}"
-  # redis_port: "{{ .Values.redis_service.REDIS_PORT }}"
   denorm_redis_host: "{{ .Values.denorm_redis_service.REDIS_HOST }}"
   denorm_redis_port: "{{ .Values.denorm_redis_service.REDIS_PORT }}"
   dedup_redis_host: "{{ .Values.dedup_redis_service.REDIS_HOST }}"

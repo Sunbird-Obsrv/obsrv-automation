@@ -4,6 +4,7 @@ cpu_requests: 0.5
 cpu_limits: 0.5
 memory_requests: 512Mi
 memory_limits: 1024Mi
+body_parser_limit: 10mb
 druid_service:
   DRUID_HOST: http://druid-raw-routers.druid-raw.svc
   DRUID_PORT: 8888
@@ -28,3 +29,5 @@ exhaust_service:
   CONTAINER: ${s3_bucket}
 service_account_annotations:
   ${dataset_api_sa_annotations}
+service:
+  type: ${service_type}

@@ -3,7 +3,7 @@ replicaCount: 1
 image:
   registry: "sunbird"
   repository: "sb-obsrv-api-service"
-  image_tag: 1.0.0-GA
+  image_tag: 2.0.1-GA
   imagePullSecrets: ""
 cpu_requests: 0.5
 cpu_limits: 0.5
@@ -50,3 +50,5 @@ EXCLUDE_DATASOURCE_VALIDATION: "system-stats,failed-events-summary,masterdata-sy
 
 service_account_annotations:
   eks.amazonaws.com/role-arn: ""
+service:
+  type: LoadBalancer

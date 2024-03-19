@@ -30,6 +30,7 @@ provider "helm" {
 module "vpc" {
   source             = "../modules/aws/vpc"
   env                = var.env
+  count              = var.create_vpc ? 1 : 0
   building_block     = var.building_block
   region             = var.region
   availability_zones = var.availability_zones
@@ -39,14 +40,16 @@ module "eks" {
   source                = "../modules/aws/eks"
   env                   = var.env
   building_block        = var.building_block
-  eks_master_subnet_ids = module.vpc.multi_zone_public_subnets_ids
-  eks_nodes_subnet_ids  = module.vpc.single_zone_public_subnets_id
+  cluster_logs_enabled  = var.cluster_logs_enabled
+  eks_master_subnet_ids = var.create_vpc ? module.vpc[0].multi_zone_public_subnets_ids : var.eks_master_subnet_ids
+  eks_nodes_subnet_ids  = var.create_vpc ? module.vpc[0].single_zone_public_subnets_id : var.eks_nodes_subnet_ids
   region                = var.region
   depends_on            = [module.vpc]
 }
 
 module "iam" {
   source                = "../modules/aws/iam"
+  count                 = var.create_velero_user ? 1 : 0
   env                   = var.env
   building_block        = var.building_block
   velero_storage_bucket = module.s3.velero_storage_bucket
@@ -76,6 +79,7 @@ module "monitoring" {
   source                           = "../modules/helm/monitoring"
   env                              = var.env
   building_block                   = var.building_block
+  service_type                     = var.service_type
   depends_on                       = [module.eks]
 }
 
@@ -90,6 +94,9 @@ module "superset" {
   redis_namespace                   = module.redis_dedup.redis_namespace
   redis_release_name                = module.redis_dedup.redis_release_name
   postgresql_service_name           = module.postgresql.postgresql_service_name
+  service_type                      = var.service_type
+  superset_image_tag                = var.superset_image_tag
+  
 }
 
 module "grafana_configs" {
@@ -117,7 +124,7 @@ module "redis_denorm" {
   source               = "../modules/helm/redis_denorm"
   env                  = var.env
   building_block       = var.building_block
-  depends_on           = [module.eks, module.monitoring]
+  depends_on           = [module.eks, module.monitoring,module.redis_dedup]
 }
 
 module "kafka" {
@@ -164,6 +171,7 @@ module "druid_raw_cluster" {
   druid_raw_user_password            = module.postgresql.postgresql_druid_raw_user_password
   druid_raw_sa_annotations           = "eks.amazonaws.com/role-arn: ${module.eks.druid_raw_sa_iam_role}"
   druid_cluster_namespace            = module.eks.druid_raw_namespace
+  service_type                       = var.service_type
 }
 
 module "druid_operator" {
@@ -217,6 +225,7 @@ module "dataset_api" {
   dedup_redis_release_name           = module.redis_dedup.redis_release_name
   dataset_api_namespace              = module.eks.dataset_api_namespace
   s3_bucket                          = module.s3.s3_bucket
+  service_type                       = var.service_type
 }
 
 module "secor" {
@@ -230,6 +239,7 @@ module "secor" {
   cloud_storage_bucket      = module.s3.s3_bucket
   kubernetes_storage_class  = var.kubernetes_storage_class
   region                    = var.region
+  secor_image_tag           = var.secor_image_tag
 }
 
 module "submit_ingestion" {
@@ -248,8 +258,8 @@ module "velero" {
   cloud_provider               = "aws"
   velero_backup_bucket         = module.s3.velero_storage_bucket
   velero_backup_bucket_region  = var.region
-  velero_aws_access_key_id     = module.iam.velero_user_access_key
-  velero_aws_secret_access_key = module.iam.velero_user_secret_key
+  velero_aws_access_key_id     = var.create_velero_user ?  module.iam[0].velero_user_access_key : var.velero_aws_access_key_id
+  velero_aws_secret_access_key = var.create_velero_user ? module.iam[0].velero_user_secret_key : var.velero_aws_secret_access_key 
 }
 
 module "alert_rules" {
@@ -262,9 +272,10 @@ module "web_console" {
   env                              = var.env
   building_block                   = var.building_block
   web_console_configs              = var.web_console_configs
-  depends_on                       = [module.eks, module.monitoring]
+  depends_on                       = [module.eks, module.monitoring, module.dataset_api]
   web_console_image_repository     = var.web_console_image_repository
   web_console_image_tag            = var.web_console_image_tag
+  service_type                     = var.service_type
 }
 
 module "get_kubeconfig" {

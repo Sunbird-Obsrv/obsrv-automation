@@ -18,6 +18,15 @@ variable "region" {
   type        = string
   description = "AWS region to create the resources."
 }
+variable "cluster_logs_enabled" {
+  type = bool
+  description = "Toggle to enable eks cluster logs"
+}
+variable "eks_cluster_logs_retention" {
+  type = number
+  description = "EKS cluster logs retention period"
+  default = 1 
+}
 
 variable "eks_master_role" {
   type        = string
@@ -68,7 +77,7 @@ variable "eks_node_group_scaling_config" {
 variable "eks_version" {
   type        = string
   description = "EKS version."
-  default     = "1.25"
+  default     = "1.28"
 }
 
 variable "eks_addons" {
@@ -80,19 +89,19 @@ variable "eks_addons" {
   default = [
     {
     name  = "kube-proxy"
-    version = "v1.25.14-eksbuild.2"
+    version = "v1.28.4-eksbuild.1"
     },
     {
     name  = "vpc-cni"
-    version = "v1.15.0-eksbuild.2"
+    version = "v1.16.0-eksbuild.1"
     },
     {
     name  = "coredns"
-    version = "v1.9.3-eksbuild.7"
+    version = "v1.10.1-eksbuild.6"
     },
     {
     name  = "aws-ebs-csi-driver"
-    version = "v1.23.0-eksbuild.1"
+    version = "v1.26.0-eksbuild.1"
     }
   ]
 }

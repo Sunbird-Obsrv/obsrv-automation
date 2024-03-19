@@ -7,6 +7,10 @@ variable "building_block" {
   type        = string
   description = "Building block name. All resources will be prefixed with this value."
 }
+variable "service_type" {
+  type = string
+  description = "Kubernetes service type either NodePort or LoadBalancer. It is NodePort by default"
+}
 
 variable "web_console_release_name" {
   type        = string
@@ -52,7 +56,6 @@ variable "web_console_image_repository" {
 variable "web_console_image_tag" {
   type        = string
   description = "web console image tag."
-  default     = "1.0.0-GA"
 }
 
 variable "web_console_image_name" {
