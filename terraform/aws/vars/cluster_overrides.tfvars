@@ -34,4 +34,4 @@ secor_image_tag                   = "1.0.0-GA"
 superset_image_tag                = "3.0.2"
 
 enable_lakehouse                = false
-flink_lakehouse_image_tag       = "1.0.0"
+flink_lakehouse_image_tag       = "1.0.1"
