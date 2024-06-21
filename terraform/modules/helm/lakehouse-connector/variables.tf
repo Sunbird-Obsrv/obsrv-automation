@@ -24,7 +24,7 @@ variable "flink_chart_path" {
 # variable "flink_release_name" {
 #   type        = string
 #   description = "Flink helm release name."
-#   default     = "merged-pipeline"
+#   default     = "unified-pipeline"
 # }
 # *** changed this to release map.
 
