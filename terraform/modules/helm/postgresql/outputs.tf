@@ -38,6 +38,11 @@ output "postgresql_obsrv_user_password" {
   sensitive = true
 }
 
+output "postgresql_keycloak_user_password" {
+  value     = var.postgresql_keycloak_user_password
+  sensitive = true
+}
+
 output "postgresql_obsrv_database" {
   value     = var.postgresql_obsrv_database
 }
@@ -54,4 +59,8 @@ output "postgresql_hms_user_password" {
 output "postgresql_hms_username" {
    value     = var.postgresql_hms_username
   sensitive = true
+}
+
+output "postgresql_hms_database" {
+  value     = "hms"
 }

@@ -7,6 +7,7 @@ metadata:
     name: flyway-postgresql
     app: flyway-postgresql
 spec:
+  ttlSecondsAfterFinished: 300
   backoffLimit: 30
   template:
     metadata:
@@ -35,9 +36,11 @@ spec:
           mountPath: /flyway/migrations/02_druid_raw
         - name: obsrv-sql-files
           mountPath: /flyway/migrations/03_obsrv
+        - name: keycloak-sql-files
+          mountPath: /flyway/migrations/04_keycloak
         {{- if .Values.enable_lakehouse }}
         - name: hms-sql-files
-          mountPath: /flyway/migrations/05_hms
+          mountPath: /flyway/migrations/04_hms
         {{- end }}
       volumes:
         - name: flyway-migrate-script
@@ -53,6 +56,9 @@ spec:
         - name: obsrv-sql-files
           configMap:
              name: obsrv-sql-files
+        - name: keycloak-sql-files
+          configMap:
+             name: keycloak-sql-files
         {{- if .Values.enable_lakehouse }}
         - name: hms-sql-files
           configMap:

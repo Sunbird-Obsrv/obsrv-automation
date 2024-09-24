@@ -2,6 +2,10 @@ labels:
   system.storage: "true"
 podLabels:
     system.storage: "true"
+upgradeCRDs: true
+image:
+  repository: velero/velero
+  tag: v1.13.0
 credentials:
   secretContents:
     cloud: |
@@ -36,3 +40,14 @@ resources:
   limits:
     cpu: 100m
     memory: 512Mi
+
+# Backup schedules to create.
+schedules:
+  obsrv-daily-backup:
+    disabled: false
+    schedule: "0 9,21 * * *"
+    useOwnerReferencesInBackup: false
+    template:
+      ttl: "240h"
+      includedNamespaces:
+      - ${velero_namespace}

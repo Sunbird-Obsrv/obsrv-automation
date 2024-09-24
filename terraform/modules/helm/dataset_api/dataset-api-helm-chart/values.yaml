@@ -38,21 +38,22 @@ denorm_redis_service:
   REDIS_PORT: 6379
 exhaust_service:
   CLOUD_STORAGE_PROVIDER: "aws"
-  CLOUD_STORAGE_REGION: ""
+  CLOUD_STORAGE_REGION: "us-east-2"
   CONTAINER: "" # Bucket name.
   CONTAINER_PREFIX: "telemetry-data"
   STORAGE_URL_EXPIRY: 3600
   EXHAUST_QUERY_RANGE: 31 # In Days
+encryption_config:
+  object_key: authenticationMechanism
+  encryption_key: encryptionKey
+command_service_config:
+  host: http://command-api-service.command-api.svc
+  port: 8000
+  path: "/system/v1/dataset/command"
 MAX_QUERY_THRESHOLD: "5000"
 MAX_QUERY_LIMIT: "5000"
 MAX_DATE_RANGE: "30"
 EXCLUDE_DATASOURCE_VALIDATION: "system-stats,failed-events-summary,masterdata-system-stats,system-events"
-
-service_account_annotations:
-  eks.amazonaws.com/role-arn: ""
-service:
-  type: LoadBalancer
-
 enable_lakehouse: false
 lakehouse_service:
     LAKEHOUSE_HOST: http://obsrv-trino
@@ -60,3 +61,8 @@ lakehouse_service:
     LAKEHOUSE_CATALOG: "lakehouse"
     LAKEHOUSE_SCHEMA: "hms"
     LAKEHOUSE_DEFAULT_USER: "admin"
+service_account_annotations:
+  eks.amazonaws.com/role-arn: ""
+
+service:
+  type: LoadBalancer

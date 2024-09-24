@@ -9,3 +9,7 @@ output "velero_storage_bucket" {
 output "checkpoint_storage_bucket" {
   value = google_storage_bucket.checkpoint_storage_bucket.name
 }
+
+output "google_backups_bucket" {
+  value = google_storage_bucket.google_backups_bucket.name
+}

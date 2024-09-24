@@ -159,7 +159,7 @@ secor_jobs:
     lag_threshold_warning: 100000
     threads: "${threads}"
     lag_threshold_critical: 200000
-  
+
   failed-backup:
     replicas: 1
     consumer_group: "${env}_failed"
@@ -237,7 +237,7 @@ secor_jobs:
     partition_prefix_mapping: "{}"
     message_channel_identifier: ""
     output_file_pattern: "{partition}-{currentTimestamp}.json"
-    message_parser: "com.pinterest.secor.parser.PatternDateMessageParser" 
+    message_parser: "com.pinterest.secor.parser.PatternDateMessageParser"
     storage:
       size: "${backup_pv_size}"
     requests:
@@ -248,7 +248,97 @@ secor_jobs:
       memory: "${secor_memory_limit}"
     lag_threshold_warning: 100000
     threads: "${threads}"
-    lag_threshold_critical: 200000  
+    lag_threshold_critical: 200000
+
+  masterdata-ingest-backup:
+    replicas: 1
+    consumer_group: "${env}_masterdata_ingest"
+    service_name: "masterdata-ingest-backup"
+    base_path: "${base_path}/masterdata_ingest"
+    timestamp_key: "${extractor_timestamp_key}"
+    fallback_timestamp_key: "${fallback_timestamp_key}"
+    topic: "${env}.masterdata.ingest"
+    kafka_broker_host: "${kafka_broker_host}"
+    zookeeper_quorum: "${zookeeper_quorum}"
+    max_file_size: "${file_size}"
+    max_file_age: "${file_age}"
+    partition_prefix_enabled: "false"
+    partition_prefix_key: ""
+    partition_prefix_mapping: "{}"
+    message_channel_identifier: "dataset"
+    output_file_pattern: "{partition}-{currentTimestamp}.json"
+    message_parser: "com.pinterest.secor.parser.ChannelDateMessageParser"
+    storage:
+      size: "${backup_pv_size}"
+    requests:
+      cpu: "${request_cpu}"
+      memory: "${request_memory}"
+    limits:
+      cpu: "${secor_cpu_limit}"
+      memory: "${secor_memory_limit}"
+    lag_threshold_warning: 100000
+    threads: "${threads}"
+    lag_threshold_critical: 200000
+
+  masterdata-transform-backup:
+    replicas: 1
+    consumer_group: "${env}_masterdata_transform"
+    service_name: "masterdata-transform"
+    base_path: "${base_path}/masterdata_transformed"
+    timestamp_key: "${default_timestamp_key}"
+    fallback_timestamp_key: "${fallback_timestamp_key}"
+    topic: "${env}.masterdata.transform"
+    kafka_broker_host: "${kafka_broker_host}"
+    zookeeper_quorum: "${zookeeper_quorum}"
+    max_file_size: "${file_size}"
+    max_file_age: "${file_age}"
+    partition_prefix_enabled: "false"
+    partition_prefix_key: ""
+    partition_prefix_mapping: "{}"
+    message_channel_identifier: "dataset"
+    output_file_pattern: "{partition}-{currentTimestamp}.json"
+    message_parser: "com.pinterest.secor.parser.ChannelDateMessageParser"
+    storage:
+      size: "${backup_pv_size}"
+    requests:
+      cpu: "${request_cpu}"
+      memory: "${request_memory}"
+    limits:
+      cpu: "${secor_cpu_limit}"
+      memory: "${secor_memory_limit}"
+    lag_threshold_warning: 100000
+    threads: "${threads}"
+    lag_threshold_critical: 200000
+
+  masterdata-failed-backup:
+    replicas: 1
+    consumer_group: "${env}_masterdata_failed"
+    service_name: "masterdata_failed"
+    base_path: "${base_path}/masterdata_failed"
+    timestamp_key: "${default_timestamp_key}"
+    fallback_timestamp_key: "${fallback_timestamp_key}"
+    topic: "${env}.masterdata.failed"
+    kafka_broker_host: "${kafka_broker_host}"
+    zookeeper_quorum: "${zookeeper_quorum}"
+    max_file_size: "${file_size}"
+    max_file_age: "${file_age}"
+    partition_prefix_enabled: "false"
+    partition_prefix_key: ""
+    partition_prefix_mapping: "{}"
+    message_channel_identifier: "dataset"
+    output_file_pattern: "{partition}-{currentTimestamp}.json"
+    message_parser: "com.pinterest.secor.parser.ChannelDateMessageParser"
+    storage:
+      size: "${backup_pv_size}"
+    requests:
+      cpu: "${request_cpu}"
+      memory: "${request_memory}"
+    limits:
+      cpu: "${secor_cpu_limit}"
+      memory: "${secor_memory_limit}"
+    lag_threshold_warning: 100000
+    threads: "${threads}"
+    lag_threshold_critical: 200000
 
 alertrules:
   enabled: false

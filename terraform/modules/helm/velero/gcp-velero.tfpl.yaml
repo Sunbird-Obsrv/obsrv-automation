@@ -32,3 +32,14 @@ metrics:
     enabled: true
     additionalLabels:
       release: monitoring
+
+# Backup schedules to create.
+schedules:
+  obsrv-daily-backup:
+    disabled: false
+    schedule: "0 9,21 * * *"
+    useOwnerReferencesInBackup: false
+    template:
+      ttl: "240h"
+      includedNamespaces:
+      - ${velero_namespace}

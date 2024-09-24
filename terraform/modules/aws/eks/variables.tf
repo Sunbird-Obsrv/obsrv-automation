@@ -68,16 +68,16 @@ variable "eks_node_group_scaling_config" {
   type        = map(number)
   description = "EKS node group auto scaling configuration."
   default = {
-    desired_size = 4
-    max_size     = 4
-    min_size     = 0
+    desired_size = 5
+    max_size     = 5
+    min_size     = 1
   }
 }
 
 variable "eks_version" {
   type        = string
   description = "EKS version."
-  default     = "1.28"
+  default     = "1.30"
 }
 
 variable "eks_addons" {
@@ -89,19 +89,19 @@ variable "eks_addons" {
   default = [
     {
     name  = "kube-proxy"
-    version = "v1.28.4-eksbuild.1"
+    version = "v1.30.0-eksbuild.3"
     },
     {
     name  = "vpc-cni"
-    version = "v1.16.0-eksbuild.1"
+    version = "v1.18.2-eksbuild.1"
     },
     {
     name  = "coredns"
-    version = "v1.10.1-eksbuild.6"
+    version = "v1.11.1-eksbuild.9"
     },
     {
     name  = "aws-ebs-csi-driver"
-    version = "v1.26.0-eksbuild.1"
+    version = "v1.30.0-eksbuild.1"
     }
   ]
 }
@@ -132,6 +132,18 @@ variable "dataset_api_sa_iam_role_name" {
   type        = string
   description = "IAM role name for dataset api service account."
   default     = "dataset-api-sa-iam-role"
+}
+
+variable "spark_sa_iam_role_name" {
+  type        = string
+  description = "IAM role name for dataset api service account."
+  default     = "spark-sa-iam-role"
+}
+
+variable "spark_namespace" {
+  type        = string
+  description = "Dataset service namespace."
+  default     = "spark"
 }
 
 variable "dataset_api_namespace" {
@@ -174,4 +186,46 @@ variable "secor_namespace" {
   type        = string
   description = "Secor namespace."
   default     = "secor"
+}
+
+variable "s3_exporter_sa_iam_role_name" {
+  type        = string
+  description = "IAM role name for s3 exporter service account."
+  default     = "s3-exporter-sa-iam-role"
+}
+
+variable "s3_exporter_namespace" {
+  type        = string
+  description = "S3 exporter service namespace."
+  default     = "s3-exporter"
+}
+
+variable "postgresql_backup_sa_iam_role_name" {
+  type        = string
+  description = "IAM role name for postgresql backup service account."
+  default     = "postgresql-backup-sa-iam-role"
+}
+
+variable "postgresql_namespace" {
+  type        = string
+  description = "Postgresql backup namespace."
+  default     = "postgresql"
+}
+
+variable "redis_backup_sa_iam_role_name" {
+  type        = string
+  description = "IAM role name for postgresql backup service account."
+  default     = "redis-backup-sa-iam-role"
+}
+
+variable "redis_namespace" {
+  type        = string
+  description = "Redis backup namespace."
+  default     = "redis"
+}
+
+variable "eks_endpoint_private_access" {
+   type        = bool
+   description = "API server endpoint access"
+   default     = false
 }

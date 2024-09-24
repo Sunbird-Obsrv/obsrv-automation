@@ -4,6 +4,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
   name: {{ include "druid-operator.fullname" . }}
   labels:
+    system.monitoring: "true"
     {{- include "druid-operator.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}

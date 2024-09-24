@@ -38,3 +38,14 @@ resource "google_storage_bucket" "velero_storage_bucket" {
     enabled = true
   }
 }
+
+resource "google_storage_bucket" "google_backups_bucket" {
+  name            = "backups-${local.storage_bucket}"
+  project         = var.project
+  location        = var.region
+  force_destroy   = true
+
+  versioning {
+    enabled = true
+  }
+}

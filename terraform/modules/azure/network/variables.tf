@@ -22,17 +22,23 @@ variable "additional_tags" {
 variable "vnet_cidr" {
     type        = list(string)
     description = "Azure vnet CIDR range."
-    default     = ["10.0.0.0/16"]
+    default     = ["10.0.0.0/23"]
 }
 
 variable "aks_subnet_cidr" {
   type        = list(string)
   description = "Azure AKS subnet CIDR range."
-  default     = ["10.0.0.0/22"]
+  default     = ["10.0.0.0/23"]
 }
 
 variable "aks_subnet_service_endpoints" {
   type        = list(string)
   description = "Azure AKS subnet service endpoints."
   default     = ["Microsoft.Sql", "Microsoft.Storage"]
+}
+
+
+variable "resource_group_name" {
+  type        = string
+  description = "Resource group name to create the AKS cluster."
 }

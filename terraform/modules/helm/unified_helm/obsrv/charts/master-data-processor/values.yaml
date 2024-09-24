@@ -2,8 +2,8 @@ namespace: "flink"
 imagepullsecrets: ""
 image:
   registry: sanketikahub
-  repository: master-data-processor
-  tag: release-0.5.0_RC23
+  repository: master-data-processor-ext
+  tag: 1.0.2-GA
 serviceMonitor:
   enabled: false
 replicaCount: 1
@@ -91,7 +91,7 @@ log4j_console_properties: |
 base_config: |
   job {
     env = "dev"
-    enable.distributed.checkpointing = false
+    enable.distributed.checkpointing = true
     statebackend {
       base.url = "wasbs://${azure_container}@${azure_account}/flink-jobs"
     }
@@ -120,12 +120,12 @@ base_config: |
 
   redis.connection.timeout = 100
   redis {
-    host = obsrv-redis-master.redis.svc.cluster.local
+    host = obsrv-redis-dedup-master.redis.svc.cluster.local
     port = 6379
   }
 
   redis-meta {
-    host = obsrv-redis-master.redis.svc.cluster.local
+    host = obsrv-redis-denorm-master.redis.svc.cluster.local
     port = 6379
   }
 
@@ -157,7 +157,7 @@ master-data-processor:
       output.unique.topic = ${job.env}".masterdata.unique"
       output.duplicate.topic = ${job.env}".masterdata.duplicate"
       output.transform.topic = ${job.env}".masterdata.transform"
-      output.transform.failed.topic = ${job.env}".masterdata.failed"
+      output.transform.failed.topic = ${job.env}".failed"
       stats.topic = ${job.env}".masterdata.stats"
       groupId = ${job.env}"-masterdata-pipeline-group"
 

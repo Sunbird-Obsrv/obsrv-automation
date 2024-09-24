@@ -78,11 +78,61 @@ variable "postgresql_obsrv_user_password" {
   type        = string
   description = "Postgresql obsrv user password."
 }
+variable "postgresql_keycloak_user_password" {
+  type          = string
+  description   = "Postgresql keycloak user password"
+}
+
+variable "web_console_credentials" {
+  type = map
+  description = "web console credentials"
+  # default = {
+  #   web_console_password   =
+  #   web_console_login      =
+  # }
+
+}
+
+# variable "superset_redirect_uri" {
+#   type = string
+#   description = "superset redirect url for webconsole"
+
+# }
+
+# variable "grafana_redirect_uri" {
+#   type = string
+#   description = "grafana redirect url for webconsole"
+
+# }
+
+variable "oauth_configs" {
+  type = map
+  description = "Superset config variables. See the below commented code to know values to be passed in postgres "
+  # default = {
+  #   superset_oauth_clientid           =
+  #   superset_oauth_client_secret      =
+  # }
+}
+
+variable "monitoring_grafana_oauth_configs" {
+  type        = map
+  description = "Grafana oauth related variables. See below commented code for values that need to be passed in postgres"
+  # default     = {
+  #   "gf_auth_generic_oauth_client_id"        = ""
+  #   "gf_auth_generic_oauth_client_secret"    = ""
+  # }
+}
+
+variable "kong_ingress_domain" {
+  type        = string
+  description = "Kong ingress domain. Leave it empty if you dont have a domain name. If you have a domain, provide value such as obsrv.ai"
+}
 
 variable "data_encryption_key" {
   type        = string
   description = "Data encryption key. This is used to encrypt data in pipeline. This is a 32 character string."
 }
+
 
 variable "postgresql_hms_user_password" {
   type        = string

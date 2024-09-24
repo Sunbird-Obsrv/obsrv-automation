@@ -246,7 +246,7 @@ secor_jobs:
     partition_prefix_mapping: "{}"
     message_channel_identifier: ""
     output_file_pattern: "{partition}-{currentTimestamp}.json"
-    message_parser: "com.pinterest.secor.parser.PatternDateMessageParser" 
+    message_parser: "com.pinterest.secor.parser.PatternDateMessageParser"
     storage:
       size: "1Gi"
     requests:
@@ -257,7 +257,98 @@ secor_jobs:
       memory: "512Mi"
     lag_threshold_warning: 100000
     threads: "2"
-    lag_threshold_critical: 200000  
+    lag_threshold_critical: 200000
+
+  masterdata-ingest-backup:
+    replicas: 1
+    consumer_group: "dev_masterdata_ingest"
+    service_name: "masterdata-ingest-backup"
+    base_path: "telemetry-data/masterdata_ingest"
+    timestamp_key: ets
+    fallback_timestamp_key: ets
+    topic: "dev.masterdata.ingest"
+    kafka_broker_host: "kafka-headless.kafka.svc.cluster.local"
+    zookeeper_quorum: "kafka-zookeeper-headless.kafka.svc.cluster.local:2181"
+    max_file_size: "100000000"
+    max_file_age: "60"
+    partition_prefix_enabled: "false"
+    partition_prefix_key: ""
+    partition_prefix_mapping: "{}"
+    message_channel_identifier: "dataset"
+    output_file_pattern: "{partition}-{currentTimestamp}.json"
+    message_parser: "com.pinterest.secor.parser.ChannelDateMessageParser"
+    storage:
+      size: "1Gi"
+    requests:
+      cpu: "128m"
+      memory: "512Mi"
+    limits:
+      cpu: "128m"
+      memory: "512Mi"
+    lag_threshold_warning: 100000
+    threads: "2"
+    lag_threshold_critical: 200000
+
+  masterdata-transform-backup:
+    replicas: 1
+    consumer_group: "dev_masterdata_transform"
+    service_name: "masterdata-transform"
+    base_path: "telemetry-data/masterdata_transformed"
+    timestamp_key: obsrv_meta.syncts
+    fallback_timestamp_key: ""
+    topic: "dev.masterdata.transform"
+    kafka_broker_host: "kafka-headless.kafka.svc.cluster.local"
+    zookeeper_quorum: "kafka-zookeeper-headless.kafka.svc.cluster.local:2181"
+    max_file_size: "100000000"
+    max_file_age: "60"
+    partition_prefix_enabled: "false"
+    partition_prefix_key: ""
+    partition_prefix_mapping: "{}"
+    message_channel_identifier: "dataset"
+    output_file_pattern: "{partition}-{currentTimestamp}.json"
+    message_parser: "com.pinterest.secor.parser.ChannelDateMessageParser"
+    storage:
+      size: "1Gi"
+    requests:
+      cpu: "128m"
+      memory: "512Mi"
+    limits:
+      cpu: "128m"
+      memory: "512Mi"
+    lag_threshold_warning: 100000
+    threads: "2"
+    lag_threshold_critical: 200000
+
+  masterdata-failed-backup:
+    replicas: 1
+    consumer_group: "dev_masterdata_failed"
+    service_name: "masterdata_failed"
+    base_path: "telemetry-data/masterdata_failed"
+    timestamp_key: obsrv_meta.syncts
+    fallback_timestamp_key: ""
+    topic: "dev.masterdata.failed"
+    kafka_broker_host: "kafka-headless.kafka.svc.cluster.local"
+    zookeeper_quorum: "kafka-zookeeper-headless.kafka.svc.cluster.local:2181"
+    max_file_size: "100000000"
+    max_file_age: "60"
+    partition_prefix_enabled: "false"
+    partition_prefix_key: ""
+    partition_prefix_mapping: "{}"
+    message_channel_identifier: "dataset"
+    output_file_pattern: "{partition}-{currentTimestamp}.json"
+    message_parser: "com.pinterest.secor.parser.ChannelDateMessageParser"
+    storage:
+      size: "1Gi"
+    requests:
+      cpu: "128m"
+      memory: "512Mi"
+    limits:
+      cpu: "128m"
+      memory: "512Mi"
+    lag_threshold_warning: 100000
+    threads: "2"
+    lag_threshold_critical: 200000
+
 
 alertrules:
   enabled: false

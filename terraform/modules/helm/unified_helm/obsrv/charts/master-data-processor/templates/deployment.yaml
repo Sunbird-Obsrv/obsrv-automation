@@ -1,5 +1,5 @@
 ---
-# Source: obsrv-chart/charts/master-data-processor/templates/flink_job_configmap.yaml
+# Source: obsrv-chart/charts/master-data-processor-ext/templates/flink_job_configmap.yaml
 apiVersion: v1
 kind: Namespace
 metadata:
@@ -7,23 +7,23 @@ metadata:
     helm.sh/resource-policy: keep
   labels:
     name: flink
+    system.processing: "true"
   name: flink
 
 ---
-# Source: obsrv-chart/charts/master-data-processor/templates/flink_job_configmap.yaml
+# Source: obsrv-chart/charts/master-data-processor-ext/templates/flink_job_configmap.yaml
 apiVersion: v1
 data:
   base-config: |+
     job {
       env = {{ .Values.env }}
-      enable.distributed.checkpointing = false
+      enable.distributed.checkpointing = true
       statebackend {
         base.url = "wasbs://{{ .Values.global.azure_storage_container }}@{{ .Values.global.azure_storage_account_name }}.blob.core.windows.net/flink-jobs"
-        # base.url = "s3://{{ .Values.global.s3_bucket }}/flink-checkpoints"
       }
     }
     kafka {
-      broker-servers = "{{ .Release.Name }}-headless.kafka.svc.cluster.local:9092"
+      broker-servers = "{{ .Release.Name }}-kafka-headless.kafka.svc.cluster.local:9092"
       producer.broker-servers = "{{ .Release.Name }}-kafka-headless.kafka.svc.cluster.local:9092"
       consumer.broker-servers = "{{ .Release.Name }}-kafka-headless.kafka.svc.cluster.local:9092"
       zookeeper = "{{ .Release.Name }}-kafka-headless.kafka.svc.cluster.local:2181"
@@ -70,7 +70,7 @@ data:
       port = "9042"
     }
 
-  flink-conf: |+
+  flink-conf: |
     jobmanager.memory.flink.size: 1024m
     taskmanager.memory.flink.size: 1024m
     taskmanager.numberOfTaskSlots: 1
@@ -83,7 +83,7 @@ data:
     heartbeat.interval: 5000
     state.savepoints.dir: file:///tmp
 
-  job_classname: org.sunbird.obsrv.pipeline.task.MasterDataProcessorStreamTask
+  job_classname: in.sanketika.obsrv.pipeline.task.MasterDataProcessorStreamTask
   log4j_console_properties: |
     # This affects logging for both user code and Flink
     rootLogger.level = INFO
@@ -101,7 +101,7 @@ data:
     logger.kafka.name= org.apache.kafka
     logger.kafka.level = ERROR
     logger.hadoop.name = org.apache.hadoop
-    logger.hadoop.level = ERROR
+    logger.hadoop.level = INFO
     logger.zookeeper.name = org.apache.zookeeper
     logger.zookeeper.level = ERROR
 
@@ -114,7 +114,7 @@ data:
     # Suppress the irrelevant (wrong) warnings from the Netty channel handler
     logger.netty.name = org.apache.flink.shaded.akka.org.jboss.netty.channel.DefaultChannelPipeline
     logger.netty.level = OFF
-  master-data-processor: |+
+  master-data-processor-ext: |
     include file("/data/flink/conf/baseconfig.conf")
     kafka {
       input.topic = ${job.env}".masterdata.ingest"
@@ -159,18 +159,19 @@ kind: ConfigMap
 metadata:
   labels:
     app: flink
-  name: master-data-processor-config
+  name: master-data-processor-ext-config
   namespace: flink
 
 ---
-# Source: obsrv-chart/charts/master-data-processor/templates/deployment.yaml
+# Source: obsrv-chart/charts/master-data-processor-ext/templates/deployment.yaml
 apiVersion: v1
 kind: Service
 metadata:
   labels:
     app: flink
-    component: master-data-processor-jobmanager
-  name: master-data-processor-jobmanager
+    component: master-data-processor-ext-jobmanager
+    system.processing: "true"
+  name: master-data-processor-ext-jobmanager
   namespace: flink
 spec:
   ports:
@@ -186,14 +187,15 @@ spec:
     port: 9250
   selector:
     app: flink
-    component: master-data-processor-jobmanager
+    component: master-data-processor-ext-jobmanager
+    system.processing: "true"
   type: ClusterIP
 ---
-# Source: obsrv-chart/charts/master-data-processor/templates/deployment.yaml
+# Source: obsrv-chart/charts/master-data-processor-ext/templates/deployment.yaml
 apiVersion: v1
 kind: Service
 metadata:
-  name: master-data-processor-jobmanager-webui
+  name: master-data-processor-ext-jobmanager-webui
   namespace: flink
 spec:
   ports:
@@ -203,17 +205,19 @@ spec:
     targetPort: 8081
   selector:
     app: flink
-    component: master-data-processor-jobmanager
+    component: master-data-processor-ext-jobmanager
+    system.processing: "true"
   type: ClusterIP
 ---
-# Source: obsrv-chart/charts/master-data-processor/templates/deployment.yaml
+# Source: obsrv-chart/charts/master-data-processor-ext/templates/deployment.yaml
 apiVersion: v1
 kind: Service
 metadata:
   labels:
     app: flink
-    component: master-data-processor-taskmanager
-  name: master-data-processor-taskmanager
+    component: master-data-processor-ext-taskmanager
+    system.processing: "true"
+  name: master-data-processor-ext-taskmanager
   namespace: flink
 spec:
   ports:
@@ -221,54 +225,50 @@ spec:
     port: 9251
   selector:
     app: flink
-    component: master-data-processor-taskmanager
+    component: master-data-processor-ext-taskmanager
+    system.processing: "true"
   type: ClusterIP
 ---
-# Source: obsrv-chart/charts/master-data-processor/templates/deployment.yaml
+# Source: obsrv-chart/charts/master-data-processor-ext/templates/deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: master-data-processor-taskmanager
+  name: master-data-processor-ext-taskmanager
   namespace: flink
 spec:
   replicas: 1
   selector:
     matchLabels:
       app: flink
-      component: master-data-processor-taskmanager
+      component: master-data-processor-ext-taskmanager
   template:
     metadata:
       labels:
         azure-extensions-usage-release-identifier: obsrv-base
         app: flink
-        component: master-data-processor-taskmanager
+        component: master-data-processor-ext-taskmanager
+        system.processing: "true"
     spec:
       imagePullSecrets:
-        - name: {{ .Values.global.image.imagePullSecrets }}
+      - name: registry
       containers:
       - args:
         - start-foreground
-        {{- if eq .Values.checkpoint_store_type "s3" }}
-        - "-Ds3.access-key={{ .Values.global.s3_access_key }}"
-        - "-Ds3.secret-key={{ .Values.global.s3_secret_key }}"
-        - "-Ds3.endpoint={{ .Values.global.s3_endpoint_url }}"
-        - "-Ds3.path.style.access={{ .Values.global.s3_path_style_access }}"
-        {{- else if eq .Values.checkpoint_store_type "azure" }}
-        - "-Dfs.azure.account.key.{{ .Values.global.azure_storage_account_name }}.blob.core.windows.net={{ .Values.global.azure_storage_account_key }}"
-        {{- end }}
+        - -Dfs.azure.account.key.{{ .Values.global.azure_storage_account_name }}.blob.core.windows.net={{ .Values.global.azure_storage_account_key }}
         - -Dweb.submit.enable=false
         - -Dmetrics.reporter.prom.class=org.apache.flink.metrics.prometheus.PrometheusReporter
-        - -Dmetrics.reporter.prom.host=master-data-processor-taskmanager
+        - -Dmetrics.reporter.prom.host=master-data-processor-ext-taskmanager
         - -Dmetrics.reporter.prom.port=9251-9260
-        - -Djobmanager.rpc.address=master-data-processor-jobmanager
+        - -Djobmanager.rpc.address=master-data-processor-ext-jobmanager
         - -Dtaskmanager.rpc.port=6122
         - --config.file.path
-        - /data/flink/conf/master-data-processor.conf
+        - /data/flink/conf/master-data-processor-ext.conf
         command:
         - /opt/flink/bin/taskmanager.sh
-        image: "{{ .Values.global.azure.images.master_data_processor.registry }}/{{ .Values.global.azure.images.master_data_processor.image }}:{{ .Values.global.azure.images.master_data_processor.digest }}"
-        imagePullPolicy: IfNotPresent
-        name: master-data-processor-taskmanager
+        # image: sanketikahub/master-data-processor-ext:1.0.1-GA-Bugfixes
+        image: "{{ .Values.image.registry }}/{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: Always
+        name: master-data-processor-ext-taskmanager
         ports:
         - containerPort: 6122
           name: rpc
@@ -289,9 +289,9 @@ spec:
         - mountPath: /data/flink/conf/baseconfig.conf
           name: flink-config-volume
           subPath: base-config.conf
-        - mountPath: /data/flink/conf/master-data-processor.conf
+        - mountPath: /data/flink/conf/master-data-processor-ext.conf
           name: flink-config-volume
-          subPath: master-data-processor.conf
+          subPath: master-data-processor-ext.conf
         workingDir:
       volumes:
       - configMap:
@@ -302,22 +302,22 @@ spec:
             path: log4j-console.properties
           - key: base-config
             path: base-config.conf
-          - key: master-data-processor
-            path: master-data-processor.conf
-          name: master-data-processor-config
+          - key: master-data-processor-ext
+            path: master-data-processor-ext.conf
+          name: master-data-processor-ext-config
         name: flink-config-volume
 ---
-# Source: obsrv-chart/charts/master-data-processor/templates/deployment.yaml
+# Source: obsrv-chart/charts/master-data-processor-ext/templates/deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: master-data-processor-jobmanager
+  name: master-data-processor-ext-jobmanager
   namespace: flink
 spec:
   selector:
     matchLabels:
       app: flink
-      component: master-data-processor-jobmanager
+      component: master-data-processor-ext-jobmanager
       azure-extensions-usage-release-identifier: obsrv-base
   template:
     metadata:
@@ -326,22 +326,25 @@ spec:
         prometheus.io/scrape: "true"
       labels:
         app: flink
-        component: master-data-processor-jobmanager
+        component: master-data-processor-ext-jobmanager
         azure-extensions-usage-release-identifier: obsrv-base
+        system.processing: "true"
     spec:
+      imagePullSecrets:
+      - name: registry
       initContainers:
       - name: check-db-ready
       {{ if .Values.global.azure.images.postgres }}
-        image: "{{ .Values.global.azure.images.postgres.registry }}/{{ .Values.global.azure.images.postgres.image }}:{{ .Values.global.azure.images.postgres.digest }}"
+        image: "{{ .Values.global.azure.images.postgres.registry }}/{{ .Values.global.azure.images.postgres.image }}@{{ .Values.global.azure.images.postgres.digest }}"
       {{ else }}
         image: postgres:latest
       {{ end }}
         command: ['sh', '-c',
-          'until pg_isready -h {{ .Release.Name }}-postgresql-hl.postgresql.svc.cluster.local -p 5432 -U obsrv -d obsrv;
+          'until pg_isready -h {{ .Release.Name }}-postgresql-hl.postgresql.svc.cluster.local -p 5432;
           do echo waiting for database; sleep 2; done;']
       - name: wait-for-available-kafka
       {{ if .Values.global.azure.images.kafka }}
-        image: "{{ .Values.global.azure.images.kafka.registry }}/{{ .Values.global.azure.images.kafka.image }}:{{ .Values.global.azure.images.kafka.digest }}"
+        image: "{{ .Values.global.azure.images.kafka.registry }}/{{ .Values.global.azure.images.kafka.image }}@{{ .Values.global.azure.images.kafka.digest }}"
       {{ else }}
         image: docker.io/bitnami/kafka:3.5.1-debian-11-r21
       {{ end }}
@@ -357,35 +360,27 @@ spec:
             9092; \
             do echo waiting for kafka; sleep 2; done;
             echo "Kafka is available";
-      imagePullSecrets:
-        - name: {{ .Values.global.image.imagePullSecrets }}
       containers:
       - args:
         - start-foreground
-        {{- if eq .Values.checkpoint_store_type "s3" }}
-        - "-Ds3.access-key={{ .Values.global.s3_access_key }}"
-        - "-Ds3.secret-key={{ .Values.global.s3_secret_key }}"
-        - "-Ds3.endpoint={{ .Values.global.s3_endpoint_url }}"
-        - "-Ds3.path.style.access={{ .Values.global.s3_path_style_access }}"
-        {{- else if eq .Values.checkpoint_store_type "azure" }}
-        - "-Dfs.azure.account.key.{{ .Values.global.azure_storage_account_name }}.blob.core.windows.net={{ .Values.global.azure_storage_account_key }}"
-        {{- end }}
-        - --job-classname=org.sunbird.obsrv.pipeline.task.MasterDataProcessorStreamTask
+        - -Dfs.azure.account.key.{{ .Values.global.azure_storage_account_name }}.blob.core.windows.net={{ .Values.global.azure_storage_account_key }}
+        - --job-classname=in.sanketika.obsrv.pipeline.task.MasterDataProcessorStreamTask
         - -Dweb.submit.enable=false
         - -Dmetrics.reporter.prom.class=org.apache.flink.metrics.prometheus.PrometheusReporter
         - -Dmetrics.reporter.prom.port=9250
-        - -Djobmanager.rpc.address=master-data-processor-jobmanager
+        - -Djobmanager.rpc.address=master-data-processor-ext-jobmanager
         - -Djobmanager.rpc.port=6123
         - -Dparallelism.default=1
         - -Dblob.server.port=6124
         - -Dqueryable-state.server.ports=6125
         - --config.file.path
-        - /data/flink/conf/master-data-processor.conf
+        - /data/flink/conf/master-data-processor-ext.conf
         command:
         - /opt/flink/bin/standalone-job.sh
-        image: "{{ .Values.global.azure.images.master_data_processor.registry }}/{{ .Values.global.azure.images.master_data_processor.image }}:{{ .Values.global.azure.images.master_data_processor.digest }}"
-        imagePullPolicy: IfNotPresent
-        name: master-data-processor-jobmanager
+        # image: sanketikahub/master-data-processor-ext:1.0.1-GA-Bugfixes
+        image: "{{ .Values.image.registry }}/{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: Always
+        name: master-data-processor-ext-jobmanager
         ports:
         - containerPort: 6123
           name: rpc
@@ -412,9 +407,9 @@ spec:
         - mountPath: /data/flink/conf/baseconfig.conf
           name: flink-config-volume
           subPath: base-config.conf
-        - mountPath: /data/flink/conf/master-data-processor.conf
+        - mountPath: /data/flink/conf/master-data-processor-ext.conf
           name: flink-config-volume
-          subPath: master-data-processor.conf
+          subPath: master-data-processor-ext.conf
         workingDir: /opt/flink
     #   restartPolicy: OnFailure
       volumes:
@@ -424,26 +419,26 @@ spec:
             path: flink-conf.yaml
           - key: base-config
             path: base-config.conf
-          - key: master-data-processor
-            path: master-data-processor.conf
+          - key: master-data-processor-ext
+            path: master-data-processor-ext.conf
           - key: log4j_console_properties
             path: log4j-console.properties
-          name: master-data-processor-config
+          name: master-data-processor-ext-config
         name: flink-config-volume
 ---
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
-  name: master-data-processor-taskmanager
+  name: master-data-processor-ext-taskmanager
   namespace: flink
   labels:
-    app: master-data-processor-taskmanager
+    app: master-data-processor-ext-taskmanager
     release: monitoring
     system.processing: "true"
 spec:
   selector:
     matchLabels:
-      component: master-data-processor-taskmanager
+      component: master-data-processor-ext-taskmanager
   endpoints:
   - port: prom
     interval: 30s
@@ -451,16 +446,16 @@ spec:
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
-  name: master-data-processor-jobmanager
+  name: master-data-processor-ext-jobmanager
   namespace: flink
   labels:
-    app: master-data-processor-jobmanager
+    app: master-data-processor-ext-jobmanager
     release: monitoring
     system.processing: "true"
 spec:
   selector:
     matchLabels:
-      component: master-data-processor-jobmanager
+      component: master-data-processor-ext-jobmanager
   endpoints:
   - port: prom
     interval: 30s

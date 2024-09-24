@@ -9,6 +9,7 @@ spec:
   image: "{{ .Values.druid_image }}"
   serviceAccount: "{{ .Values.druid_namespace }}-sa"
   startScript: /druid.sh
+  system.querying: "true"
   # podLabels:
   #   release: alpha
   # podAnnotations:

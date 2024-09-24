@@ -12,15 +12,12 @@ variable "location" {
     type        = string
     description = "Azure location to create the resources."
 }
-
-variable "kubernetes_storage_class" {
-    type        = string
-    description = "Storage class name for the AKS cluster"
-    default     = "default"
+variable "resource_group_name" {
+  type        = string
+  description = "Resource group name for AKS, subnets etc"
 }
 
-variable "druid_deepstorage_type" {
-    type        = string
-    description = "Druid deep strorage type."
-    default     = "azure"
+variable "storage_account_name" {
+  type        = string
+  description = "Storage account name"
 }

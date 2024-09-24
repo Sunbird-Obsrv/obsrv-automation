@@ -35,3 +35,20 @@ variable "resource_group_name" {
   type        = string
   description = "Resource group name to create the AKS cluster."
 }
+
+variable "storage_account_name" {
+  type        = string
+  description = "Storage account name"
+}
+
+variable "checkpoint_container" {
+  type        = string
+  description = "Storage account name"
+  default = "checkpointing"
+}
+
+variable "velero_backup_container" {
+  type        = string
+  description = "Storage account name"
+  default = "velero"
+}

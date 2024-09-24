@@ -65,6 +65,7 @@ commonLabels:
   system.ingestion: "true"
   system.querying: "true"
   system.api: "true"
+  system.infra: "true"
 ## @param commonAnnotations Add annotations to all the deployed resources
 ##
 commonAnnotations: {}

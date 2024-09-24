@@ -28,6 +28,7 @@ resource "google_container_cluster" "cluster" {
   logging_service    = var.logging_service
   monitoring_service = var.monitoring_service
   min_master_version = local.kubernetes_version
+  deletion_protection = var.deletion_protection
 
   # Whether to enable legacy Attribute-Based Access Control (ABAC). RBAC has significant security advantages over ABAC.
   enable_legacy_abac = var.enable_legacy_abac
@@ -197,7 +198,7 @@ resource "google_container_node_pool" "node_pool" {
 
     tags = var.gke_node_pool_network_tags
 
-    disk_size_gb = "20"
+    disk_size_gb = "60"
     disk_type    = var.kubernetes_storage_class
     preemptible  = var.gke_node_pool_preemptible
 

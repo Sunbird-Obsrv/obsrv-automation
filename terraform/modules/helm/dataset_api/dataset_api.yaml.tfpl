@@ -1,12 +1,11 @@
 namespace: ${dataset_api_namespace}
 SYSTEM_ENV: ${env}
-cpu_requests: 0.5
-cpu_limits: 0.5
+cpu_requests: 0.8
+cpu_limits: 1
 memory_requests: 512Mi
 memory_limits: 1024Mi
-body_parser_limit: 10mb
 druid_service:
-  DRUID_HOST: http://druid-raw-routers.druid-raw.svc
+  DRUID_HOST: http://${druid_cluster_release_name}-routers.${druid_cluster_namespace}.svc.cluster.local
   DRUID_PORT: 8888
 postgres_service:
   POSTGRES_HOST: postgresql-hl.postgresql.svc
@@ -18,7 +17,7 @@ image:
   registry: ${dataset_api_container_registry}
   repository: ${dataset_api_image_name}
   image_tag: ${dataset_api_image_tag}
-  imagePullSecrets: ""
+  imagePullSecrets: ${docker_registry_secret_name}
 dedup_redis_service:
   REDIS_HOST: ${dedup_redis_release_name}-master.${dedup_redis_namespace}.svc.cluster.local
   REDIS_PORT: 6379
@@ -27,8 +26,20 @@ denorm_redis_service:
   REDIS_PORT: 6379
 exhaust_service:
   CONTAINER: ${s3_bucket}
+  CLOUD_STORAGE_PROVIDER: ${storage_provider}
+  CLOUD_STORAGE_REGION: ${s3_region}
 service_account_annotations:
   ${dataset_api_sa_annotations}
+grafana_service:
+  GRAFANA_URL: ${grafana_url}
+encryption_config:
+  object_key: authenticationMechanism
+  encryption_key: "${encryption_key}"
+command_service_config:
+  host: http://${command_service_release_name}-service.${command_service_namespace}.svc.cluster.local
+  port: 8000
+  path: "/system/v1/dataset/command"
+
 service:
   type: ${service_type}
 enable_lakehouse: ${enable_lakehouse}

@@ -40,6 +40,7 @@ serviceMonitor:
   # Set labels for the ServiceMonitor, use this to define your scrape label for Prometheus Operator
   labels:
     release: monitoring
+    system.monitoring: "true"
   # Set timeout for scrape
   # timeout: 10s
   # Set of labels to transfer from the Kubernetes Service onto the target
@@ -453,7 +454,8 @@ affinity: {}
 
 annotations: {}
 
-podLabels: {}
+podLabels: 
+  system.monitoring: "true"
 
 # Configurable health checks
 livenessProbe:

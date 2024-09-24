@@ -25,6 +25,7 @@ spec:
   template:
     metadata:
       labels: {{- include "common.labels.standard" . | nindent 8 }}
+        system.monitoring: "true"
         app.kubernetes.io/component: cluster-metrics
         {{- if .Values.metrics.kafka.podLabels }}
         {{- include "common.tplvalues.render" (dict "value" .Values.metrics.kafka.podLabels "context" $) | nindent 8 }}

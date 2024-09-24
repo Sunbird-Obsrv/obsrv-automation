@@ -1,5 +1,6 @@
 commonLabels:
   system: storage
+  system.processing: 'true'
 image:
   registry: docker.io
   repository: bitnami/redis
@@ -10,7 +11,6 @@ image:
 commonConfiguration: |-
   # Enable RDB persistence
   save 300 100
-
 auth:
   enabled: false
 
@@ -85,5 +85,38 @@ replica:
     accessModes:
       - ReadWriteOnce
     size: 1Gi
+
+  sidecars:
+    - name: redis-backup
+      image: sanketikahub/redis-backup:1.0.4-GA
+      imagePullPolicy: IfNotPresent
+      volumeMounts:
+        - mountPath: /data
+          name: redis-data
+      env:
+        - name: REDIS_BACKUP_CRON_SCHEDULE
+          value: "00 00 * * *"
+        - name: CLOUD_SERVICE
+          value: s3
+        - name: AZURE_STORAGE_ACCOUNT_NAME
+          value: ""
+        - name: AZURE_STORAGE_ACCOUNT_KEY
+          value: ""
+        - name: AZURE_BACKUP_BUCKET
+          value: ""
+        - name: S3_BACKUP_BUCKET
+          value: "" # Update the name of S3 the bucket
+        - name: GCS_BACKUP_BUCKET
+          value: "" # Update the name of GCS bucket
+        - name: REDIS_RDB_FILE_PATH
+          value: /data
+        - name: REDIS_REPLICATION_MODE
+          value: master
+        - name: BACKUP_PREFIX
+          value: dedup-redis
+      resources:
+        limits:
+          cpu: 0.2
+          memory: 100Mi
   serviceAccount:
     create: true

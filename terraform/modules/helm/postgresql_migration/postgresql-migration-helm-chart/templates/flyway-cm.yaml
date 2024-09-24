@@ -33,6 +33,18 @@ metadata:
 data:
   {{- (tpl (.Files.Glob "migration/03_obsrv/*.sql").AsConfig .) | nindent 2 }}
 
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: keycloak-sql-files
+  namespace: {{ .Values.namespace }}
+  labels:
+    name: keycloak-sql-files
+    app: flyway-postgresql
+data:
+  {{- (tpl (.Files.Glob "migration/04_keycloak/*.sql").AsConfig .) | nindent 2 }}
+
 
 ---
 {{- if .Values.enable_lakehouse }}

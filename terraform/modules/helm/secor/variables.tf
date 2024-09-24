@@ -22,11 +22,11 @@ variable "secor_image_tag" {
 variable "jobs" {
   description = "Create release names"
   type        = list(string)
-  default     = [
-  "ingest-backup", "raw-backup",
-  "failed-backup", "unique-backup",
-  "denorm-backup", "transform-backup",
-  "system-events", "system-telemetry-events"
+  default = [
+    "ingest-backup", "failed-backup", "transform-backup",
+    # "raw-backup", "unique-backup", "denorm-backup",
+    "system-events", "system-telemetry-events",
+    "masterdata-ingest-backup", "masterdata-transform-backup", "masterdata-failed-backup"
   ]
 }
 
@@ -117,13 +117,13 @@ variable "secor_memory_limit" {
 variable "secor_backup_interval" {
   type        = number
   description = "Secor backup interval"
-  default     = 1000  # In seconds
+  default     = 1000 # In seconds
 }
 
 variable "secor_backup_max_file_size" {
   type        = number
   description = "Secor backup max file size"
-  default     = 100000000  # In bytes
+  default     = 100000000 # In bytes
 }
 
 variable "secor_backup_basepath" {

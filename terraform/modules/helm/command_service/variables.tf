@@ -54,7 +54,7 @@ variable "command_service_chart_depends_on" {
 variable "command_service_image_repository" {
   type        = string
   description = "CommandService image name."
-  default     = "sanketikahub/flink-command-service"
+  default     = "sanketikahub/obsrv-command-service"
 }
 
 variable "command_service_image_tag" {
@@ -85,7 +85,64 @@ variable "flink_namespace" {
   default     = "flink"
 }
 
- 
+variable "druid_cluster_release_name" {
+  type        = string
+  description = "Druid installation release name"
+  default     = "druid-raw"
+}
+
+variable "druid_cluster_namespace" {
+  type        = string
+  description = "Druid installation namespace"
+  default     = "druid-raw"
+}
+
+variable "docker_registry_secret_dockerconfigjson" {
+  type        = string
+  description = "The dockerconfigjson encoded in base64 format."
+  sensitive   = true
+}
+
+variable "docker_registry_secret_name" {
+  type        = string
+  description = "Kubernetes secret name to pull images from private docker registry."
+}
+
+variable "datasetFailedBatchEventsConfig" {
+  type        = map(string)
+  description = "Dataset alert rule config for failed batch events"
+  default     = { "frequency" = "5m", "interval" = "5m", "threshold" = "100" }
+}
+
+variable "datasetDuplicateBatchEventsConfig" {
+  type        = map(string)
+  description = "Dataset alert rule config for dataset duplicate batch events"
+  default     = { "frequency" = "5m", "interval" = "5m", "threshold" = "100" }
+}
+
+variable "datasetDuplicateEventsConfig" {
+  type        = map(string)
+  description = "Dataset alert rule config for duplicate events"
+  default     = { "frequency" = "5m", "interval" = "5m", "threshold" = "100" }
+}
+
+variable "datasetValidationFailedEventsConfig" {
+  type        = map(string)
+  description = "Dataset alert rule config for validation failed events"
+  default     = { "frequency" = "5m", "interval" = "5m", "threshold" = "100" }
+}
+
+variable "kafka_release_name" {
+  type        = string
+  description = "Kafka helm release name."
+}
+
+variable "kafka_namespace" {
+  type        = string
+  description = "Kafka namespace."
+}
+
+
 variable "enable_lakehouse" {
   type        = bool
   description = "Toggle to install hudi components (hms, trino and flink job)"

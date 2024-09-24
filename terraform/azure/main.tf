@@ -25,11 +25,12 @@ module "network" {
   building_block        = var.building_block
   env                   = var.env
   location              = var.location
+  resource_group_name = var.resource_group_name
 }
 
 module "aks" {
   source              = "../modules/azure/aks"
-  resource_group_name = module.network.resource_group_name
+  resource_group_name = var.resource_group_name
   building_block        = var.building_block
   env                   = var.env
   location              = var.location
@@ -38,10 +39,11 @@ module "aks" {
 
 module "storage" {
   source              = "../modules/azure/storage"
-  resource_group_name = module.network.resource_group_name
+  resource_group_name = var.resource_group_name
   building_block        = var.building_block
   env                   = var.env
   location              = var.location
+  storage_account_name = var.storage_account_name
 }
 
 provider "helm" {
@@ -51,14 +53,4 @@ provider "helm" {
     client_key             = module.aks.client_key
     cluster_ca_certificate = module.aks.cluster_ca_certificate
   }
-}
-
-module "unified_helm" {
-  source                      = "../modules/helm/unified_helm"
-  building_block              = var.building_block
-  env                         = var.env
-  depends_on                  = [ module.storage,module.aks ]
-  azure_storage_account_key   = module.storage.azurerm_storage_account_key
-  azure_storage_account_name  = module.storage.azurerm_storage_account_name
-  azure_storage_container     = module.storage.azurerm_storage_container
 }

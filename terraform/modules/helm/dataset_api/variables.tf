@@ -7,10 +7,6 @@ variable "building_block" {
   type        = string
   description = "Building block name. All resources will be prefixed with this value."
 }
-variable "service_type" {
-  type = string
-  description = "Kubernetes service type either NodePort or LoadBalancer. It is NodePort by default"
-}
 
 variable "dataset_api_release_name" {
   type        = string
@@ -21,6 +17,10 @@ variable "dataset_api_release_name" {
 variable "dataset_api_namespace" {
   type        = string
   description = "Dataset service namespace."
+}
+variable "service_type" {
+  type = string
+  description = "Kubernetes service type either NodePort or LoadBalancer. It is NodePort by default"
 }
 
 variable "dataset_api_chart_path" {
@@ -82,12 +82,22 @@ variable "dataset_api_container_registry" {
 variable "dataset_api_image_name" {
   type        = string
   description = "Dataset api image name."
-  default     = "obsrv-api-service"
 }
 
 variable "dataset_api_image_tag" {
   type        = string
   description = "Dataset api image tag."
+}
+
+variable "docker_registry_secret_dockerconfigjson" {
+  type        = string
+  description = "The dockerconfigjson encoded in base64 format."
+  sensitive   = true
+}
+
+variable "docker_registry_secret_name" {
+  type        = string
+  description = "Kubernetes secret name to pull images from private docker registry."
 }
 
 variable "dataset_api_sa_annotations" {
@@ -120,10 +130,54 @@ variable "dedup_redis_namespace" {
   default     = "redis"
 }
 
+variable "druid_cluster_release_name" {
+  type        = string
+  description = "Druid cluster helm release name."
+  default     = "druid-raw"
+}
+
+variable "druid_cluster_namespace" {
+  type        = string
+  description = "Druid cluster namespace."
+  default     = "druid-raw"
+}
+
+variable "command_service_namespace" {
+  type        = string
+  description = "Command service namespace."
+  default     = "command-api"
+}
+
+variable "command_service_release_name" {
+  type        = string
+  description = "Command service helm release name."
+  default     = "command-api"
+}
+
 variable "s3_bucket" {
   type        = string
   description = "S3 bucket name for dataset api exhaust."
   default     = ""
+}
+variable "grafana_url" {
+  type        = string
+  description = "grafana url"
+  default     = "http://monitoring-grafana.monitoring.svc:80"
+}
+
+variable "encryption_key" {
+  type        = string
+  description = "key for credential encryption."
+}
+
+variable "storage_provider" {
+  type      = string
+  description = "storage provider name e.g: aws, azure, gcp"
+}
+
+variable "s3_region" {
+  type        = string
+  description = "AWS region to create the resources. e.g.: us-east-2"
 }
 
 variable "enable_lakehouse" {

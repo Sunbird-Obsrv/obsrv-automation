@@ -34,7 +34,6 @@ clusterDomain: cluster.local
 ##
 commonLabels:
   system.ingestion: "true"
-  system.processing: "true"
 ## @param commonAnnotations Annotations to add to all deployed objects
 ##
 commonAnnotations: {}

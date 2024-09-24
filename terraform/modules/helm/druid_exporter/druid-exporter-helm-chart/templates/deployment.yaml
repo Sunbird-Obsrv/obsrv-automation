@@ -10,6 +10,7 @@ metadata:
     app.kubernetes.io/managed-by: {{ .Release.Service }}
     app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/version: {{ .Chart.AppVersion }}
+    system.monitoring: "true"
   annotations:
     {{- toYaml .Values.annotations | nindent 4 }}
 spec:

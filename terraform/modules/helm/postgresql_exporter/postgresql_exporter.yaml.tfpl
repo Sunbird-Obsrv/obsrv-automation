@@ -4,3 +4,6 @@ serviceMonitor:
   interval: 30s
   labels:
     release: monitoring
+    system.monitoring: 'true'
+podLabels:
+  system.monitoring: 'true'    

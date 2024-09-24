@@ -6,6 +6,7 @@ metadata:
   labels:
     app: command-api
     system.ingestion: "true"
+    system.dataset-management: "true"
 data:
   service_config: |
 {{ .Values.service_config | indent 4 }}

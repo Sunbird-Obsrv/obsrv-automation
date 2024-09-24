@@ -30,12 +30,6 @@ variable "superset_chart_path" {
   default     = "superset-helm-chart"
 }
 
-variable "superset_chart_install_timeout" {
-  type        = number
-  description = "Superset helm chart install timeout."
-  default     = 3000
-}
-
 variable "superset_create_namespace" {
   type        = bool
   description = "Create superset namespace."
@@ -95,10 +89,45 @@ variable "redis_namespace" {
 variable "redis_release_name" {
   type        = string
   description = "Release name for Redis installation."
-  default     = "obsrv-redis"
+  default     = "obsrv-dedup-redis"
 }
 
 variable "postgresql_service_name" {
   type        = string
-  description = "Postgresql service name"
+  description = "Service name for Postgres installation."
+}
+
+variable "web_console_base_url" {
+  type        = string
+  description = "Web console base url."
+}
+
+variable "superset_base_url" {
+  type        = string
+  description = "Superset base url."
+}
+
+variable "keycloak_base_url" {
+  type        = string
+  description = "Keycloak base url."
+}
+
+variable "redirection_auth_path" {
+  type = string
+  description = "Either obsrv or keycloak" 
+}
+
+variable "oauth_configs" {
+  type = map
+  description = "Superset config variables. See the below commented code to know values to be passed "
+  # default = {
+  #   superset_oauth_clientid           =
+  #   superset_oauth_client_secret      =
+  #   superset_oauth_token              =
+  # }
+}
+
+variable "dataset_api_namespace" {
+  type        = string
+  description = "Namespace for dataset api"
 }

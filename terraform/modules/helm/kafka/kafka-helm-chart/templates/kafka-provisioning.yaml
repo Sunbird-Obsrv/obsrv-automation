@@ -21,6 +21,7 @@ spec:
     metadata:
       labels: {{- include "common.labels.standard" . | nindent 8 }}
         app.kubernetes.io/component: kafka-provisioning
+        system.ingestion: "true"
         {{- if .Values.provisioning.podLabels }}
         {{- include "common.tplvalues.render" (dict "value" .Values.provisioning.podLabels "context" $) | nindent 8 }}
         {{- end }}

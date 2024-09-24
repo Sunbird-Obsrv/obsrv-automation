@@ -104,6 +104,12 @@ variable "postgresql_superset_user_password" {
   default   = "superset123"
 }
 
+variable "postgresql_keycloak_user_password" {
+  type        = string
+  description = "Postgresql keycloak user password."
+  default   = "keycloak123"
+}
+
 variable "postgresql_persistence_size" {
   type        = string
   description = "Postgresql persistent volume size."
@@ -121,7 +127,6 @@ variable "postgresql_druid_raw_user_password" {
   description = "Postgresql druid user password."
   default   = "druidraw123"
 }
-
 
 variable "postgresql_hms_username" {
   type        = string

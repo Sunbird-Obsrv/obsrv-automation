@@ -9,3 +9,6 @@ serviceMonitor:
   enabled: true
   labels:
     release: monitoring
+    system.monitoring: "true"
+podLabels:
+  system.monitoring: "true"

@@ -16,7 +16,7 @@ variable "location" {
 variable "aks_version" {
   type = string
   description = "AKS cluster version"
-  default = "1.27"
+  default = "1.28"
   
 }
 variable "additional_tags" {
@@ -34,7 +34,7 @@ variable "aks_nodepool_name" {
 variable "aks_node_count" {
   type        = number
   description = "AKS node count."
-  default     = 4
+  default     = 5
 }
 
 variable "aks_node_size" {

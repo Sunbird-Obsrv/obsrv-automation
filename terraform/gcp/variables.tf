@@ -15,6 +15,7 @@ variable "building_block" {
 variable "env" {
   type        = string
   description = "Environment name. All resources will be prefixed with this value."
+  default     = "dev"
 }
 
 ## Google Cloud Platform
@@ -22,16 +23,19 @@ variable "env" {
 variable "project" {
   description = "The project ID where all resources will be launched."
   type        = string
+  default     = "obsrv-gcp"
 }
 
 variable "region" {
   description = "The region for the network. If the cluster is regional, this must be the same region. Otherwise, it should be the region of the zone."
   type        = string
+  default     = "us-central1"
 }
 
 variable "zone" {
   description = "The zone for the cluster. If the cluster is regional, this should be one of the zones in the region. Otherwise, this should be the same zone as the region."
   type        = string
+  default     = "us-central1-a"
 }
 
 
@@ -52,7 +56,7 @@ variable "vpc_secondary_cidr_block" {
 variable "auto_assign_public_ip" {
   type        = bool
   description = "Auto assign public ip's to instances in this subnet"
-  default     = false
+  default     = true
 }
 
 variable "public_subnetwork_secondary_range_name" {
@@ -114,6 +118,7 @@ variable "gcs_service_account_description" {
 variable "gke_cluster_location" {
   description = "The location (region or zone) of the GKE cluster."
   type        = string
+  default     = "us-central1"
 }
 
 variable "gke_master_ipv4_cidr_block" {
@@ -162,83 +167,16 @@ variable "override_default_node_pool_service_account" {
   default     = true
 }
 
-variable "kubernetes_storage_class" {
+variable "command_api_sa_iam_role_name" {
   type        = string
-  description = "Storage class name for the GKE cluster"
-  default     = "pd-ssd"
+  description = "IAM role name for dataset api service account."
+  default     = "command-api-sa-iam-role"
 }
 
-variable "kubernetes_storage_class_raw" {
+variable "command_api_namespace" {
   type        = string
-  description = "Storage class name in raw format, they use a different notation than the GKE cluster"
-  default     = "standard-rwo"
-}
-
-variable "druid_deepstorage_type" {
-  type        = string
-  description = "Druid deep strorage."
-  default     = "google"
-}
-
-variable "flink_checkpoint_store_type" {
-  type        = string
-  description = "Flink checkpoint store type."
-  default     = "gcs"
-}
-
-### kubectl config
-
-variable "kubectl_config_path" {
-  description = "The path to the kubectl config file."
-  type        = string
-  default     = "./kubeconfig/kubeconfig.yaml"
-}
-
-# variable "kubectl_config_context" {
-#   description = "The name of the kubectl config context to use."
-#   type        = string
-#   default     = "gke_"
-# }
-
-# Helm Specific Configs
-
-variable "timezone" {
-  type        = string
-  description = "Timezone property to backup the data"
-  default     = "UTC"
-}
-
-variable "service_type" {
-  type        = string
-  description = "Kubernetes service type either NodePort or LoadBalancer. It is LoadBalancer by default"
-}
-
-variable "flink_release_names" {
-  description = "Create release names"
-  type        = map(string)
-  default = {
-    extractor       = "extractor"
-    preprocessor    = "preprocessor"
-    denormalizer    = "denormalizer"
-    transformer     = "transformer"
-    druid-router    = "druid-router"
-    master-data-processor = "master-data-processor"
-  }
-}
-
-variable "flink_unified_pipeline_release_names" {
-  description = "Create release names"
-  type        = map(string)
-  default = {
-    unified-pipeline = "unified-pipeline"
-    master-data-processor = "master-data-processor"
-  }
-}
-
-variable "unified_pipeline_enabled" {
-  description = "Toggle to deploy unified pipeline"
-  type = bool
-  default = true
+  description = "Command service namespace."
+  default     = "command-api"
 }
 
 variable "dataset_api_sa_iam_role_name" {
@@ -301,67 +239,53 @@ variable "velero_namespace" {
   default     = "velero"
 }
 
-variable "web_console_configs" {
-  type = map
-  description = "Web console config variables. See below commented code for values that need to be passed"
-  default = {
-    port                               = "3000"
-    app_name                           = "obsrv-web-console"
-    prometheus_url                     = "http://monitoring-kube-prometheus-prometheus.monitoring:9090"
-    react_app_grafana_url              = "http://localhost:80"
-    react_app_superset_url             = "http://localhost:8081"
-    https                              = "false"
-    react_app_version                  = "v1.2.0"
-    generate_sourcemap                 = "false"
-  }
-}
-
-variable "dataset_api_container_registry" {
+variable "postgresql_backup_sa_iam_role_name" {
   type        = string
-  description = "Container registry. For example docker.io/obsrv"
-  default     = "sanketikahub"
+  description = "IAM role name for postgresql backup service account."
+  default     = "psql-backup-sa"
 }
 
-variable "flink_container_registry" {
+variable "postgresql_namespace" {
   type        = string
-  description = "Container registry. For example docker.io/obsrv"
-  default     = "sanketikahub"
+  description = "Postgresql backup namespace."
+  default     = "postgresql"
 }
 
-variable "web_console_image_repository" {
+variable "redis_backup_sa_iam_role_name" {
   type        = string
-  description = "Container registry. For example docker.io/obsrv"
-  default     = "sanketikahub"
+  description = "IAM role name for postgresql backup service account."
+  default     = "redis-backup-sa"
 }
 
-## Images
-
-variable "dataset_api_image_tag" {
+variable "redis_namespace" {
   type        = string
-  description = "Dataset api image tag."
+  description = "Redis backup namespace."
+  default     = "redis"
 }
 
-variable "flink_image_tag" {
-   type        = string
-   description = "Flink kubernetes service name."
-}
-
-variable "web_console_image_tag" {
+variable "spark_sa_iam_role_name" {
   type        = string
-  description = "web console image tag."
+  description = "IAM role name for spark service account."
+  default     = "spark-sa-iam-role"
 }
 
-variable "command_service_image_tag" {
+variable "spark_namespace" {
   type        = string
-  description = "CommandService image tag."
+  description = "Spark namespace."
+  default     = "spark"
 }
 
-variable "superset_image_tag" {
+
+# ### kubectl config
+
+variable "kubectl_config_path" {
+  description = "The path to the kubectl config file."
   type        = string
-  description = "Superset image tag."
+  default     = ""
 }
 
-variable "secor_image_tag" {
+variable "kubectl_config_context" {
+  description = "The name of the kubectl config context to use."
   type        = string
-  description = "secor image version"
+  default     = "gke_"
 }

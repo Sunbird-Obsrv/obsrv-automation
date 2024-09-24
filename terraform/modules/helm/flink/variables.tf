@@ -7,12 +7,14 @@ variable "building_block" {
   type        = string
   description = "Building block name. All resources will be prefixed with this value."
 }
+# *** changed this to release map.
+# variable "flink_release_name" {
+#   type        = string
+#   description = "Flink helm release name."
+#   default     = "unified-pipeline"
+# }
+# *** changed this to release map.
 
-variable "flink_sa_release_name" {
-  type        = string
-  description = "Flink helm release name."
-  default     = "flink"
-}
 
 variable "flink_namespace" {
   type        = string
@@ -30,14 +32,13 @@ variable "flink_chart_path" {
   description = "Flink chart path."
   default     = "flink-helm-chart"
 }
-
-# *** changed this to release map.
-# variable "flink_release_name" {
-#   type        = string
-#   description = "Flink helm release name."
-#   default     = "unified-pipeline"
-# }
-# *** changed this to release map.
+variable "flink_release_map" {
+  description = "Create release names"
+  type        = map(string)
+  default = {
+    unified-pipeline = "unified-pipeline"
+  }
+}
 
 variable "flink_chart_install_timeout" {
   type        = number
@@ -62,11 +63,15 @@ variable "flink_custom_values_yaml" {
   description = "Flink chart values.yaml path."
   default     = "flink.yaml.tfpl"
 }
-
 variable "flink_custom_values_yaml_sa" {
   type        = string
   description = "Flink chart values.yaml path."
   default     = "flink.yaml.tfpl-sa"
+}
+variable "flink_sa_release_name" {
+  type        = string
+  description = "Flink helm release name."
+  default     = "flink"
 }
 
 variable "flink_kubernetes_service_name" {
@@ -79,7 +84,6 @@ variable "flink_container_registry" {
   type        = string
   description = "Container registry. For example docker.io/obsrv"
 }
-
 
 variable "flink_image_tag" {
   type        = string
@@ -177,6 +181,18 @@ variable "flink_sa_annotations" {
   description = "Service account annotations for flink service account."
   default     = "serviceAccountName: default"
 }
+
+variable "docker_registry_secret_dockerconfigjson" {
+  type        = string
+  description = "The dockerconfigjson encoded in base64 format."
+  sensitive   = true
+}
+
+variable "docker_registry_secret_name" {
+  type        = string
+  description = "Kubernetes secret name to pull images from private docker registry."
+}
+
 variable "flink_release_names" {
   description = "Create release names"
   type        = map(string)

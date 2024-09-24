@@ -48,6 +48,11 @@ variable "cluster_secondary_range_name" {
   type        = string
 }
 
+variable "deletion_protection" {
+  description = "Whether to enable deletion protection for the cluster"
+  type        = bool
+  default     = false
+}
 
 # ---------------------------------------------------------------------------------------------------------------------
 # OPTIONAL PARAMETERS
@@ -63,7 +68,7 @@ variable "description" {
 variable "kubernetes_version" {
   description = "The Kubernetes version of the masters. If set to 'latest' it will pull latest available version in the selected region."
   type        = string
-  default     = "1.28.3-gke.1286000"
+  default     = "latest"
 }
 
 variable "gke_node_pool_instance_type" {
