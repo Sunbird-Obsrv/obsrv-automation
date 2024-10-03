@@ -154,9 +154,9 @@ serviceConfig:
   commands:
     PUBLISH_DATASET:
       workflow:
+        - CREATE_KAFKA_TOPIC
         - MAKE_DATASET_LIVE
         - SUBMIT_INGESTION_TASKS
-        - CREATE_KAFKA_TOPIC
         - START_PIPELINE_JOBS
         - DEPLOY_CONNECTORS
         - CREATE_ALERT_METRIC
@@ -266,6 +266,8 @@ serviceConfig:
     brokers: "{{ .Values.global.kafka.host }}:{{ .Values.global.kafka.port }}"
     telemetry:
       topic: "system.telemetry.events"
+    replication_factor: 1 
+    no_of_partitions: 1
 
   helm_charts_base_dir: /app/helm-charts
 
