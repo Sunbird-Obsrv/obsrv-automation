@@ -328,7 +328,7 @@ images: &images
 
   lakehouse-connector: &lakehouse-connector
     repository: lakehouse-connector
-    tag: 1.0.8
+    tag: 1.1-RC
 
   nlq-api: &nlq-api
     repository: text2sql
