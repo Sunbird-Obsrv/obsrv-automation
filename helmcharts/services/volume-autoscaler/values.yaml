@@ -1,5 +1,9 @@
 # The name of the service and pods/deployment/etc being deployed
+global:
+  image:
+    registry: ""
 name: volume-autoscaler
+namespace: volume-autoscaler
 
 # The typical config variables for the volume-autoscaler service, and their respective defaults
 
