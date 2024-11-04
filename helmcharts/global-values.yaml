@@ -71,7 +71,7 @@ defaults:
   druid_indexer_host: &druid-indexer-host "druid-raw-indexers.druid-raw.svc.cluster.local"
 
   redirection_auth_path: &redirection_auth_path ""
-  domain: &domain "13.234.121.41.sslip.io"
+  domain: &domain "18.119.23.219.sslip.io"
 
   ssl_enabled: &ssl_enabled true
 
@@ -91,32 +91,34 @@ kafka: &kafka
   hudiConnectorTopic: *hudiConnectorTopic
   connectorsMetricTopic: *connectorsMetricTopic
   connectorsFailedTopic: *connectorsFailedTopic
-
+  numPartitions: 4
   provisioning:
+    numPartitions: 4
+    replicationFactor: 1
     topics:
       - name: *ingestTopic
-        partitions: 1
+        partitions: 4
         replicationFactor: 1
       - name: *masterdataIngestTopic
-        partitions: 1
+        partitions: 4
         replicationFactor: 1
       - name: *telemetryEventsTopic
-        partitions: 1
+        partitions: 4
         replicationFactor: 1
       - name: *system_stats_topic
-        partitions: 1
+        partitions: 4
         replicationFactor: 1
       - name: *masterdata_system_stats_topic
-        partitions: 1
+        partitions: 4
         replicationFactor: 1
       - name: *hudiConnectorTopic
-        partitions: 1
+        partitions: 4
         replicationFactor: 1
       - name: *connectorsMetricTopic
-        partitions: 1
+        partitions: 4
         replicationFactor: 1
       - name: *connectorsFailedTopic
-        partitions: 1
+        partitions: 4
         replicationFactor: 1
 
 
@@ -259,6 +261,8 @@ kafka-message-exporter:
 
 kube-prometheus-stack:
   namespaceOverride: *monitoring-namespace
+  prometheus-windows-exporter:
+   namespaceOverride: *monitoring-namespace
   kube-state-metrics:
     namespaceOverride: *monitoring-namespace
   prometheus-node-exporter:
@@ -447,6 +451,14 @@ velero:
 
 volume-autoscaler:
   namespace: *volume-autoscaler-namespace
+  # How much full the disk must be before considering scaling
+  scale_above_percent: "80"
+  # How much to scale disks up by, as a percentage of their current size
+  scale_up_percent: "20"
+  # An maximum amount of bytes to scale up by (helps prevent large disks from growing too fast/exponentially).  Set to 16TB by default, which basically means this is disabled
+  scale_up_max_increment: "16000000000000"
+  # The maximum size of disks to scale up to.  By default on AWS using EBS volumes this is set to 16TB as that is the EBS Max disk size.
+  scale_up_max_size: ""
 
 hms:
   namespace: *hms_namespace
