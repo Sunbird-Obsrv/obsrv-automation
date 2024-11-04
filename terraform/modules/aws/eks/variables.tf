@@ -137,7 +137,7 @@ variable "dataset_api_sa_iam_role_name" {
 variable "config_api_sa_iam_role_name" {
   type        = string
   description = "IAM role name for dataset api service account."
-  default     = "config_api_sa_iam_role_name"
+  default     = "config-api-sa-iam-role"
 }
 
 
