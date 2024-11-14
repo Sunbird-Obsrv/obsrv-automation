@@ -1,15 +1,15 @@
 ## Installation
 To install Obsrv, you will need to clone the [Obsrv Automation](https://github.com/Sunbird-Obsrv/obsrv-automation) repository. It provides support for installation across major cloud providers. Please check [here](#configurations) for all the various configurations across all components.
 
-You will require `terragrunt` to install Obsrv components. Please see [Install Terragrunt](https://terragrunt.gruntwork.io/docs/getting-started/install/) for installation help.
+You will require `terragrunt` to install Obsrv components. Please see [Install Terragrunt](https://terragrunt.gruntwork.io/docs/getting-started/install/) for installation help.
 **AWS**
 Prerequisites:
-- You will need a `key-secret` pair to access AWS. Learn how to create or manage these at [Managing access keys for IAM users](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html). Please export these variables in terminal session.
+- You will need a `key-secret` pair to access AWS. Learn how to create or manage these at [Managing access keys for IAM users](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html). Please export these variables in terminal session.
     ```
     export AWS_ACCESS_KEY_ID=mykey
     export AWS_SECRET_ACCESS_KEY=mysecret
     ```
-- You will require an S3 bucket to store tf-state. Learn how to create or manage these at [Create an Amazon S3 bucket](https://docs.aws.amazon.com/transfer/latest/userguide/requirements-S3.html). Please export this variable at
+- You will require an S3 bucket to store tf-state. Learn how to create or manage these at [Create an Amazon S3 bucket](https://docs.aws.amazon.com/transfer/latest/userguide/requirements-S3.html). Please export this variable at
     ```
     export AWS_TERRAFORM_BACKEND_BUCKET_NAME=mybucket
     export AWS_TERRAFORM_BACKEND_BUCKET_REGION=myregion
