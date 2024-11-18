@@ -24,9 +24,12 @@ namespaces:
 - velero
 - volume-autoscaler
 - web-console
+- config-api
 
 global:
   image:
-    dockerRegistrySecretName: registry-secret-name
+    dockerRegistrySecretName: obsrv-docker-secret
+    #<fill-value>: Replace the dockerConfigJson below for the private images
     dockerConfigJson: |-
-      {"auths":{"http://registry.your-domain.io":{"username":"REGISTRY_USER","password":"REGISTRY_PASSWORD","email":"email@your-domain.io","auth":"UkVHSVNUUllfVVNFUjpSRUdJU1RSWV9QQVNTV09SRA=="}}}
+      {"auths": {"http://<registry.your-domain.io>": {"auth": "<base64-encoded REGISTRY_USER:REGISTRY_PASSWORD>"}}}  
+

@@ -1,16 +1,16 @@
-nameOverride: "dataset-api"
-fullnameOverride: "dataset-api"
+nameOverride: "config-api"
+fullnameOverride: "config-api"
 
 replicaCount: 1
 
-namespace: dataset-api
+namespace: config-api
 global:
   image:
     registry: "sanketikahub"
 
 registry: ""
-repository: obsrv-api-service
-tag: "1.0.0-GA"
+repository: config-service-ext
+tag: "1.2.0-RC"
 digest: ""
 
 imagePullPolicy: IfNotPresent
@@ -41,8 +41,8 @@ service:
   type: ClusterIP
   ports:
     - name: http
-      port: 3000
-      targetPort: 3000
+      port: 4000
+      targetPort: 4000
 
 ingress:
   enabled: false
@@ -116,7 +116,7 @@ serviceMonitor:
     #   interval: 30s
     #   scrapeTimeout: 10s
     #   honorLabels: true
-    - port: http
+    - port: "4000"
       path: /metrics
       interval: 30s
       scrapeTimeout: 10s
@@ -136,10 +136,10 @@ sidecars:
   #   command: ["/bin/sh"] # Override the default command
   #   args: ["-c", "tail -f /var/log/app.log"] # Run a shell script that tails the log file
 
-command_api_path: "/obsrv/v1/system/dataset/command"
+# command_api_path: "/obsrv/v1/system/dataset/command"
 env:
   system_env: "{{ .Values.global.env }}"
-  api_port: "3000"
+  api_port: "4000"
   telemetry_kafka_compression: snappy
   druid_host: "http://{{ .Values.global.druid.host }}"
   druid_port: "{{ .Values.global.druid.port }}"
@@ -160,7 +160,7 @@ env:
   dedup_redis_port: "{{ .Values.global.redis_dedup.port }}"
   cloud_storage_provider: "{{ .Values.global.cloud_storage_provider }}"
   cloud_storage_region: "{{ .Values.global.cloud_storage_region }}"
-  container: "{{ .Values.global.dataset_api_cloud_bucket }}"
+  container: "{{ .Values.global.config_api_cloud_bucket }}"
   container_prefix: "connector-registry"
   storage_url_expiry: "3600"
   exhaust_query_range: "31" # In Days
@@ -177,7 +177,3 @@ env:
   pipeline_merged_job_manager_url: "http://unified-pipeline-jobmanager.{{.Values.global.flink.namespace}}.svc.cluster.local:8081"
   masterdata_processor_job_manager_url: "http://master-data-processor-ext-jobmanager.{{.Values.global.flink.namespace}}.svc.cluster.local:8081"
   prometheus_url: "{{ .Values.global.prometheus.url }}"
-  user_token_public_key: ""
-  is_RBAC_enabled: "false"
-  user_token_keycloak_public_key: ""
-  keycloak_audience: ""

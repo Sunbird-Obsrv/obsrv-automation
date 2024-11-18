@@ -291,7 +291,7 @@ loki:
 
 #druid-raw-cluster need changes in yaml files
 druid-raw-cluster:
-  druid_brokers_pod:
+  druid_brokers:
     resources:
       limits:
         cpu: 500m
@@ -300,7 +300,7 @@ druid-raw-cluster:
         cpu: 250m
         memory: 128Mi
       
-  druid_coordinator_pod:
+  druid_coordinator:
     resources:
       limits:
         cpu: 500m
@@ -309,7 +309,7 @@ druid-raw-cluster:
         cpu: 250m
         memory: 500Mi
 
-  druid_overlord_pod:
+  druid_overlord:
     resources:
       limits:
         cpu: 500m
@@ -318,7 +318,7 @@ druid-raw-cluster:
         cpu: 250m
         memory: 256Mi
 
-  druid_historical_pod:
+  druid_historical:
     resources:
       limits:
         cpu: 1
@@ -331,13 +331,13 @@ druid-raw-cluster:
         - ReadWriteOnce
       size: 50Gi
 
-  druid_middlemanager_pod:
+  druid_middlemanager:
     persistence:
       accessModes:
         - ReadWriteOnce
       size: 1Gi
 
-  druid_indexer_pod:
+  druid_indexer:
     resources:
       limits:
         cpu: 1
@@ -350,7 +350,7 @@ druid-raw-cluster:
         - ReadWriteOnce
       size: 20Gi
 
-  druid_router_pod:
+  druid_router:
     resources:
       limits:
         cpu: 512m
@@ -373,24 +373,35 @@ druid-raw-cluster:
       size: 1Gi
         
 flink:
-  flink_jobs:
-    merget-pipeline:
+ flink_resource: &flink_resources
+    taskmanager:
       resources:
-        limits:
-          cpu: 0.25
-          memory: 1024Mi
         requests:
-          cpu: 0.25
+          cpu: 100m
+          memory: 100Mi
+        limits:
+          cpu: 1
           memory: 1024Mi
-    master-data-processor:
+    jobmanager:
       resources:
-        limits:
-          cpu: 0.5
-          memory: 1024Mi
         requests:
-          cpu: 0.5
+          cpu: 100m
+          memory: 100Mi
+        limits:
+          cpu: 1
           memory: 1024Mi
+ flink_jobs:
+    unified-pipeline:
+      resources: *flink_resources
+    transformer-ext:
+      resources: *flink_resources
+    master-data-processor-ext:
+    resources: *flink_resources
+    cache-indexer:
+        resources: *flink_resources
 
+    
+  
 kafka-message-exporter:
   resources:
     limits:
@@ -440,10 +451,10 @@ kube-prometheus-stack:
     resources:
       limits:
         cpu: 0.2
-        memory: 128Mi
+        memory: 1024Mi
       requests:
         cpu: 0.1
-        memory: 128Mi
+        memory: 500Mi
     persistence:
       type: pvc
       # storageClassName: default
@@ -500,7 +511,7 @@ secor:
     requests:
       cpu: 128m
       memory: 512Mi
-      #issue running helm templete
+      
   
 spark:
   master:
@@ -567,10 +578,19 @@ dataset-api:
   resources:
     limits:
       cpu: 0.5
+      memory: 2048Mi
+    requests:
+      cpu: 0.5
+      memory: 1024Mi
+
+config-api:
+  resources:
+    limits:
+      cpu: 0.5
       memory: 1024Mi
     requests:
       cpu: 0.5
-      memory: 512Mi
+      memory: 512Mi      
 
 web-console:
   resources:
@@ -616,3 +636,60 @@ volume-autoscaler:
     requests:
       cpu: 0.05
       memory: 100Mi
+
+lakehouse-connector:  
+  jobmanager:
+    cpu_requests: 1
+    cpu_limits: 1
+    memory_requests: 1024Mi
+    memory_limits: 1024Mi
+
+  taskmanager:
+    cpu_requests: 1
+    cpu_limits: 1
+    memory_requests: 1024Mi
+    memory_limits: 2300Mi 
+
+trino: 
+  coordinator:  
+    resources: 
+      limits:
+        cpu: 1
+        memory: 2048Mi
+      requests:
+        cpu: 1
+        memory: 2048Mi
+  worker:
+    resources: 
+      limits:
+        cpu: 1
+        memory: 2048Mi
+      requests:
+        cpu: 1
+        memory: 2048Mi
+
+s3-exporter: 
+  resources:
+    limits:
+      cpu: 50m
+      memory: 128Mi
+    requests:
+      cpu: 50m
+      memory: 128Mi
+
+nlq-api:
+  resources:
+    requests:
+      cpu: 0.5
+      memory: 512Mi
+    limits:
+      cpu: 0.5
+      memory: 1Gi
+hms:
+  resources:
+    limits:
+      cpu: 100m
+      memory: 1024Mi
+    requests:
+      cpu: 100m
+      memory: 1024Mi
