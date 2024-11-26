@@ -104,7 +104,6 @@ all)
     bash $0 hudi
     bash $0 obsrvtools
     bash $0 additional
-
     ;;
 reset)
     helm uninstall additional -n obsrv
