@@ -4,7 +4,7 @@ global:
     dockerRegistrySecretName: &dockerSecretName "registry-secret-name"
      #Replace the dockerConfigJson below for the private images
     dockerConfigJson: |-
-      {"auths":{"http://registry.your-domain.io":{"auth":"eW91cl9yZWdpc3RyeV91c2VybmFtZTp5b3VyX3JlZ2lzdHJ5X3Rva2Vu"}}}  
+      {"auths":{"http://registry.your-domain.io":{"auth":"eW91cl9yZWdpc3RyeV91c2VybmFtZTp5b3VyX3JlZ2lzdHJ5X3Rva2Vu"}}}
 
 
 
@@ -38,9 +38,8 @@ images: &images
   config-api: &config-api # registry: ""
     repository: config-service-ext
     tag: "1.2.0-RC"
-    digest: ""  
+    digest: ""
 
-  
   web-console: &web-console # registry: ""
     repository: "obsrv-web-console"
     tag: "1.2.0-RC"
@@ -290,7 +289,7 @@ images: &images
 
   kafka-message-exporter: &kafka-message-exporter # registry: ""
     repository: kafka-message-exporter
-    tag: 1.0.3-GA
+    tag: 1.2.0-RC
     digest: ""
 
   druid_operator: &druid_operator
@@ -338,16 +337,11 @@ images: &images
     repository: lakehouse-connector
     tag: 1.1-RC
 
-  nlq-api: &nlq-api
-    repository: text2sql
-    tag: 0.1.0
-
   opentelemetry-collector: &opentelemetry-collector
     image:
       repository: otel/opentelemetry-collector-contrib
       tag: "0.114.0"
-      digest: ""    
-
+      digest: ""
 # Public charts like bitnami etc
 # Modyfying these charts involves many changes
 # Hence we are keeping their original desgin
@@ -368,10 +362,6 @@ internal: &internal
 
   config-api:
     <<: *config-api
-    imagePullSecrets: *imagePullSecrets   
-
-  nlq-api:
-    <<: *nlq-api
     imagePullSecrets: *imagePullSecrets
 
   postgresql:
