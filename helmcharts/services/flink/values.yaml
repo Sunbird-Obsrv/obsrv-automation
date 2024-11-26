@@ -352,6 +352,8 @@ baseconfig: |
     host = "{{ .Values.global.cassandra.host }}"
     port = "{{ .Values.global.cassandra.port }}"
   }
+  
+  otel.collector.endpoint="http://opentelemetry-collector.otel.svc.cluster.local:4317"
 
 
 

@@ -28,6 +28,7 @@ defaults:
     hms_namespace: &hms_namespace "hms"
     trino_namespace: &trino_namespace "trino"
     nlq_api_namespace: &nlq_api_namespace "nlq"
+    opentelemetry-collector: &opentelemetry-collector "otel"
 
   postgres:
     pghost: &pghost "postgresql-hl.postgresql.svc.cluster.local"
@@ -204,6 +205,9 @@ druid: &druid
   host: "druid-raw-routers.druid-raw.svc.cluster.local"
   port: 8888
   supervisorEndpoint: "indexer/v1/supervisor"
+
+opentelemetry-collector: 
+  namespace: *opentelemetry-collector
 
 redis-denorm: &redis_denorm
   namespace: *redis-namespace

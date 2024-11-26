@@ -342,6 +342,12 @@ images: &images
     repository: text2sql
     tag: 0.1.0
 
+  opentelemetry-collector: &opentelemetry-collector
+    image:
+      repository: otel/opentelemetry-collector-contrib
+      tag: "0.114.0"
+      digest: ""    
+
 # Public charts like bitnami etc
 # Modyfying these charts involves many changes
 # Hence we are keeping their original desgin
@@ -545,6 +551,10 @@ internal: &internal
   lakehouse-connector:
     image:
       <<: *lakehouse-connector
+
+  opentelemetry-collector:
+    <<: *opentelemetry-collector
+    imagePullSecrets: *imagePullSecrets    
 
 
 ## Sourcing internal as root element,

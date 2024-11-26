@@ -25,6 +25,7 @@ namespaces:
 - volume-autoscaler
 - web-console
 - config-api
+- otel
 
 global:
   image:

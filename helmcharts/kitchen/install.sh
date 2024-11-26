@@ -71,6 +71,13 @@ hudi)
     cp -rf ../services/{hms,trino,lakehouse-connector} hudi/charts/
     helm $cmd hudi ./hudi -n obsrv -f global-resource-values.yaml -f global-values.yaml -f images.yaml -f $cloud_file_name --debug
     ;;
+otel)
+    rm -rf opentelemetry-collector
+    cp -rf ../obsrv opentelemetry-collector
+    cp -rf ../services/opentelemetry-collector opentelemetry-collector/charts/
+    helm $cmd opentelemetry-collector ./opentelemetry-collector -n obsrv -f global-resource-values.yaml -f global-values.yaml -f images.yaml -f $cloud_file_name --debug
+    ;;
+
 obsrvtools)
     rm -rf obsrvtools
     cp -rf ../obsrv obsrvtools

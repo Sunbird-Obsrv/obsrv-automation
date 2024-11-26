@@ -104,8 +104,6 @@ config:
       sampling_thereafter: 200  
     otlphttp:
       endpoint: http://loki-test-gateway.loki-telemetry.svc.cluster.local/otlp
-      # auth:
-      #   authenticator: basicauth/otlp
       tls:
         insecure: true
     loki:
@@ -114,7 +112,7 @@ config:
         insecure: true
     prometheus:
       endpoint: "0.0.0.0:9090"
-      #namespace: "open_telemetry_test"  # A prefix for the metrics, e.g., obsrv_<metric_name>
+      namespace: "otel"  # A prefix for the metrics, e.g., obsrv_<metric_name>
       enable_open_metrics: true  # Enables the OpenMetrics format   
 
 
@@ -332,11 +330,14 @@ useGOMEMLIMIT: true
 
 # Resource limits & requests.
 # It is HIGHLY recommended to set resource limits.
-resources: {}
-# resources:
-#   limits:
-#     cpu: 250m
-#     memory: 512Mi
+# resources: {}
+resources:
+  limits:
+    cpu: 250m
+    memory: 512Mi
+  requests:
+    cpu: 250m
+    memory: 512Mi
 
 podAnnotations: {}
 
