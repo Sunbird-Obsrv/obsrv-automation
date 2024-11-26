@@ -27,7 +27,8 @@ defaults:
     volume_autoscaler_namespace: &volume-autoscaler-namespace "volume-autoscaler"
     hms_namespace: &hms_namespace "hms"
     trino_namespace: &trino_namespace "trino"
-
+    opentelemetry-collector: &opentelemetry-collector "otel"
+    
   postgres:
     pghost: &pghost "postgresql-hl.postgresql.svc.cluster.local"
     obsrv_username: &psql-obsrv-user "obsrv"
@@ -203,6 +204,9 @@ druid: &druid
   host: "druid-raw-routers.druid-raw.svc.cluster.local"
   port: 8888
   supervisorEndpoint: "indexer/v1/supervisor"
+
+opentelemetry-collector: 
+  namespace: *opentelemetry-collector
 
 redis-denorm: &redis_denorm
   namespace: *redis-namespace

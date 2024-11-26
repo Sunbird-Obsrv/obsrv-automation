@@ -679,3 +679,12 @@ hms:
     requests:
       cpu: 100m
       memory: 1024Mi
+
+opentelemetry-collector:
+  resources:
+    limits:
+      cpu: 250m
+      memory: 512Mi
+    requests:
+      cpu: 250m
+      memory: 512Mi

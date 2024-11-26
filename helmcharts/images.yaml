@@ -337,6 +337,10 @@ images: &images
     repository: lakehouse-connector
     tag: 1.1-RC
 
+  opentelemetry-collector: &opentelemetry-collector
+    repository: otel/opentelemetry-collector-contrib
+    tag: "latest"
+    digest: ""
 # Public charts like bitnami etc
 # Modyfying these charts involves many changes
 # Hence we are keeping their original desgin
@@ -536,6 +540,14 @@ internal: &internal
   lakehouse-connector:
     image:
       <<: *lakehouse-connector
+
+  opentelemetry-collector:
+    image:
+    <<: *opentelemetry-collector
+
+  opentelemetry-collector:
+    <<: *opentelemetry-collector
+    imagePullSecrets: *imagePullSecrets    
 
 
 ## Sourcing internal as root element,
