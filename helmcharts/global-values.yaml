@@ -27,7 +27,6 @@ defaults:
     volume_autoscaler_namespace: &volume-autoscaler-namespace "volume-autoscaler"
     hms_namespace: &hms_namespace "hms"
     trino_namespace: &trino_namespace "trino"
-    nlq_api_namespace: &nlq_api_namespace "nlq"
     minio_namespace: &minio_namespace "minio"
     opentelemetry-collector: &opentelemetry-collector "otel"
 
@@ -480,10 +479,6 @@ trino:
 
 lakehouse-connector:
   namespace: *flink_namespace
-
-nlq-api:
-  namespace: *nlq_api_namespace
-  openai_api_key: "<OPENAI_API_KEY>"
 
 minio:
   namespace: *minio_namespace
