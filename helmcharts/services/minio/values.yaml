@@ -409,11 +409,14 @@ provisioning:
   ## @param provisioning.config MinIO&reg; config provisioning
   ## https://docs.min.io/docs/minio-server-configuration-guide.html
   ## e.g.
-  ## config:
-  ##   - name: region
-  ##     options:
-  ##       name: us-east-1
-  config: []
+  # config:
+  #   - name: region
+  #     options:
+  #       name: us-east-1
+  config:
+    - name: region
+      options:
+        name: us-east-1
   ## MinIO&reg; pod Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param provisioning.podSecurityContext.enabled Enable pod Security Context
