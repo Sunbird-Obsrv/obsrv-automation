@@ -28,6 +28,7 @@ defaults:
     hms_namespace: &hms_namespace "hms"
     trino_namespace: &trino_namespace "trino"
     nlq_api_namespace: &nlq_api_namespace "nlq"
+    minio_namespace: &minio_namespace "minio"
 
   postgres:
     pghost: &pghost "postgresql-hl.postgresql.svc.cluster.local"
@@ -479,6 +480,10 @@ lakehouse-connector:
 nlq-api:
   namespace: *nlq_api_namespace
   openai_api_key: "<OPENAI_API_KEY>"
+
+minio:
+  namespace: *minio_namespace
+  fullnameOverride: "minio"
 
 global:
   env: *env

@@ -90,6 +90,8 @@ additional)
     "azure")
         cp -rf ../services/azure-exporter additional/charts/
         ;;
+    *)
+        cp -rf ../services/minio additional/charts/
     esac
 
     helm $cmd additional ./additional -n obsrv -f global-resource-values.yaml -f global-values.yaml -f images.yaml -f $cloud_file_name --debug
