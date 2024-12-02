@@ -71,6 +71,13 @@ hudi)
     cp -rf ../services/{hms,trino,lakehouse-connector} hudi/charts/
     helm $cmd hudi ./hudi -n obsrv -f global-resource-values.yaml -f global-values.yaml -f images.yaml -f $cloud_file_name --debug
     ;;
+otel)
+    rm -rf opentelemetry-collector
+    cp -rf ../obsrv opentelemetry-collector
+    cp -rf ../services/opentelemetry-collector opentelemetry-collector/charts/
+    helm $cmd opentelemetry-collector ./opentelemetry-collector -n obsrv -f global-resource-values.yaml -f global-values.yaml -f images.yaml -f $cloud_file_name --debug
+    ;;
+
 obsrvtools)
     rm -rf obsrvtools
     cp -rf ../obsrv obsrvtools
@@ -106,7 +113,7 @@ all)
     bash $0 hudi
     bash $0 obsrvtools
     bash $0 additional
-
+    bash $0 otel
     ;;
 reset)
     helm uninstall additional -n obsrv
@@ -118,6 +125,7 @@ reset)
     helm uninstall migrations -n obsrv
     helm uninstall coredb -n obsrv
     helm uninstall obsrv-bootstrap -n obsrv
+    helm uninstall opentelemetry-collector -n obsrv
     ;;
 *)
     if [ ! -d "../services/$1" ]; then

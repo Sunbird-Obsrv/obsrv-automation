@@ -29,6 +29,7 @@ defaults:
     trino_namespace: &trino_namespace "trino"
     nlq_api_namespace: &nlq_api_namespace "nlq"
     minio_namespace: &minio_namespace "minio"
+    opentelemetry-collector: &opentelemetry-collector "otel"
 
   postgres:
     pghost: &pghost "postgresql-hl.postgresql.svc.cluster.local"
@@ -206,6 +207,9 @@ druid: &druid
   port: 8888
   supervisorEndpoint: "indexer/v1/supervisor"
 
+opentelemetry-collector: 
+  namespace: *opentelemetry-collector
+
 redis-denorm: &redis_denorm
   namespace: *redis-namespace
   host: redis-denorm-headless.redis.svc.cluster.local
@@ -272,7 +276,7 @@ kube-prometheus-stack:
     namespaceOverride: *monitoring-namespace
   grafana:
     fullnameOverride: "grafana"
-    namespaceOverride: *monitoring-namespace 
+    namespaceOverride: *monitoring-namespace
     env:
       GF_SECURITY_ADMIN_PASSWORD: *grafana-admin-password
       GF_SECURITY_ADMIN_USER: *grafana-admin-user
@@ -288,8 +292,8 @@ kube-prometheus-stack:
         ehlo_identity: ""
         startTLS_policy: ""
         skip_verify: true
-        from_name: "Grafana"    
-  
+        from_name: "Grafana"
+
 
 kubernetes-reflector:
   namespace: *kubernetes-reflector-namespace
@@ -313,7 +317,7 @@ postgresql-exporter:
 spark: &spark
   namespace: *spark-namespace
 
-superset_oauth: &superset_oauth 
+superset_oauth: &superset_oauth
   enabled: true
   client_id: *superset_oauth_clientid
   client_secret: *superset_oauth_client_secret
@@ -330,7 +334,7 @@ superset:
       db_name: *psql-superset-db
       db_username: *psql-superset-user
       db_password: *psql-superset-pwd
-  oauth: 
+  oauth:
     <<: *superset_oauth
 
 command-api: &command-api
