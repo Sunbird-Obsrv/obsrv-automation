@@ -275,6 +275,12 @@ images: &images
     tag: 3.6.0
     digest: ""
 
+  minio: &minio
+    registry: docker.io
+    repository: bitnami/minio
+    tag: 2024.11.7-debian-12-r0
+    digest: ""
+
   # kafka-connector: &kafka-connector
   #   # registry: ""
   #   # repository: kafka-connector
@@ -540,7 +546,11 @@ internal: &internal
   lakehouse-connector:
     image:
       <<: *lakehouse-connector
-
+      
+  minio:
+    image:
+      <<: *minio
+      
   opentelemetry-collector:
     image:
     <<: *opentelemetry-collector

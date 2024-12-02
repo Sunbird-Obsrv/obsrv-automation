@@ -27,8 +27,9 @@ defaults:
     volume_autoscaler_namespace: &volume-autoscaler-namespace "volume-autoscaler"
     hms_namespace: &hms_namespace "hms"
     trino_namespace: &trino_namespace "trino"
+    minio_namespace: &minio_namespace "minio"
     opentelemetry-collector: &opentelemetry-collector "otel"
-    
+
   postgres:
     pghost: &pghost "postgresql-hl.postgresql.svc.cluster.local"
     obsrv_username: &psql-obsrv-user "obsrv"
@@ -478,6 +479,10 @@ trino:
 
 lakehouse-connector:
   namespace: *flink_namespace
+
+minio:
+  namespace: *minio_namespace
+  fullnameOverride: "minio"
 
 global:
   env: *env
