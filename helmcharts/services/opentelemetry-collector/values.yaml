@@ -169,7 +169,7 @@ config:
           - /var/log/pods/*/*/*.log
       exclude:
           # Exclude logs from all containers named otel-collector
-          - /var/log/pods/*/otel-collector/*.log    
+          - /var/log/pods/*/opentelemetry-collector/*.log    
       start_at: "beginning"  # Optionally start reading logs from the end (default is "beginning")
       include_file_path: true
       include_file_name: false
@@ -183,8 +183,8 @@ config:
     pipelines:
       logs:
         exporters:
-          #- loki
-          - debug
+          - loki
+          #- debug
         processors:
           - memory_limiter
           - batch
@@ -195,8 +195,8 @@ config:
           - filelog
       metrics:
         exporters:
-          #- prometheus
-          - debug
+          - prometheus
+          #- debug
         processors:
           - memory_limiter
           - batch
