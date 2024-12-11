@@ -1,4 +1,5 @@
 global:
+  ssl_enabled: &ssl_enabled false
   cloud_storage_provider: &cloud_storage_provider "aws"
   cloud_store_provider: &cloud_store_provider "s3"
   cloud_storage_region: &cloud_storage_region "us-east-1"
@@ -9,12 +10,12 @@ global:
   redis_namespace: &redis-namespace "redis"
   dataset_api_container: "storage-obsrv-local"
   config_api_container: "storage-obsrv-local"
-  postgresql_backup_cloud_bucket: &backups_bucket "backups-obsrv-local" # Update with the backup bucket name 
-  redis_backup_cloud_bucket: &redis_backup_cloud_bucket "backups-obsrv-local" # Update with the backup bucket name 
+  postgresql_backup_cloud_bucket: &backups_bucket "backups-obsrv-local" # Update with the backup bucket name
+  redis_backup_cloud_bucket: &redis_backup_cloud_bucket "backups-obsrv-local" # Update with the backup bucket name
   velero_backup_cloud_bucket: &velero_backup_cloud_bucket "velero-obsrv-local" # Update with velero backup  bucket name
-  cloud_storage_bucket: &cloud_storage_bucket "storage-obsrv-local" # Update with the name of cloud storage bucket 
-  # Should check wether we can create prefix directly for hudi 
-  hudi_metadata_bucket: &hudi_metadata_bucket "s3a://<fill-value>/hudi" # Update with hudi bucket name
+  cloud_storage_bucket: &cloud_storage_bucket "storage-obsrv-local" # Update with the name of cloud storage bucket
+  # Should check wether we can create prefix directly for hudi
+  hudi_metadata_bucket: &hudi_metadata_bucket "s3a://storage-obsrv-local/hudi" # Update with hudi bucket name
 
   s3_bucket: &s3-bucket "storage-obsrv-local"
   s3_access_key: &s3-access-key "minioadmin"
@@ -174,7 +175,7 @@ velero-backup: &velero-backup
   schedules:
     obsrv-daily-backup:
       disabled: false
-          
+
 spark:
   storage_type: *storage_class
   connectors:
@@ -198,7 +199,7 @@ flink:
   checkpointing:
     enabled: true
     statebackend: *checkpoint_bucket
-  
+
 command-api:
   imagePullPolicy: Always
 
@@ -224,7 +225,7 @@ secor:
   s3_path_style_access: *s3-path-style-access
 
 letsencrypt-ssl:
-  enabled: false
+  enabled: *ssl_enabled
 
 postgresql-exporter:
   config:
@@ -247,6 +248,10 @@ redis-dedup:
   port: 6379
   << : *redis_dedup_backup_sidecar
 
+kong:
+  proxy:
+    type: NodePort
+
 lakehouse-connector:
   enable_lakehouse: *enable_lakehouse
   namespace: flink
@@ -262,34 +267,34 @@ lakehouse-connector:
   checkpointing:
     enabled: true
     statebackend: *checkpoint_bucket
-  
-  hadoop_core_site: 
-      fs.s3a.imp: org.apache.hadoop.fs.s3a.S3AFileSystem 
+
+  hadoop_core_site:
+      fs.s3a.imp: org.apache.hadoop.fs.s3a.S3AFileSystem
       fs.s3a.access.key: *s3-access-key
       fs.s3a.secret.key: *s3-secret-access-key
-    
+
 trino:
   enabled: *enable_lakehouse
   namespace: trino
-  additionalCatalogs: 
+  additionalCatalogs:
     lakehouse: |-
       connector.name=hudi
       hive.metastore.uri=thrift://hudi-hms.hms.svc:9083
       hive.s3.aws-access-key="minioadmin"
       hive.s3.aws-secret-key="198CImxTlly79Dx9ZCDJ"
-      hive.s3.ssl.enabled=false 
+      hive.s3.ssl.enabled=false
 
 hms:
   enabled: *enable_lakehouse
   namespace: hms
   envVars:
     DATABASE_HOST: postgresql-hl.postgresql.svc.cluster.local
-    WAREHOUSE_DIR: s3a://lakehouse-benchmarking/hudi/
+    WAREHOUSE_DIR: *hudi_metadata_bucket
     THRIFT_PORT: "9083"
   hadoop_core_site:
     fs.s3a.access.key:  *s3-access-key
     fs.s3a.secret.key:  *s3-secret-access-key
-    fs.s3a.endpoint: *s3-endpoint-url 
+    fs.s3a.endpoint: *s3-endpoint-url
     fs.s3a.path.style.access: *s3-path-style-access
     # fs.s3a.connection.ssl.enabled: true
 
@@ -298,6 +303,6 @@ minio:
   auth:
     rootUser: *s3-access-key
     rootPassword: *s3-secret-access-key
-  defaultBuckets: backups-obsrv-local, velero-obsrv-local, checkpoint-obsrv-local, storage-obsrv-local 
+  defaultBuckets: backups-obsrv-local, velero-obsrv-local, checkpoint-obsrv-local, storage-obsrv-local
   service:
-    type: LoadBalancer
+    type: NodePort

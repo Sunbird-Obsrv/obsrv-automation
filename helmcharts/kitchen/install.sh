@@ -42,7 +42,12 @@ coredb)
 migrations)
     rm -rf migrations
     cp -rf ../obsrv migrations
-    cp -rf ../services/{minio,postgresql-migration,cert-manager,kubernetes-reflector,grafana-configs} migrations/charts/
+    cp -rf ../services/{minio,postgresql-migration,kubernetes-reflector,grafana-configs} migrations/charts/
+
+    ssl_enabled=$(cat $cloud_file_name | grep 'ssl_enabled:' | awk '{ print $3}')
+    if [ "$ssl_enabled" == "true" ]; then
+        cp -rf ../services/cert-manager migrations/charts/
+    fi
 
     helm $cmd migrations ./migrations -n obsrv -f global-resource-values.yaml -f global-values.yaml -f images.yaml -f $cloud_file_name --debug
     ;;
