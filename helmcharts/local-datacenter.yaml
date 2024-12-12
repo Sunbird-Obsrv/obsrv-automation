@@ -251,6 +251,8 @@ redis-dedup:
 kong:
   proxy:
     type: NodePort
+  livenessProbe: ### For Dev Only
+  readinessProbe: ### For Dev Only
 
 lakehouse-connector:
   enable_lakehouse: *enable_lakehouse
