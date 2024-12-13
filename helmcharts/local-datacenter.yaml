@@ -257,10 +257,6 @@ kong:
 lakehouse-connector:
   enable_lakehouse: *enable_lakehouse
   namespace: flink
-  image:
-    registry: sanketikahub
-    repository: lakehouse-connector
-    tag: 1.3.0-RC
   s3_access_key: *s3-access-key
   s3_secret_key: *s3-secret-access-key
   s3_endpoint: *s3-endpoint-url
@@ -269,11 +265,12 @@ lakehouse-connector:
   checkpointing:
     enabled: true
     statebackend: *checkpoint_bucket
-
   hadoop_core_site:
       fs.s3a.imp: org.apache.hadoop.fs.s3a.S3AFileSystem
       fs.s3a.access.key: *s3-access-key
       fs.s3a.secret.key: *s3-secret-access-key
+      fs.s3a.endpoint: *s3-endpoint-url
+      fs.s3a.path.style.access: *s3-path-style-access
 
 trino:
   enabled: *enable_lakehouse
