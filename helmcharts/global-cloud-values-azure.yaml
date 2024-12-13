@@ -172,9 +172,9 @@ dataset-api-service-account: &dataset-api-service-account
     annotations: {}
 
 config-api-service-account: &config-api-service-account
-serviceAccount:
-  create: *create_sa
-  annotations: {}
+  serviceAccount:
+    create: *create_sa
+    annotations: {}  
 
 dataset-api:
   <<: *dataset-api-service-account
