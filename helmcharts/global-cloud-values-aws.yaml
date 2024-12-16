@@ -24,6 +24,7 @@ global:
   deep_store_type: &deep_store_type "s3"
   s3_access_key: &s3-access-key "<fill-value>" # Update with the AWS access key
   s3_secret_key: &s3-secret-access-key "<fill-value>" # Update with the AWS secret key
+  s3_endpoint_url: &s3-endpoint-url ""
   kong_annotations: &kong_annotations
     service.beta.kubernetes.io/aws-load-balancer-type: nlb
     service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
@@ -212,6 +213,7 @@ kong:
   proxy:
     annotations:
       <<: *kong_annotations
+    type: LoadBalancer
 
 flink-service-account: &flink-service-account
   serviceAccount:

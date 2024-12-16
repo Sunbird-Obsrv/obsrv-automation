@@ -244,6 +244,7 @@ spark:
 kong:
   proxy:
     annotations: {}
+    type: LoadBalancer
 
 loki:
   storage:

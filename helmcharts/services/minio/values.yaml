@@ -137,7 +137,7 @@ auth:
 ## e.g:
 ## defaultBuckets: "my-bucket, my-second-bucket"
 ##
-defaultBuckets: "backups-obsrv-local, velero-obsrv-local, checkpoint-obsrv-local, storage-obsrv-local"
+defaultBuckets: ""
 ## @param disableWebUI Disable MinIO&reg; Web UI
 ## ref: https://github.com/minio/minio/tree/master/docs/config/#browser
 ##
@@ -655,7 +655,7 @@ resources: {}
 ## @param livenessProbe.successThreshold Success threshold for livenessProbe
 ##
 livenessProbe:
-  enabled: false
+  enabled: true
   initialDelaySeconds: 5
   periodSeconds: 5
   timeoutSeconds: 5
@@ -671,7 +671,7 @@ livenessProbe:
 ## @param readinessProbe.successThreshold Success threshold for readinessProbe
 ##
 readinessProbe:
-  enabled: false
+  enabled: true
   initialDelaySeconds: 5
   periodSeconds: 5
   timeoutSeconds: 1

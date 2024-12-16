@@ -304,6 +304,6 @@ minio:
   auth:
     rootUser: *s3-access-key
     rootPassword: *s3-secret-access-key
-  defaultBuckets: backups-obsrv-local, velero-obsrv-local, checkpoint-obsrv-local, storage-obsrv-local
+  defaultBuckets: "backups-obsrv-local, velero-obsrv-local, checkpoint-obsrv-local, storage-obsrv-local"
   service:
     type: NodePort

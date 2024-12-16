@@ -264,3 +264,7 @@ flink:
 
 letsencrypt-ssl:
   enabled: *ssl_enabled
+
+kong:
+  proxy:
+    type: LoadBalancer
