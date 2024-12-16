@@ -411,7 +411,6 @@ kong:
 
 kong-ingress-routes:
   namespace: *kong-ingress-namespace
-  domain: *domain
 
 letsencrypt-ssl:
   namespace: *web-console-namesapce
