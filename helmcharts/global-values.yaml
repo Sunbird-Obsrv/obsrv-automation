@@ -45,7 +45,7 @@ defaults:
     hms_user_name: &psql-hms-user "hms"
     hms_user_password: &psql-hms-pwd "hms123"
 
-  grafana:
+  grafana: &grafana
     grafana_admin_user: &grafana-admin-user "admin"
     grafana_admin_password: &grafana-admin-password "adminpassword"
     grafana_auth_token: &grafana-auth-token "YWRtaW46YWRtaW5wYXNzd29yZA=="
@@ -483,6 +483,7 @@ global:
   building_block: *building-block
   encryption_key: *encryption-key
   domain: *domain
+  grafana: *grafana
   kafka: *kafka
   zookeeper: *zookeeper
   druid: *druid
