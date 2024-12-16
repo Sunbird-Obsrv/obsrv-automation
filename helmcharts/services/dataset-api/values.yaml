@@ -177,7 +177,7 @@ env:
   pipeline_merged_job_manager_url: "http://unified-pipeline-jobmanager.{{.Values.global.flink.namespace}}.svc.cluster.local:8081"
   masterdata_processor_job_manager_url: "http://master-data-processor-ext-jobmanager.{{.Values.global.flink.namespace}}.svc.cluster.local:8081"
   prometheus_url: "{{ .Values.global.prometheus.url }}"
-  user_token_public_key: "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAs0PUCKRS5VOgpgYQRzYImsqee3pplsF/jgOUgi33fHVHXD5zPB15eLbnuFnebF4Qw9mpL/gWizVD5sh3gPhzBbMMHv8Q9IPdJlctPVxWOK5YYlsWCP3bBgSfzhcGspTBM0+sHde+Ga7w/8B36OdKDXXFUoNcAN2Zo78IxF+T6yrsKPsPObTAnk2rXYaFVADrTeuC5mqscImI3hdx98/8kAQLy7sX1T99vZNij8jK9654EEehYBBP6uz4+KamZn/ic39CQW6upufS+Fm0VIu630omMrWyoj0omV4aRMiod0tFeQQXgh3xO29zKNviEUKwnvKsxXFoe7kSTKBHBE+4qQIDAQAB\n-----END PUBLIC KEY-----\n`"
+  user_token_public_key: ""
   is_RBAC_enabled: "false"
   user_token_keycloak_public_key: ""
   keycloak_audience: ""
