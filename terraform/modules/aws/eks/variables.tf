@@ -49,7 +49,7 @@ variable "eks_node_group_name" {
 variable "eks_node_group_ami_type" {
   type        = string
   description = "EKS node group AMI type."
-  default     = "AL2_x86_64"
+  default     = "AL2023_x86_64_STANDARD"
 }
 
 variable "eks_node_group_instance_type" {
@@ -77,7 +77,7 @@ variable "eks_node_group_scaling_config" {
 variable "eks_version" {
   type        = string
   description = "EKS version."
-  default     = "1.30"
+  default     = "1.36"
 }
 
 variable "eks_addons" {
@@ -89,19 +89,19 @@ variable "eks_addons" {
   default = [
     {
     name  = "kube-proxy"
-    version = "v1.30.0-eksbuild.3"
+    version = "v1.36.0-eksbuild.9"
     },
     {
     name  = "vpc-cni"
-    version = "v1.18.2-eksbuild.1"
+    version = "v1.22.2-eksbuild.1"
     },
     {
     name  = "coredns"
-    version = "v1.11.1-eksbuild.9"
+    version = "v1.14.3-eksbuild.3"
     },
     {
     name  = "aws-ebs-csi-driver"
-    version = "v1.30.0-eksbuild.1"
+    version = "v1.62.0-eksbuild.1"
     }
   ]
 }
@@ -178,6 +178,30 @@ variable "flink_namespace" {
   default     = "flink"
 }
 
+variable "trino_sa_iam_role_name" {
+  type        = string
+  description = "IAM role name for trino service account."
+  default     = "trino-sa-iam-role"
+}
+
+variable "trino_namespace" {
+  type        = string
+  description = "Trino namespace."
+  default     = "trino"
+}
+
+variable "hms_sa_iam_role_name" {
+  type        = string
+  description = "IAM role name for hive metastore service account."
+  default     = "hms-sa-iam-role"
+}
+
+variable "hms_namespace" {
+  type        = string
+  description = "Hive metastore namespace."
+  default     = "hms"
+}
+
 variable "druid_raw_sa_iam_role_name" {
   type        = string
   description = "IAM role name for druid raw service account."
@@ -242,4 +266,19 @@ variable "eks_endpoint_private_access" {
    type        = bool
    description = "API server endpoint access"
    default     = false
+}
+variable "velero_backup_sa_iam_role_name" {
+  type        = string
+  description = "IAM role name for postgresql backup service account."
+  default     = "velero-backup-sa-iam-role"
+}
+variable "velero_namespace" {
+  type        = string
+  description = "Velero namespace."
+  default = "velero"
+}
+variable "volume_encryption" {
+  description = "Enable EBS volume encryption for EKS nodes"
+  type        = bool
+  default     = true
 }

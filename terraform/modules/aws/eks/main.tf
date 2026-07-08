@@ -132,7 +132,8 @@ resource "aws_eks_node_group" "eks_nodes" {
   ami_type        = var.eks_node_group_ami_type
   instance_types  = var.eks_node_group_instance_type
   capacity_type   = var.eks_node_group_capacity_type
-  disk_size       = var.eks_node_disk_size
+  version         = var.eks_version
+  # disk_size       = var.eks_node_disk_size
 
   tags = merge(
     {
@@ -150,6 +151,48 @@ resource "aws_eks_node_group" "eks_nodes" {
   depends_on = [
     aws_iam_role_policy_attachment.eks_node_policy_attachment
   ]
+  launch_template {
+    id      = aws_launch_template.eks_launch_template.id
+    version = "$Latest"
+  }
+}
+
+resource "aws_launch_template" "eks_launch_template" {
+  name_prefix = "${var.building_block}-${var.env}-eks-nodes-launch-template"
+  user_data = base64encode(<<-EOT
+    MIME-Version: 1.0
+    Content-Type: multipart/mixed; boundary="==MYBOUNDARY=="
+
+    --==MYBOUNDARY==
+    Content-Type: text/x-shellscript; charset="us-ascii"
+
+    #!/bin/bash
+    KUBELET_CONFIG=/etc/kubernetes/kubelet/kubelet-config.json
+    echo "$(jq ".imageGCHighThresholdPercent=75" $KUBELET_CONFIG)" > $KUBELET_CONFIG
+    echo "$(jq ".imageGCLowThresholdPercent=70" $KUBELET_CONFIG)" > $KUBELET_CONFIG
+    echo "$(jq ".imageMinimumGCAge=\"2m\"" $KUBELET_CONFIG)" > $KUBELET_CONFIG
+    echo "$(jq ".imageMaximumGCAge=\"168h\"" $KUBELET_CONFIG)" > $KUBELET_CONFIG
+
+    --==MYBOUNDARY==--
+  EOT
+  )
+
+  block_device_mappings {
+    device_name = "/dev/xvda"
+    ebs {
+      volume_size = var.eks_node_disk_size
+      volume_type = "gp3"
+      delete_on_termination = true
+      encrypted = var.volume_encryption
+    }
+  }
+
+  metadata_options {
+    http_tokens               = "required"   # Require IMDSv2
+    http_put_response_hop_limit = 2          # Hop limit as required
+    http_endpoint             = "enabled"    # Ensure endpoint is accessible
+  }
+
 }
 
 resource "aws_eks_addon" "addons" {
@@ -157,7 +200,9 @@ resource "aws_eks_addon" "addons" {
   cluster_name      = aws_eks_cluster.eks_master.id
   addon_name        = each.value.name
   addon_version     = each.value.version
-  resolve_conflicts = "OVERWRITE"
+
+  # Configure service account for EBS CSI driver
+  service_account_role_arn = each.value.name == "aws-ebs-csi-driver" ? aws_iam_role.ebs_csi_driver_role.arn : null
 }
 
 data "tls_certificate" "cluster_tls_cert" {
@@ -235,6 +280,32 @@ resource "aws_iam_role" "flink_sa_iam_role" {
   var.additional_tags)
 }
 
+resource "aws_iam_role" "trino_sa_iam_role" {
+  name                = "${var.env}-${var.building_block}-${var.trino_sa_iam_role_name}"
+  assume_role_policy  = templatefile("${path.module}/oidc_assume_role_policy.json.tfpl", { OIDC_ARN = aws_iam_openid_connect_provider.eks_openid.arn, OIDC_URL = replace(aws_iam_openid_connect_provider.eks_openid.url, "https://", ""), NAMESPACE = "${var.trino_namespace}", SA_NAME = "${var.trino_namespace}-sa" })
+  managed_policy_arns = ["arn:aws:iam::aws:policy/AmazonS3FullAccess"]
+  depends_on          = [aws_iam_openid_connect_provider.eks_openid]
+  tags = merge(
+    {
+      Name = "${var.env}-${var.trino_sa_iam_role_name}"
+    },
+    local.common_tags,
+  var.additional_tags)
+}
+
+resource "aws_iam_role" "hms_sa_iam_role" {
+  name                = "${var.env}-${var.building_block}-${var.hms_sa_iam_role_name}"
+  assume_role_policy  = templatefile("${path.module}/oidc_assume_role_policy.json.tfpl", { OIDC_ARN = aws_iam_openid_connect_provider.eks_openid.arn, OIDC_URL = replace(aws_iam_openid_connect_provider.eks_openid.url, "https://", ""), NAMESPACE = "${var.hms_namespace}", SA_NAME = "${var.hms_namespace}-sa" })
+  managed_policy_arns = ["arn:aws:iam::aws:policy/AmazonS3FullAccess"]
+  depends_on          = [aws_iam_openid_connect_provider.eks_openid]
+  tags = merge(
+    {
+      Name = "${var.env}-${var.hms_sa_iam_role_name}"
+    },
+    local.common_tags,
+  var.additional_tags)
+}
+
 resource "aws_iam_role" "druid_raw_sa_iam_role" {
   name                = "${var.env}-${var.building_block}-${var.druid_raw_sa_iam_role_name}"
   assume_role_policy  = templatefile("${path.module}/oidc_assume_role_policy.json.tfpl", { OIDC_ARN = aws_iam_openid_connect_provider.eks_openid.arn, OIDC_URL = replace(aws_iam_openid_connect_provider.eks_openid.url, "https://", ""), NAMESPACE = "${var.druid_raw_namespace}", SA_NAME = "${var.druid_raw_namespace}-sa" })
@@ -298,4 +369,77 @@ resource "aws_iam_role" "redis_backup_sa_iam_role" {
     },
     local.common_tags,
   var.additional_tags)
+}
+
+resource "aws_iam_role" "velero_backup_sa_iam_role" {
+  name                = "${var.env}-${var.building_block}-${var.velero_backup_sa_iam_role_name}"
+  assume_role_policy  = templatefile("${path.module}/oidc_assume_role_policy.json.tfpl", { OIDC_ARN = aws_iam_openid_connect_provider.eks_openid.arn, OIDC_URL = replace(aws_iam_openid_connect_provider.eks_openid.url, "https://", ""), NAMESPACE = "${var.velero_namespace}", SA_NAME = "${var.velero_namespace}-backup-sa" })
+  managed_policy_arns = ["arn:aws:iam::aws:policy/AmazonS3FullAccess"]
+  depends_on          = [aws_iam_openid_connect_provider.eks_openid]
+  tags = merge(
+    {
+      Name = "${var.env}-${var.velero_backup_sa_iam_role_name}"
+    },
+    local.common_tags,
+  var.additional_tags)
+}
+
+resource "aws_iam_role" "ebs_csi_driver_role" {
+  name = "${var.env}-${var.building_block}-ebs-csi-driver"
+  assume_role_policy = templatefile("${path.module}/oidc_assume_role_policy.json.tfpl", {
+    OIDC_ARN  = aws_iam_openid_connect_provider.eks_openid.arn,
+    OIDC_URL  = replace(aws_iam_openid_connect_provider.eks_openid.url, "https://", ""),
+    NAMESPACE = "kube-system",
+    SA_NAME   = "ebs-csi-controller-sa"
+  })
+  managed_policy_arns = ["arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy"]
+  depends_on          = [aws_iam_openid_connect_provider.eks_openid]
+  tags = merge(
+    {
+      Name = "${var.env}-${var.building_block}-ebs-csi-driver"
+    },
+    local.common_tags,
+    var.additional_tags
+  )
+}
+
+resource "aws_iam_role_policy" "velero_backup_permissions" {
+  name   = "${var.env}-${var.building_block}-${var.velero_backup_sa_iam_role_name}-permissions"
+  role   = aws_iam_role.velero_backup_sa_iam_role.name
+  policy = jsonencode({
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Effect": "Allow",
+        "Action": [
+          "s3:PutObject",
+          "s3:GetObject",
+          "s3:DeleteObject",
+          "s3:ListBucket"
+        ],
+        "Resource": [
+          "arn:aws:s3:::*",
+          "arn:aws:s3:::*/*"
+        ]
+
+      },
+      {
+        "Effect": "Allow",
+        "Action": [
+          "ec2:CreateSnapshot",
+          "ec2:DeleteSnapshot",
+          "ec2:CreateTags",
+          "ec2:DeleteTags",
+          "ec2:DescribeVolumes",
+          "ec2:DescribeSnapshots"
+        ],
+        "Resource": "*"
+      },
+      {
+        "Effect": "Allow",
+        "Action": "iam:PassRole",
+        "Resource": "*"
+      }
+    ]
+  })
 }

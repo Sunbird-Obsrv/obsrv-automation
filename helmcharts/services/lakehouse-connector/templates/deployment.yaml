@@ -1,15 +1,18 @@
----
 apiVersion: v1
 kind: Service
 metadata:
+  namespace: {{ include "base.namespace" . }}
   name: {{ .Chart.Name }}-jobmanager
-  namespace: flink
   labels:
-    app: flink
+    {{- include "common.labels.standard" (dict "customLabels" .Values.commonLabels "context" .) | nindent 4 }}
     component: {{ .Chart.Name }}-jobmanager
-    system.processing: "true"
+  {{- if .Values.commonAnnotations }}
+  annotations:
+    {{- include "common.tplvalues.render" (dict "value" .Values.commonAnnotations "context" .) | nindent 4 }}
+  {{- end }}
 spec:
   type: ClusterIP
+  clusterIP: None
   ports:
     - name: rpc
       port: {{ .Values.jobmanager.rpc_port }}
@@ -22,70 +25,59 @@ spec:
     - name: prom
       port: {{ .Values.jobmanager.prom_port }}
   selector:
-    app: flink
-    component: {{ .Chart.Name }}-jobmanager
-    system.processing: "true"
+    app.kubernetes.io/component: {{ .Chart.Name }}-jobmanager
 
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ .Chart.Name }}-jobmanager-webui
-  namespace: flink
-spec:
-  type: {{ .Values.service.type }}
-  ports:
-    - name: rest
-      port: {{ .Values.rest_port }}
-      protocol: TCP
-      targetPort: {{ .Values.resttcp_port }}
-  selector:
-    app: flink
-    component: {{ .Chart.Name }}-jobmanager
-
----
-apiVersion: v1
-kind: Service
-metadata:
+  namespace: {{ include "base.namespace" . }}
   name: {{ .Chart.Name }}-taskmanager
-  namespace: flink
   labels:
-    app: flink
+    {{- include "common.labels.standard" (dict "customLabels" .Values.commonLabels "context" .) | nindent 4 }}
     component: {{ .Chart.Name }}-taskmanager
-    system.processing: "true"
+  {{- if .Values.commonAnnotations }}
+  annotations:
+    {{- include "common.tplvalues.render" (dict "value" .Values.commonAnnotations "context" .) | nindent 4 }}
+  {{- end }}
 spec:
   type: ClusterIP
+  clusterIP: None
   ports:
     - name: prom
       port: {{ .Values.taskmanager.prom_port }}
   selector:
-    app: flink
-    component: {{ .Chart.Name }}-taskmanager
+    app.kubernetes.io/component: {{ .Chart.Name }}-taskmanager
 
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ .Chart.Name }}-jobmanager
-  namespace: flink
+  namespace: {{ include "base.namespace" . }}
+  labels: {{- include "common.labels.standard" ( dict "customLabels" .Values.commonLabels "context" $ ) | nindent 4 }}
+  annotations:
+  {{- if .Values.commonAnnotations }}
+    {{ include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
+  {{- end }}
 spec:
   selector:
     matchLabels:
-      app: flink
-      component: {{ .Chart.Name }}-jobmanager
+      app.kubernetes.io/name: {{ include "common.names.name" . }}
+      app.kubernetes.io/component: {{ .Chart.Name }}-jobmanager
   template:
     metadata:
       labels:
-        app: flink
+        app.kubernetes.io/name: {{ include "common.names.name" . }}
+        app.kubernetes.io/component: {{ .Chart.Name }}-jobmanager
         component: {{ .Chart.Name }}-jobmanager
-        system.processing: "true"
-      annotations:
-        prometheus.io/scrape: 'true'
-        prometheus.io/port: "{{ .Values.jobmanager.prom_port }}"
+        app: flink
     spec:
-      # imagePullSecrets:
-      # - name: {{ .Values.image.imagePullSecrets }}
-      {{- if .Values.serviceAccount.create }}
+      imagePullSecrets:
+      {{- range .Values.image.imagePullSecrets }}
+        - name: {{ . }}
+      {{- end }}
+      {{- if or .Values.serviceAccount.create .Values.serviceAccount.name }}
       serviceAccountName: {{ include "base.serviceaccountname" . }}
       {{- end }}
       volumes:
@@ -107,7 +99,6 @@ spec:
       containers:
       - name: {{ .Chart.Name }}-jobmanager # Main container to start job-manager
         image: "{{ .Values.image.registry }}/{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-        # image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: Always
         resources:
           requests:
@@ -117,16 +108,17 @@ spec:
             cpu: "{{ .Values.jobmanager.cpu_limits }}"
             memory: "{{ .Values.jobmanager.memory_limits }}"
         workingDir: /opt/flink
-        command: ["/opt/flink/bin/standalone-job.sh"]   
+        command: ["/opt/flink/bin/standalone-job.sh"]
         args: ["start-foreground",
-{{- if eq .Values.global.cloud_storage_provider "azure" }}
+{{- if eq .Values.global.checkpoint_store_type "azure" }}
 - -Dfs.azure.account.key.{{ .Values.global.azure_storage_account_name }}.blob.core.windows.net={{ .Values.global.azure_storage_account_key }}
 {{- end }}
-# {{- if eq .Values.global.cloud_storage_provider "aws" }}
-#           - -Dfs.s3a.access.key={{ .Values.global.s3_access_key }}
-#           - -Dfs.s3a.secret.key={{ .Values.global.s3_secret_key }}
-#           {{- end }}
-{{- if eq .Values.global.cloud_storage_provider "gcs" }}
+{{- if eq .Values.global.checkpoint_store_type "s3" }}
+          "-Ds3.access.key={{ .Values.global.s3_access_key }}",
+          "-Ds3.secret.key={{ .Values.global.s3_secret_key }}",
+          "-Ds3.endpoint={{ .Values.global.s3_endpoint_url }}",
+{{- end }}
+{{- if eq .Values.global.checkpoint_store_type "gcs" }}
           "-Dgoogle.cloud.auth.service.account.enable=true",
 {{- end }}
 {{- $release_name := .Chart.Name }}
@@ -168,29 +160,39 @@ spec:
           subPath: log4j-console.properties
         - name: flink-config-volume
           mountPath: /opt/hadoop/etc/hadoop/core-site.xml
-          subPath: core-site.xml     
+          subPath: core-site.xml
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ .Chart.Name }}-taskmanager
-  namespace: flink
+  namespace: {{ include "base.namespace" . }}
+  labels: {{- include "common.labels.standard" ( dict "customLabels" .Values.commonLabels "context" $ ) | nindent 4 }}
+  annotations:
+  {{- if .Values.commonAnnotations }}
+    {{ include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
+  {{- end }}
 spec:
   replicas: {{ .Values.taskmanager.replicas }}
   selector:
     matchLabels:
-      app: flink
-      component: {{ .Chart.Name }}-taskmanager
+      app.kubernetes.io/name: {{ include "common.names.name" . }}
+      app.kubernetes.io/component: {{ .Chart.Name }}-taskmanager
   template:
     metadata:
       labels:
-        system.processing: "true"
         app: flink
         component: {{ .Chart.Name }}-taskmanager
+        app.kubernetes.io/name: {{ include "common.names.name" . }}
+        app.kubernetes.io/component: {{ .Chart.Name }}-taskmanager
     spec:
-      # imagePullSecrets:
-      # - name: {{ .Values.image.imagePullSecrets }}
-      # serviceAccount: flink-sa
+      imagePullSecrets:
+      {{- range .Values.image.imagePullSecrets }}
+        - name: {{ . }}
+      {{- end }}
+      {{- if or .Values.serviceAccount.create .Values.serviceAccount.name }}
+      serviceAccountName: {{ include "base.serviceaccountname" . }}
+      {{- end }}
       volumes:
       - configMap:
           items:
@@ -221,33 +223,33 @@ spec:
             cpu: "{{ .Values.taskmanager.cpu_limits }}"
             memory: "{{ .Values.taskmanager.memory_limits }}"
         volumeMounts:
-          - name: flink-config-volume
-            mountPath: /opt/flink/conf/log4j-console.properties
-            subPath: log4j-console.properties
-        volumeMounts:
-        - mountPath: /opt/flink/conf/flink-conf.yaml
-          name: flink-config-volume
+        - name: flink-config-volume
+          mountPath: /opt/flink/conf/flink-conf.yaml
           subPath: flink-conf.yaml
-        - mountPath: /data/flink/conf/baseconfig.conf
-          name: flink-config-volume
+        - name: flink-config-volume
+          mountPath: /data/flink/conf/baseconfig.conf
           subPath: base-config.conf
-        - mountPath: /data/flink/conf/{{ .Chart.Name }}.conf
-          name: flink-config-volume
+        - name: flink-config-volume
+          mountPath: /data/flink/conf/{{ .Chart.Name }}.conf
           subPath: {{ .Chart.Name }}.conf
-        - mountPath: /opt/flink/conf/log4j-console.properties
-          name: flink-config-volume
+        - name: flink-config-volume
+          mountPath: /opt/flink/conf/log4j-console.properties
           subPath: log4j-console.properties
         - name: flink-config-volume
           mountPath: /opt/hadoop/etc/hadoop/core-site.xml
           subPath: core-site.xml
         workingDir: /opt/flink
-        args: ["taskmanager"]
+        args: ["taskmanager",
+               "-Dweb.submit.enable=false",
+               "-Dmetrics.reporter.prom.factory.class=org.apache.flink.metrics.prometheus.PrometheusReporterFactory",
+               "-Dmetrics.reporter.prom.port={{ .Values.taskmanager.prom_port }}",
+               "-Dparallelism.default=1"]
         env:
         - name: HADOOP_CONF_DIR
           value: "/opt/hadoop/etc/hadoop"
         - name: FLINK_PROPERTIES
           value: |+
-            jobmanager.rpc.address: {{ .Chart.Name }}-jobmanager
+            jobmanager.rpc.address: {{ .Chart.Name }}-taskmanager
             taskmanager.rpc.port=6122
             taskmanager.numberOfTaskSlots: 1
             metrics.reporters: prom

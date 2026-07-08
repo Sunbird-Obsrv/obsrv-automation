@@ -7,7 +7,8 @@ metadata:
 allowVolumeExpansion: true
 provisioner: ebs.csi.aws.com
 volumeBindingMode: WaitForFirstConsumer
-reclaimPolicy: Delete
+reclaimPolicy: Retain
 parameters:
   fsType: ext4
   type: gp3
+  encrypted: "{{ .Values.volume_encryption }}"

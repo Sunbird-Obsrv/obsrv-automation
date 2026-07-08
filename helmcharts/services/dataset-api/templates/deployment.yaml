@@ -22,6 +22,10 @@ spec:
         {{- include "common.tplvalues.render" (dict "value" .Values.podAnnotations "context" $) | nindent 8 }}
         {{- end }}
     spec:
+      {{- if .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml .Values.nodeSelector | nindent 8 }}
+      {{- end }}
       {{- if .Values.serviceAccount.create}}
       serviceAccountName: {{ include "base.serviceaccountname" . }}
       {{- end }}
@@ -60,7 +64,13 @@ spec:
           - configMapRef:
               name: {{ include "common.names.fullname" . }}-env
           - secretRef:
-              name: {{ .Values.namespace }}-grafana-secret
+              name: {{ include "common.names.fullname" . }}-grafana-secret
+          env:
+          - name: user_token_public_key
+            valueFrom:
+              secretKeyRef:
+                name: openssl-secrets
+                key: public.pem
           {{- if .Values.configmap.enabled }}
           volumeMounts:
           - name: config

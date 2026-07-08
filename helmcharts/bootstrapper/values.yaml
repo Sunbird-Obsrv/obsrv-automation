@@ -7,11 +7,13 @@ namespaces:
 - flink
 - hms
 - kafka
+- kafka40
 - kong-ingress
 - kubernetes-reflector
+- keycloak
 - loki
+- minio
 - monitoring
-- nlq
 - postgresql
 - redis
 - s3-exporter
@@ -25,6 +27,7 @@ namespaces:
 - volume-autoscaler
 - web-console
 - config-api
+- otel
 
 global:
   image:

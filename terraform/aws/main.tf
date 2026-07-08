@@ -3,7 +3,7 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 4.0"
+      version = "~> 6.0"
     }
     local = {
       source  = "hashicorp/local"
@@ -50,6 +50,7 @@ module "eks" {
   eks_node_group_scaling_config = var.eks_node_group_scaling_config
   eks_node_disk_size            = var.eks_node_disk_size
   eks_endpoint_private_access   = var.eks_endpoint_private_access
+  volume_encryption             = var.volume_encryption
 }
 
 module "iam" {
@@ -66,6 +67,7 @@ module "s3" {
   env            = var.env
   building_block = var.building_block
 }
+
 
 resource "random_string" "connectors_encryption_key" {
   length  = 32
@@ -113,7 +115,7 @@ resource "random_string" "data_encryption_key" {
 #   lakehouse_port              = var.lakehouse_port
 #   lakehouse_catalog           = var.lakehouse_catalog
 #   lakehouse_schema            = var.lakehouse_schema
-#   lakehouse_default_user      = var.lakehouse_default_user     
+#   lakehouse_default_user      = var.lakehouse_default_user
 # }
 
 # module "secor" {
@@ -266,6 +268,8 @@ module "eip" {
   source         = "../modules/aws/eip"
   env            = var.env
   building_block = var.building_block
+  create_kong_ingress_ip = var.create_kong_ingress_ip  
+  count = var.create_kong_ingress_ip ? 1 : 0  
 }
 
 # module "kong_ingress" {
@@ -311,6 +315,7 @@ module "eks_storage_class" {
   env            = var.env
   building_block = var.building_block
   depends_on     = [module.eks]
+  volume_encryption = var.volume_encryption
 }
 
 module "get_kubeconfig" {
@@ -320,6 +325,69 @@ module "get_kubeconfig" {
   region         = var.region
 }
 
+module "aws_cloud_values" {
+  source        = "../modules/aws/aws_cloud_values"
+
+  template_path = "${path.module}/global-cloud-values-aws.yaml.tfpl"
+  output_path   = "${path.module}/../../helmcharts/global-cloud-values-aws.yaml"
+
+  template_vars = {
+    cloud_storage_region            = var.region
+
+    dataset_api_container           = length(module.s3) > 0 ? module.s3[0].s3_backups_bucket : var.s3_buckets["s3_backups_bucket"]
+    config_api_container            = length(module.s3) > 0 ? module.s3[0].s3_backups_bucket : var.s3_buckets["s3_backups_bucket"]
+    postgresql_backup_cloud_bucket  = length(module.s3) > 0 ? module.s3[0].s3_backups_bucket : var.s3_buckets["s3_backups_bucket"]
+    velero_backup_cloud_bucket      = length(module.s3) > 0 ? module.s3[0].velero_storage_bucket : var.s3_buckets["velero_storage_bucket"]
+    cloud_storage_bucket            = length(module.s3) > 0 ? module.s3[0].s3_bucket : var.s3_buckets["s3_bucket"]
+    hudi_metadata_bucket            = length(module.s3) > 0 ? module.s3[0].s3_bucket : var.s3_buckets["s3_bucket"]
+    checkpoint_bucket               = length(module.s3) > 0 ? module.s3[0].checkpoint_storage_bucket : var.s3_buckets["checkpoint_storage_bucket"]
+
+    secor_sa_annotation             = module.eks.secor_sa_iam_role != null ? module.eks.secor_sa_iam_role : "" 
+    dataset_api_sa_annotation       = module.eks.dataset_api_sa_annotations != null ? module.eks.dataset_api_sa_annotations : ""
+    config_api_sa_annotation        = module.eks.config_api_sa_annotations != null ? module.eks.config_api_sa_annotations : ""
+    druid_raw_sa_annotation         = module.eks.druid_raw_sa_iam_role != null ? module.eks.druid_raw_sa_iam_role : ""
+    flink_sa_annotation             = module.eks.flink_sa_iam_role != null ? module.eks.flink_sa_iam_role : ""
+    postgresql_backup_sa_annotation = module.eks.postgresql_backup_sa_iam_role != null ? module.eks.postgresql_backup_sa_iam_role : ""
+    s3_exporter_sa_annotation       = module.eks.s3_exporter_sa_annotations != null ? module.eks.s3_exporter_sa_annotations : ""
+    spark_sa_annotation             = module.eks.spark_sa_annotations != null ? module.eks.spark_sa_annotations : ""
+    velero_sa_annotation            = module.eks.velero_backup_sa_annotation != null ? module.eks.velero_backup_sa_annotation : ""
+    trino_sa_annotation             = module.eks.trino_sa_iam_role != null ? module.eks.trino_sa_iam_role : ""
+    hms_sa_annotation               = module.eks.hms_sa_iam_role != null ? module.eks.hms_sa_iam_role : ""
+
+    load_balancer_subnet            = length(module.vpc) > 0 ? module.vpc[0].load_balancer_subnet : var.vpc_id
+    elastic_ip_allocation_id        = length(module.eip) > 0 ? module.eip[0].eip_allocation_id : var.kong_ingress_alloc_id
+
+  }
+}
+
+# module "tls-keys" {
+#   source = "../modules/keys/tls-keys"
+#   key_algorithm = "RSA"
+#   key_size      = 2048
+# }
+
+# module "output_file" {
+#   source       = "../modules/keys/output-file"
+#   private_key  = module.tls-keys.private_key_pem
+#   public_key   = module.tls-keys.public_key_pem
+#   file_path    = "global-values.yaml"
+# }
+
+
+# output "private_key_pem" {
+#   value     = module.tls-keys.private_key_pem
+#   sensitive = true
+# }
+
+# output "public_key_pem" {
+#   value     = module.tls-keys.public_key_pem
+#   sensitive = true
+# }
+
+# output "generated_yaml_file" {
+#   description = "The path to the generated global-values.yaml file"
+#   value       = module.output_file.global_values_file_path
+# }
 # module "postgresql_migration" {
 #   source                                = "../modules/helm/postgresql_migration"
 #   env                                   = var.env

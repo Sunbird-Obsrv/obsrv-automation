@@ -13,6 +13,13 @@ repository: obsrv-api-service
 tag: "1.0.0-GA"
 digest: ""
 
+kubectl:
+  image:
+    registry: "sanketikahub"
+    repository: "kubectl"
+    tag: "1.32.0-r1"
+    digest: ""
+
 imagePullPolicy: IfNotPresent
 imagePullSecrets: []
 
@@ -143,8 +150,10 @@ env:
   telemetry_kafka_compression: snappy
   druid_host: "http://{{ .Values.global.druid.host }}"
   druid_port: "{{ .Values.global.druid.port }}"
-  kafka_host: "{{ .Values.global.kafka.host }}"
-  kafka_port: "{{ .Values.global.kafka.port }}"
+  druid_username: "{{ .Values.global.druid.username }}"
+  druid_password: "{{ .Values.global.druid.password }}"
+  kafka_host: "{{ .Values.global.kafka40.host }}"
+  kafka_port: "{{ .Values.global.kafka40.port }}"
   client_id: "obsrv-apis"
   kafka_initial_retry_time: "3000"
   kafka_retries: "5"
@@ -154,14 +163,15 @@ env:
   postgres_username: "{{ .Values.postgresqlUser | default .Values.global.postgresql.username }}"
   postgres_password: "{{ .Values.postgresqlPassword | default .Values.global.postgresql.password }}"
   postgres_database: obsrv
-  denorm_redis_host: "{{ .Values.global.redis_denorm.host }}"
-  denorm_redis_port: "{{ .Values.global.redis_denorm.port }}"
-  dedup_redis_host: "{{ .Values.global.redis_dedup.host }}"
-  dedup_redis_port: "{{ .Values.global.redis_dedup.port }}"
+  denorm_redis_host: "{{ .Values.global.valkey_denorm.host }}"
+  denorm_redis_port: "{{ .Values.global.valkey_denorm.port }}"
+  dedup_redis_host: "{{ .Values.global.valkey_dedup.host }}"
+  dedup_redis_port: "{{ .Values.global.valkey_dedup.port }}"
   cloud_storage_provider: "{{ .Values.global.cloud_storage_provider }}"
   cloud_storage_region: "{{ .Values.global.cloud_storage_region }}"
-  container: "{{ .Values.global.dataset_api_cloud_bucket }}"
+  container: "{{ .Values.global.dataset_api_container}}"
   container_prefix: "connector-registry"
+  telemetry_data_path: "telemetry-data"
   storage_url_expiry: "3600"
   exhaust_query_range: "31" # In Days
   max_query_threshold: "5000"
@@ -170,14 +180,20 @@ env:
   exclude_datasource_validation: "system-stats,failed-events-summary,masterdata-system-stats,system-events"
   object_key: authenticationMechanism
   encryption_key: "{{ .Values.global.encryption_key }}"
-  command_service_host: "http://command-api.command-api.svc"
+  command_service_host: "http://command-api.command-api.svc.cluster.local"
   command_service_port: "8000"
-  grafana_url: "http://grafana.monitoring.svc"
+  grafana_url: "http://grafana.monitoring.svc.cluster.local"
   GRAFANA_ADMIN_URL: http://grafana.monitoring.svc.cluster.local
   pipeline_merged_job_manager_url: "http://unified-pipeline-jobmanager.{{.Values.global.flink.namespace}}.svc.cluster.local:8081"
-  masterdata_processor_job_manager_url: "http://master-data-processor-ext-jobmanager.{{.Values.global.flink.namespace}}.svc.cluster.local:8081"
+  masterdata_processor_job_manager_url: "http://cache-indexer-jobmanager.{{.Values.global.flink.namespace}}.svc.cluster.local:8081"
   prometheus_url: "{{ .Values.global.prometheus.url }}"
-  user_token_public_key: ""
-  is_RBAC_enabled: "false"
-  user_token_keycloak_public_key: ""
-  keycloak_audience: ""
+  storage_types: '{"lake_house":false,"realtime_store":true}'
+  telemetry_dataset: "system.telemetry.events"
+  default_task_duration: "PT4H" # Druid Supervisor task default duration value
+  alerts_config_path: /config
+  obsrv_version: "{{ .Values.tag }}"
+
+  ## Below metrics are used for data observability
+  default_freshness_threshold: "5" # In Minutes, default freshness threshold for data observability
+  data_out_query_time_period: "1d" # In Days, default query time period for data out generally to identify number of api calls are happened with in one or configured value day and used only in the prometheus query
+  default_query_time_period: "7" # In Days, For any metrics the default query time period is 7 days in the druid

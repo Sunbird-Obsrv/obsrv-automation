@@ -8,8 +8,10 @@ global:
 
 registry: "apache"
 repository: "druid"
-tag: "28.0.1"
+tag: "32.0.1"
 digest: ""
+
+imagePullPolicy: IfNotPresent
 
 druid_monitoring: True
 mount_path: /druid/data
@@ -17,7 +19,7 @@ storageClass: ""
 
 ######################### Druid common variables ########################
 druid_directory: "/opt/druid"
-druid_extensions_loadList: '"postgresql-metadata-storage", "druid-kafka-indexing-service", "druid-azure-extensions", "druid-s3-extensions", "druid-google-extensions"'
+druid_extensions_loadList: '"druid-basic-security","postgresql-metadata-storage", "druid-kafka-indexing-service", "druid-azure-extensions", "druid-s3-extensions", "druid-google-extensions", "prometheus-emitter", "druid-datasketches"'
 
 # Logging
 # Log all runtime properties on startup. Disable to avoid logging properties on startup:
@@ -40,6 +42,8 @@ s3_bucket: "" # bucket name
 druid_storage_baseKey: druid/segments
 druid_s3_endpoint_url: ""
 druid_s3_endpoint_signingRegion: ""
+druid_s3_protocol: "https"
+druid_s3_path_style_access: "false"
 
 # Azure Container Details
 azure_storage_account_name: ""
@@ -62,9 +66,11 @@ druid_selectors_coordinator_serviceName: druid/coordinator
 
 # Monitoring
 druid_monitoring_monitors: '"com.metamx.metrics.JvmMonitor","org.apache.druid.java.util.metrics.JvmMonitor"'
-druid_emitter: composing
+druid_emitter: "prometheus"
+druid_emitter_prometheus_strategy: "pushgateway"
 druid_emitter_composing_emitters: '"logging"'
 druid_emitter_logging_logLevel: INFO
+druid_emitter_prometheus_pushGatewayAddress: "monitoring-prometheus-pushgateway.monitoring.svc.cluster.local:9091"
 
 # Storage type of double columns
 # ommiting this will lead to index double as float at the storage layer
@@ -291,8 +297,8 @@ zookeeper:
   namespace: *druidns
   image:
     registry: docker.io
-    repository: bitnami/zookeeper
-    tag: 3.6-debian-10
+    repository: sanketikahub/zookeeper
+    tag: 3.6
     pullPolicy: IfNotPresent
 
   persistence:
@@ -377,3 +383,11 @@ serviceAccount:
   # The name of the service account to use.
   # If not set and create is true, a name is generated using the fullname template
   name: druid-raw-sa
+
+#################### Druid Auth Variables ######################
+
+  druid_auth_enabled: false
+  druid_auth_admin_password: admin123
+  druid_auth_escalator_username: druid_system
+  druid_auth_escalator_password: internal123
+  
