@@ -1,12 +1,14 @@
 defaults:
   env: &env "dev"
   building-block: &building-block "obsrv"
+  allowInsecureImages: &allow-insecure-images true
   encryption_key: &encryption-key "strong_encryption_key_to_encrypt"
-  namespaces:
+  namespaces: &namespaces
     kafka_namespace: &kafka-namespace "kafka"
+    kafka40_namespace: &kafka40-namespace "kafka40"
     postgresql_namespace: &postgresql-namespace "postgresql"
     druid_namespace: &druid-namespace "druid-raw"
-    redis_namespace: &redis-namespace "redis"
+    valkey_namespace: &valkey-namespace "redis"
     flink_namespace: &flink_namespace "flink"
     loki_namespace: &loki-namespace "loki"
     monitoring_namespace: &monitoring-namespace "monitoring"
@@ -27,10 +29,18 @@ defaults:
     volume_autoscaler_namespace: &volume-autoscaler-namespace "volume-autoscaler"
     hms_namespace: &hms_namespace "hms"
     trino_namespace: &trino_namespace "trino"
-    nlq_api_namespace: &nlq_api_namespace "nlq"
+    minio_namespace: &minio_namespace "minio"
+    opentelemetry-collector: &opentelemetry-collector "otel"
+    keycloak_namespace: &keycloak_namespace "keycloak"
+    s3_exporter_namespace: &s3_exporter_namespace "s3-exporter"
+    connector_namespaces:
+      spark: *spark-namespace
+      flink: &flink_connector_namespace "flink-connectors"
 
   postgres:
     pghost: &pghost "postgresql-hl.postgresql.svc.cluster.local"
+    pguser: &pguser "postgres"
+    pgpassword: &pgpassword "postgres"
     obsrv_username: &psql-obsrv-user "obsrv"
     obsrv_database: &psql-obsrv-db "obsrv"
     obsrv_user_password: &psql-obsrv-pwd "obsrv123"
@@ -43,41 +53,66 @@ defaults:
     hms_db_name: &psql-hms-db "hms"
     hms_user_name: &psql-hms-user "hms"
     hms_user_password: &psql-hms-pwd "hms123"
+    keycloak_db_name: &psql-keycloak-db "keycloak"
+    keycloak_user_name: &psql-keycloak-user "keycloak"
+    keycloak_user_password: &psql-keycloak-pwd "keycloak123"
 
-  grafana:
+  grafana: &grafana
     grafana_admin_user: &grafana-admin-user "admin"
     grafana_admin_password: &grafana-admin-password "adminpassword"
-    grafana_auth_token: &grafana-auth-token "YWRtaW46YWRtaW5wYXNzd29yZA=="
     grafana_url: &grafana-url "http://grafana.monitoring.svc.cluster.local"
 
   kafka-topics:
-    ingestTopic: &ingestTopic "dev.ingest"
-    system_stats_topic: &system_stats_topic "dev.stats"
-    masterdata_system_stats_topic: &masterdata_system_stats_topic "dev.masterdata.stats"
-    masterdataIngestTopic: &masterdataIngestTopic "dev.masterdata.ingest"
+    numPartitions: &kafkaNumPartitions 4
+    ingestTopic: &ingestTopic "ingest"
+    system_stats_topic: &system_stats_topic "stats"
+    masterdata_system_stats_topic: &masterdata_system_stats_topic "masterdata.stats"
+    masterdataIngestTopic: &masterdataIngestTopic "masterdata.ingest"
     telemetryEventsTopic: &telemetryEventsTopic "system.telemetry.events"
-    hudiConnectorTopic: &hudiConnectorTopic "dev.hudi.connector.in"
+    hudiConnectorTopic: &hudiConnectorTopic "hudi.connector.in"
     connectorsMetricTopic: &connectorsMetricTopic "obsrv-connectors-metrics"
     connectorsFailedTopic: &connectorsFailedTopic "connectors.failed"
 
+  keycloak_users:
+    obsrv_admin: &obsrv_admin "obsrv_admin"
+    obsrv_password: &obsrv_password "enDoPvTAxFSd"
+    admin_user: &keycloak_admin_user "admin"
+    admin_password: &keycloak_admin_password "admin123"
+
+  superset_users:
+    admin_user: &superset_admin_user "admin"
+    admin_password: &superset_admin_password "admin123"
+
+  druid_users:
+    auth_enabled: &druid_auth_enabled "true"
+    admin_password: &druid_admin_password "admin123"
+    admin_user: &druid_admin_user "admin"
+    escalator_username: &druid_escalator_username "druid_system"
+    escalator_password: &druid_escalator_password "internal123"
+
   # config_service_host: &config-service-host "http://command-api.command-api.svc.cluster.local"
   # druid_host: &global-druid-host "http://druid-raw-routers.druid-raw.svc.cluster.local"
-  druid_url: &global-druid-url "http://druid-raw-routers.druid-raw.svc:8888"
+  druid_url: &global-druid-url "http://druid-raw-routers.druid-raw.svc.cluster.local:8888"
   dataset_service_url: &dataset-service-url "http://dataset-api.dataset-api.svc.cluster.local:3000"
   config_service_url: &config-service-url "http://config-api.config-api.svc.cluster.local:4000"
+  otel_collector_endpoint: &otel_collector_endpoint "http://opentelemetry-collector.otel.svc.cluster.local:4317"
+  otel_enable: &otel_enable "false"
+
 
   cron_schedule: &cron-schedule "0 0 * * *"
   druid_router_host: &druid-router-host "druid-raw-routers.druid-raw.svc.cluster.local"
   druid_indexer_host: &druid-indexer-host "druid-raw-indexers.druid-raw.svc.cluster.local"
 
   redirection_auth_path: &redirection_auth_path ""
-  domain: &domain "<fill-value>.sslip.io"  # Update with the Allocation ID of the Elastic IP 
-
-
-
-  ssl_enabled: &ssl_enabled true
-
+  domain: &domain "<fill-value>.sslip.io"  # Update with the Allocation ID of the Elastic IP
   domain_admin_email: &domain_admin_email "test@obsrv-ai.com"
+
+  oauth: &oauth_configs
+    superset_client_id: &superset_client_id "obsrv-superset"
+    superset_client_secret: &superset_client_secret "supersetobsrv@123"
+    grafana_client_id: &grafana_client_id "obsrv-grafana"
+    grafana_client_secret: &grafana_client_secret "grafanaobsrv@123" 
+    web_console_client_id: "obsrv-console"
 
 #coredb-charts/
 kafka: &kafka
@@ -93,41 +128,112 @@ kafka: &kafka
   hudiConnectorTopic: *hudiConnectorTopic
   connectorsMetricTopic: *connectorsMetricTopic
   connectorsFailedTopic: *connectorsFailedTopic
-  numPartitions: 4
+  numPartitions: *kafkaNumPartitions
   provisioning:
-    numPartitions: 4
+    numPartitions: *kafkaNumPartitions
     replicationFactor: 1
     topics:
       - name: *ingestTopic
-        partitions: 4
+        partitions: *kafkaNumPartitions
         replicationFactor: 1
       - name: *masterdataIngestTopic
-        partitions: 4
+        partitions: *kafkaNumPartitions
         replicationFactor: 1
       - name: *telemetryEventsTopic
-        partitions: 4
+        partitions: *kafkaNumPartitions
         replicationFactor: 1
       - name: *system_stats_topic
-        partitions: 4
+        partitions: *kafkaNumPartitions
         replicationFactor: 1
       - name: *masterdata_system_stats_topic
-        partitions: 4
+        partitions: *kafkaNumPartitions
         replicationFactor: 1
       - name: *hudiConnectorTopic
-        partitions: 4
+        partitions: *kafkaNumPartitions
         replicationFactor: 1
       - name: *connectorsMetricTopic
-        partitions: 4
+        partitions: *kafkaNumPartitions
         replicationFactor: 1
       - name: *connectorsFailedTopic
-        partitions: 4
+        partitions: *kafkaNumPartitions
         replicationFactor: 1
 
+  zookeeper: &zookeeper
+    namespace: *kafka-namespace
+    host: "kafka-zookeeper-headless.kafka.svc.cluster.local"
+    port: 2181
+  global:
+    security:
+      allowInsecureImages: *allow-insecure-images 
 
-zookeeper: &zookeeper
-  namespace: *kafka-namespace
-  host: "kafka-zookeeper-headless.kafka.svc.cluster.local"
-  port: 2181
+kafka40: &kafka40
+  namespace: *kafka40-namespace
+  # For externally managed Kafka (e.g., AWS MSK, Confluent Cloud):
+  # Replace the host with your external Kafka broker address
+  # Example: "b-1.mycluster.abc123.c3.kafka.us-east-1.amazonaws.com"
+  host: "kafka40-controller-headless.kafka40.svc.cluster.local"
+  port: 9092
+  # For externally managed Kafka:
+  # Replace with comma-separated list of broker addresses including ports
+  # Example: "b-1.mycluster.abc123.c3.kafka.us-east-1.amazonaws.com:9092,b-2.mycluster.abc123.c3.kafka.us-east-1.amazonaws.com:9092"
+  bootstrap-server: &kafka-bootstrap-server "kafka40-controller-headless.kafka40.svc.cluster.local:9092"
+  ingestTopic: *ingestTopic
+  masterdataIngestTopic: *masterdataIngestTopic
+  telemetryEventsTopic: *telemetryEventsTopic
+  ss-kafka-topic: *system_stats_topic
+  masterdata-ss-kafka-topic: *masterdata_system_stats_topic
+  hudiConnectorTopic: *hudiConnectorTopic
+  connectorsMetricTopic: *connectorsMetricTopic
+  connectorsFailedTopic: *connectorsFailedTopic
+  numPartitions: *kafkaNumPartitions
+  provisioning:
+    numPartitions: *kafkaNumPartitions
+    replicationFactor: 1
+    topics:
+      - name: *ingestTopic
+        partitions: *kafkaNumPartitions
+        replicationFactor: 1
+      - name: *masterdataIngestTopic
+        partitions: *kafkaNumPartitions
+        replicationFactor: 1
+      - name: *telemetryEventsTopic
+        partitions: *kafkaNumPartitions
+        replicationFactor: 1
+      - name: *system_stats_topic
+        partitions: *kafkaNumPartitions
+        replicationFactor: 1
+      - name: *masterdata_system_stats_topic
+        partitions: *kafkaNumPartitions
+        replicationFactor: 1
+      - name: *hudiConnectorTopic
+        partitions: *kafkaNumPartitions
+        replicationFactor: 1
+      - name: *connectorsMetricTopic
+        partitions: *kafkaNumPartitions
+        replicationFactor: 1
+      - name: *connectorsFailedTopic
+        partitions: *kafkaNumPartitions
+        replicationFactor: 1
+  listeners:
+    client:
+      protocol: PLAINTEXT
+    controller:
+      protocol: PLAINTEXT
+    interbroker:
+      protocol: PLAINTEXT
+    external:
+      protocol: PLAINTEXT
+  sasl:
+    enabledMechanisms: ""
+    interBrokerMechanism: ""
+    controllerMechanism: ""
+  tls:
+    autoGenerated:
+      enabled: false
+    existingSecret: ""
+  global:
+    security:
+      allowInsecureImages: *allow-insecure-images
 
 postgresql: &postgresql
   namespace: *postgresql-namespace
@@ -141,8 +247,8 @@ postgresql: &postgresql
   #################################################################
   # !!! If bitnami charts is used, **username should be postgres**.
   #################################################################
-  username: &pguser "postgres"
-  password: &pgpassword "postgres"
+  username: *pguser
+  password: *pgpassword
 
   obsrv:
     name: *psql-obsrv-db
@@ -164,6 +270,15 @@ postgresql: &postgresql
     user: *psql-hms-user
     password: *psql-hms-pwd
 
+  keycloak:
+    name: *psql-keycloak-db
+    user: *psql-keycloak-user
+    password: *psql-keycloak-pwd
+  global:
+    security:
+      allowInsecureImages: *allow-insecure-images
+
+
   # Internal. Don't touch
   auth:
     enablePostgresUser: true
@@ -184,6 +299,8 @@ postgresql: &postgresql
           CREATE EXTENSION IF NOT EXISTS pg_stat_statements;
         04_create_hms_db.sql: |
           CREATE DATABASE hms;
+        05_create_keycloak.sql: |
+          CREATE DATABASE keycloak;
     extendedConfiguration: |
       password_encryption = md5
       shared_preload_libraries = 'pg_stat_statements' # (change requires restart)
@@ -204,21 +321,59 @@ druid: &druid
   host: "druid-raw-routers.druid-raw.svc.cluster.local"
   port: 8888
   supervisorEndpoint: "indexer/v1/supervisor"
+  username: *druid_admin_user
+  password: *druid_admin_password
 
-redis-denorm: &redis_denorm
-  namespace: *redis-namespace
-  host: redis-denorm-headless.redis.svc.cluster.local
-  port: 6379
+opentelemetry-collector:
+  namespace: *opentelemetry-collector
 
-redis-dedup: &redis_dedup
-  namespaceOverride: *redis-namespace #TODO: check why namespace  doesn't work here
-  host: &redis-url redis-dedup-headless.redis.svc.cluster.local
+keycloak:
+  namespace: *keycloak_namespace
+  fullnameOverride: keycloak
+  ingress:
+    secrets:
+      - "kong-ingress-ssl-cert"
+  tls:
+    existingSecret: "kong-ingress-ssl-cert"
+    usePem: true
+    truststoreFilename: "tls.crt"
+    keystoreFilename: "tls.key"
+  extraEnvVars:
+    - name: KC_HOSTNAME
+      value: "http{{ if .Values.global.ssl_enabled }}s{{ end }}://{{ .Values.global.domain }}/auth"
+  externalDatabase:
+    host: *pghost
+    port: 5432
+    user: *psql-keycloak-user
+    database: *psql-keycloak-db
+    password: *psql-keycloak-pwd
+  obsrvuser: *obsrv_admin
+  obsrvpassword: *obsrv_password
+  auth:
+    adminUser: *keycloak_admin_user
+    adminPassword: *keycloak_admin_password
+
+
+valkey-denorm: &valkey_denorm
+  namespace: *valkey-namespace
+  fullnameOverride: valkey-denorm
+  host: valkey-denorm-headless.redis.svc.cluster.local
   port: 6379
+  global:
+    security:
+      allowInsecureImages: *allow-insecure-images
+
+valkey-dedup: &valkey_dedup
+  namespace: *valkey-namespace
+  fullnameOverride: valkey-dedup
+  host: &redis-url valkey-dedup-headless.redis.svc.cluster.local
+  port: 6379
+  global:
+    security:
+      allowInsecureImages: *allow-insecure-images
 
 flink: &flink
   namespace: *flink_namespace
-  host: "flink-headless.flink.svc.cluster.local"
-  port: 8081
 
 #migrations/charts/
 postgresql-migration:
@@ -228,10 +383,11 @@ postgresql-migration:
   kong_ingress_domain: *domain
   gf_auth_generic_oauth_client_id: "528806583-dev.oauth.obsrv.ai"
   gf_auth_generic_oauth_client_secret: "el642dcXd1P3v6i+hODnGrUKx9ZSWAlmXWZaEoZQI7/R3NUGQlLTnNCV"
-  web_console_password: "$2a$10$bG9R7ioA4/pfw8m0GPcWTOZMhc2sNN4wEkKV.j50RvQW5iUki/4Za"
+  web_console_user: *obsrv_admin
+  web_console_password: *obsrv_password
   web_console_login: "admin@obsrv.in"
   system_settings:
-    encryption_key: "strong_encryption_key_to_encrypt"
+    encryption_key: *encryption-key
     default_dataset_id: "ALL"
     max_event_size: 1048576
     dedup_period: 604800 # In seconds (7 days)
@@ -240,9 +396,12 @@ postgresql-migration:
 prometheus: &prometheus
   url: http://monitoring-kube-prometheus-prometheus.monitoring.svc.cluster.local:9090
 
-loki:
+loki: &loki
   namespace: *loki-namespace
+  url: http://loki-gateway.loki.svc.cluster.local
 
+promtail:
+  namespace: *loki-namespace
 
 druid-raw-cluster: &druid-raw-cluster
   namespace: *druid-namespace
@@ -250,13 +409,23 @@ druid-raw-cluster: &druid-raw-cluster
   druid_metadata_storage_connector_password: *psql-druid-pwd
   zookeeper:
     namespace: *druid-namespace
+  druid_auth_admin_password: *druid_admin_password
+  druid_auth_escalator_username: *druid_escalator_username
+  druid_auth_escalator_password: *druid_escalator_password
+  druid_auth_enabled: *druid_auth_enabled
+
+
 
 druid-operator:
   namespace: *druid-namespace
   # nameOverride: druid-operator
 
+kafka-exporter:
+  kafka:
+    bootstrapServers: *kafka-bootstrap-server
+
 kafka-message-exporter:
-  namespace: *kafka-namespace
+  namespace: *kafka40-namespace
   exporterEnv:
     KAFKA_BROKERS: *kafka-bootstrap-server
     KAFKA_CONSUMER_GROUP_ID: obsrv-kafka-message-exporter
@@ -271,7 +440,7 @@ kube-prometheus-stack:
     namespaceOverride: *monitoring-namespace
   grafana:
     fullnameOverride: "grafana"
-    namespaceOverride: *monitoring-namespace 
+    namespaceOverride: *monitoring-namespace
     env:
       GF_SECURITY_ADMIN_PASSWORD: *grafana-admin-password
       GF_SECURITY_ADMIN_USER: *grafana-admin-user
@@ -287,8 +456,8 @@ kube-prometheus-stack:
         ehlo_identity: ""
         startTLS_policy: ""
         skip_verify: true
-        from_name: "Grafana"    
-  
+        from_name: "Obsrv"
+
 
 kubernetes-reflector:
   namespace: *kubernetes-reflector-namespace
@@ -302,17 +471,22 @@ postgresql-backup:
   initContainers: {}
 
 postgresql-exporter:
+  namespace: *postgresql-namespace
   config:
     datasource:
       host: *pghost
       user: *pguser
       password: *pgpassword
 
+prometheus-pushgateway:
+  namespace: *monitoring-namespace
+  serviceMonitor:
+    namespace: *monitoring-namespace
 
 spark: &spark
   namespace: *spark-namespace
 
-superset_oauth: &superset_oauth 
+superset_oauth: &superset_oauth
   enabled: true
   client_id: *superset_oauth_clientid
   client_secret: *superset_oauth_client_secret
@@ -329,8 +503,15 @@ superset:
       db_name: *psql-superset-db
       db_username: *psql-superset-user
       db_password: *psql-superset-pwd
-  oauth: 
+  oauth:
     <<: *superset_oauth
+  adminUser:
+    username: *superset_admin_user
+    password: *superset_admin_password
+  embed:
+    allowed_origins:
+      - "http://localhost:8080"
+      - "http://127.0.0.1:8080"
 
 command-api: &command-api
   namespace: *command-api-namespace
@@ -340,22 +521,28 @@ dataset-api: &dataset-api
   namespace: *dataset-api-namespace
   host: *dataset-service-url
   env:
-    GRAFANA_AUTH_TOKEN: *grafana-auth-token
-    GRAFANA_ADMIN_URL: *grafana-url
+    otel_collector_endpoint: *otel_collector_endpoint
+    is_rbac_enabled: "false"
+    keycloak_audience: ""
+    otel_enable: *otel_enable
+    telemetry_log: '{"enable":true,"response_data":false}'
 
 config-api: &config-api
   namespace: *config-api-namespace
   host: *config-service-url
   env:
-    GRAFANA_AUTH_TOKEN: *grafana-auth-token
     GRAFANA_ADMIN_URL: *grafana-url
 
 
 grafana-configs:
   namespace: *monitoring-namespace
 
-submit-ingestion:
+submit-ingestion: &submit-ingestion
   namespace: *submit-ingestion-namespace
+  druid:
+    admin_username: *druid_admin_user
+    admin_password: *druid_admin_password
+  bootstrap_servers: *kafka-bootstrap-server
 
 system-rules-ingestor:
   namespace: *system-rules-ingestor-namespace
@@ -367,9 +554,6 @@ system-rules-ingestor:
 
 web-console:
   namespace: *web-console-namesapce
-  env:
-    GRAFANA_AUTH_TOKEN: *grafana-auth-token
-    GRAFANA_ADMIN_URL: *grafana-url
 
 #additional-charts/
 alert-rules: &alert-rules
@@ -378,6 +562,9 @@ alert-rules: &alert-rules
 druid-exporter:
   namespace: *druid-namespace
   druidURL: *global-druid-url
+  auth_enabled: *druid_auth_enabled
+  admin_password: *druid_admin_password
+  admin_user: *druid_admin_user
   serviceMonitor:
     enabled: true
     namespace: *druid-namespace
@@ -413,9 +600,17 @@ kong:
 kong-ingress-routes:
   namespace: *kong-ingress-namespace
   domain: *domain
+  ingress:
+    webconsole:
+      namespace: *web-console-namesapce
+    superset:
+      namespace: *superset-namespace
+    grafana:
+      namespace: *monitoring-namespace
+    keycloak:
+      namespace: *keycloak_namespace
 
 letsencrypt-ssl:
-  enabled: *ssl_enabled
   namespace: *web-console-namesapce
   cert_issuer_name: "letsencrypt-prod"
   # prod letsencrypt url, to be used on prod instances
@@ -476,23 +671,27 @@ trino:
 lakehouse-connector:
   namespace: *flink_namespace
 
-nlq-api:
-  namespace: *nlq_api_namespace
-  openai_api_key: "<OPENAI_API_KEY>"
+minio:
+  namespace: *minio_namespace
+  fullnameOverride: "minio"
+
+s3-exporter:
+  namespace: *s3_exporter_namespace
 
 global:
   env: *env
+  namespaces: *namespaces
   building_block: *building-block
   encryption_key: *encryption-key
   domain: *domain
-  ssl_enabled: *ssl_enabled
+  grafana: *grafana
   kafka: *kafka
-  zookeeper: *zookeeper
+  kafka40: *kafka40
   druid: *druid
   postgresql: *postgresql
   flink: *flink
-  redis_denorm: *redis_denorm
-  redis_dedup: *redis_dedup
+  valkey_denorm: *valkey_denorm
+  valkey_dedup: *valkey_dedup
   druid-raw-cluster: *druid-raw-cluster
   spark: *spark
   cert-manager: *cert-manager
@@ -501,5 +700,7 @@ global:
   dataset_api: *dataset-api
   storageClass: ""
   # This redis is used by flink
-  redis: *redis_denorm
+  redis: *valkey_denorm
   prometheus: *prometheus
+  oauth_configs: *oauth_configs
+  loki: *loki

@@ -198,27 +198,6 @@ CREATE INDEX IF NOT EXISTS  dataset_source_config_draft_dataset ON dataset_sourc
 
 CREATE INDEX IF NOT EXISTS dataset_source_config_draft_status ON dataset_source_config_draft (status);
 
-CREATE TABLE IF NOT EXISTS connector_objects_info (
-    "id" text PRIMARY KEY,
-    "connector_id" text,
-    "dataset_id" text,
-    "status" text NOT NULL,
-    "location" text,
-    "format" text,
-    "file_size_kb" int8,
-    "in_time" timestamp DEFAULT now(),
-    "download_time" int8,
-    "start_processing_time" timestamp DEFAULT now(),
-    "end_processing_time" timestamp DEFAULT now(),
-    "file_hash" text,
-    "num_of_retries" int4,
-    "created_by" text DEFAULT 'SYSTEM'::text,
-    "updated_by" text DEFAULT 'SYSTEM'::text,
-    "created_at" timestamp DEFAULT now(),
-    "updated_at" timestamp DEFAULT now(),
-    "tags" _text
-);
-
 CREATE TABLE IF NOT EXISTS system_settings (
   "key" text NOT NULL,
   "value" text NOT NULL,
@@ -279,21 +258,21 @@ CREATE TABLE IF NOT EXISTS "oauth_clients" (
 );
 
 INSERT INTO "public"."oauth_clients" ("id", "name", "client_id", "client_secret", "redirect_uri", "is_trusted", "created_on", "last_updated_on")
-VALUES ('1', 'Superset ', '{{ .Values.superset_oauth_clientid }}', '{{ .Values.superset_oauth_client_secret }}', 'https://{{ tpl .Values.kong_ingress_domain . }}/oauth-authorized/obsrv', 't', '2023-07-04 10:12:08.913786', NULL)
+VALUES ('1', 'Superset ', '{{ .Values.superset_oauth_clientid }}', '{{ .Values.superset_oauth_client_secret }}', 'http{{ if .Values.global.ssl_enabled }}s{{ end }}://{{ tpl .Values.kong_ingress_domain . }}/oauth-authorized/obsrv', 't', '2023-07-04 10:12:08.913786', NULL)
 ON CONFLICT(id) DO
   UPDATE SET
   client_id = '{{ .Values.superset_oauth_clientid }}',
   client_secret = '{{ .Values.superset_oauth_client_secret }}',
-  redirect_uri = 'https://{{ tpl .Values.kong_ingress_domain . }}/oauth-authorized/obsrv';
+  redirect_uri = 'http{{ if .Values.global.ssl_enabled }}s{{ end }}://{{ tpl .Values.kong_ingress_domain . }}/oauth-authorized/obsrv';
 
 
 INSERT INTO "public"."oauth_clients" ("id", "name", "client_id", "client_secret", "redirect_uri", "is_trusted", "created_on", "last_updated_on")
-VALUES ('2', 'Grafana', '{{ .Values.gf_auth_generic_oauth_client_id }}', '{{ .Values.gf_auth_generic_oauth_client_secret }}', 'https://{{ tpl .Values.kong_ingress_domain . }}/grafana/login/generic_oauth', 't', '2023-07-04 10:12:08.904986', NULL)
+VALUES ('2', 'Grafana', '{{ .Values.gf_auth_generic_oauth_client_id }}', '{{ .Values.gf_auth_generic_oauth_client_secret }}', 'http{{ if .Values.global.ssl_enabled }}s{{ end }}://{{ tpl .Values.kong_ingress_domain . }}/grafana/login/generic_oauth', 't', '2023-07-04 10:12:08.904986', NULL)
 ON CONFLICT(id) DO
   UPDATE SET
   client_id = '{{ .Values.gf_auth_generic_oauth_client_id }}',
   client_secret = '{{ .Values.gf_auth_generic_oauth_client_secret }}',
-  redirect_uri = 'https://{{ tpl .Values.kong_ingress_domain . }}/grafana/login/generic_oauth';
+  redirect_uri = 'http{{ if .Values.global.ssl_enabled }}s{{ end }}://{{ tpl .Values.kong_ingress_domain . }}/grafana/login/generic_oauth';
 
 CREATE TABLE IF NOT EXISTS "oauth_users" (
   id VARCHAR(255) PRIMARY KEY,
@@ -373,13 +352,14 @@ CREATE TABLE IF NOT EXISTS "silences" (
 );
 
 CREATE SEQUENCE redis_db_index START 3;
+CREATE EXTENSION pgcrypto;
 
 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO obsrv;
 GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO obsrv;
 
 INSERT INTO "oauth_users" ("id", "user_name", "password", "first_name", "last_name", "email_address", "created_on", "last_updated_on")
-VALUES ('1', 'obsrv_admin', '{{ .Values.web_console_password }}', 'obsrv', 'admin', '{{ .Values.web_console_login }}', NOW(), NOW())
+VALUES ('1', '{{.Values.web_console_user}}', crypt('{{ .Values.web_console_password }}', gen_salt('bf', 12)), 'obsrv', 'admin', '{{ .Values.web_console_login }}', NOW(), NOW())
 ON CONFLICT(id) DO
   UPDATE SET
-  password = '{{ .Values.web_console_password }}',
+  password = crypt('{{ .Values.web_console_password }}', gen_salt('bf', 12)),
   email_address = '{{ .Values.web_console_login }}';

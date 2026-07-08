@@ -7,7 +7,7 @@ metadata:
   name: "{{ .Values.druid_cluster_type }}"
   namespace: {{ include "base.namespace" . }}
 spec:
-  image: "{{- include "base.image" . }}"
+  image: {{ include "base.image" . }}
   {{- if .Values.serviceAccount.create}}
   serviceAccount: "{{ include "druid-cluster.serviceAccountName" . }}"
   {{- end}}
@@ -57,6 +57,28 @@ spec:
     # Logging
     # Log all runtime properties on startup. Disable to avoid logging properties on startup:
     druid.startup.logging.logProperties=true
+
+    #Druid console - basic security authentication 
+    druid.auth.enabled={{ .Values.druid_auth_enabled }}
+
+    {{- if .Values.druid_auth_enabled }}
+
+    druid.auth.authenticatorChain=["MyBasicMetadataAuthenticator"]
+    druid.auth.authenticator.MyBasicMetadataAuthenticator.type=basic
+    #the property initialAdminPassword only creates a user named admin by default and does not allow changing the username via config
+    druid.auth.authenticator.MyBasicMetadataAuthenticator.initialAdminPassword={{ .Values.druid_auth_admin_password }}
+    druid.auth.authenticator.MyBasicMetadataAuthenticator.initialInternalClientPassword={{ .Values.druid_auth_escalator_password }}
+    druid.auth.authenticator.MyBasicMetadataAuthenticator.credentialsValidator.type=metadata
+    druid.auth.authenticator.MyBasicMetadataAuthenticator.skipOnFailure=false
+    druid.auth.authenticator.MyBasicMetadataAuthenticator.authorizerName=MyBasicMetadataAuthorizer
+    druid.escalator.type=basic
+    druid.escalator.internalClientUsername={{ .Values.druid_auth_escalator_username }}
+    druid.escalator.internalClientPassword={{ .Values.druid_auth_escalator_password }}
+    druid.escalator.authorizerName=MyBasicMetadataAuthorizer
+    druid.auth.authorizers=["MyBasicMetadataAuthorizer"]
+    druid.auth.authorizer.MyBasicMetadataAuthorizer.type=basic
+
+    {{- end }}
     # Zookeeper
     druid.zk.service.host={{ .Release.Name }}-zookeeper-headless.{{ .Values.namespace }}.svc.cluster.local
     druid.zk.paths.base=/druid
@@ -76,6 +98,8 @@ spec:
     druid.storage.baseKey={{ .Values.druid_storage_baseKey }}
     druid.s3.endpoint.url={{ .Values.druid_s3_endpoint_url }}
     druid.s3.endpoint.signingRegion={{ .Values.druid_s3_endpoint_signingRegion }}
+    druid.s3.protocol={{ .Values.druid_s3_protocol }}
+    druid.s3.enablePathStyleAccess={{ .Values.druid_s3_path_style_access }}
     # Azure
     druid.azure.account = {{ .Values.global.azure_storage_account_name }}
     druid.azure.key = {{ .Values.global.azure_storage_account_key }}
@@ -111,16 +135,21 @@ spec:
     druid.selectors.indexing.serviceName={{ .Values.druid_selectors_indexing_serviceName }}
     druid.selectors.coordinator.serviceName={{ .Values.druid_selectors_coordinator_serviceName }}
     # Monitoring
+    druid.emitter.prometheus.pushGatewayAddress={{ .Values.druid_emitter_prometheus_pushGatewayAddress }}
+    druid.emitter.prometheus.strategy={{ .Values.druid_emitter_prometheus_strategy }}
+    druid.emitter={{ .Values.druid_emitter }}
+    druid.emitter.logging.logLevel={{ .Values.druid_emitter_logging_logLevel }}
+    
     # druid.monitoring.monitors=[{{ .Values.druid_monitoring_monitors }}]
     # druid.emitter=composing
     # druid.emitter.composing.emitters=[{{ .Values.druid_emitter_composing_emitters }}]
-    # druid.emitter.logging.logLevel={{ .Values.druid_emitter_logging_logLevel }}
-    {{- if .Values.druid_monitoring -}}
-    druid.emitter.graphite.port={{ .Values.druid_emitter_graphite_port }}
-    druid.emitter.graphite.hostname={{ .Values.druid_emitter_graphite_hostname }}
-    druid.emitter.graphite.protocol={{ .Values.druid_emitter_graphite_protocol }}
-    druid.emitter.graphite.eventConverter={{ .Values.druid_emitter_graphite_eventConverter }}
-    {{- end -}}
+    
+    # {{- if .Values.druid_monitoring -}}
+    # druid.emitter.graphite.port={{ .Values.druid_emitter_graphite_port }}
+    # druid.emitter.graphite.hostname={{ .Values.druid_emitter_graphite_hostname }}
+    # druid.emitter.graphite.protocol={{ .Values.druid_emitter_graphite_protocol }}
+    # druid.emitter.graphite.eventConverter={{ .Values.druid_emitter_graphite_eventConverter }}
+    # {{- end -}}
     # Storage type of double columns
     # ommiting this will lead to index double as float at the storage layer
     druid.indexing.doubleStorage={{ .Values.druid_indexing_doubleStorage }}
@@ -128,7 +157,7 @@ spec:
     druid.request.logging.type={{ .Values.druid_request_logging_type }}
     druid.request.logging.dir={{ .Values.druid_request_logging_dir }}
     druid.javascript.enabled=true
-    druid.sql.enable={{ .Values.druid_sql_enable }}
+    druid.sql.enable={{ .Values.druid_sql_enable }} 
   env:
     - name: POD_NAME
       valueFrom:
@@ -152,7 +181,6 @@ spec:
       runtime.properties: |
         druid.service={{ .Values.druid_broker_service }}
         # HTTP server threads
-        #testing
         druid.broker.http.numConnections={{ .Values.druid_broker_http_numConnections }}
         druid.server.http.numThreads={{ .Values.druid_broker_http_numThreads }}
         # Processing threads and buffers
@@ -169,7 +197,6 @@ spec:
         httpGet:
           path: /status/health
           port: {{ .Values.druid_broker_port }}
-
       # hpAutoscaler:
       #   maxReplicas: 2
       #   minReplicas: 1
@@ -212,7 +239,6 @@ spec:
       extra.jvm.options: |-
         -Xms{{ .Values.druid_coordinator_min_heap_size }}
         -Xmx{{ .Values.druid_coordinator_max_heap_size }}
-
       readinessProbe:
         httpGet:
           path: /status/health
@@ -246,7 +272,6 @@ spec:
       extra.jvm.options: |-
         -Xms{{ .Values.druid_overlord_min_heap_size }}
         -Xmx{{ .Values.druid_overlord_max_heap_size }}
-
       readinessProbe:
         httpGet:
           path: /status/health
@@ -301,6 +326,12 @@ spec:
       volumeMounts:
         - mountPath: {{ .Values.mount_path }}
           name: historical-volume
+      {{- if .Values.druid_historical.persistence.existingClaim }}
+      volumes:
+        - name: historical-volume
+          persistentVolumeClaim:
+            claimName: {{ .Values.druid_historical.persistence.existingClaim }}
+      {{- else }}
       volumeClaimTemplates:
         - metadata:
             name: historical-volume
@@ -315,7 +346,7 @@ spec:
             resources:
               requests:
                 storage: {{ .Values.druid_historical.persistence.size }}
-
+      {{- end }}
       resources:
         {{- toYaml .Values.druid_historical.resources | nindent 8 }}
         # requests:
@@ -430,6 +461,12 @@ spec:
       volumeMounts:
         - mountPath: {{ .Values.mount_path }}
           name: indexer-volume
+      {{- if .Values.druid_indexer.persistence.existingClaim }}
+      volumes:
+        - name: indexer-volume
+          persistentVolumeClaim:
+            claimName: {{ .Values.druid_indexer.persistence.existingClaim }}
+      {{- else }}
       volumeClaimTemplates:
         - metadata:
             name: indexer-volume
@@ -444,6 +481,7 @@ spec:
             resources:
               requests:
                 storage: {{ .Values.druid_indexer.persistence.size }}
+      {{- end}}
       resources:
         {{- toYaml .Values.druid_indexer.resources | nindent 8 }}
         # requests:
@@ -454,6 +492,7 @@ spec:
         #   cpu: {{ .Values.druid_indexer_pod_cpu_limit }}
 
     routers:
+      kind: Deployment
       nodeType: "router"
       druid.port: {{ .Values.druid_router_plaintextPort }}
       nodeConfigMountPath: "/opt/druid/conf/druid/cluster/query/router"

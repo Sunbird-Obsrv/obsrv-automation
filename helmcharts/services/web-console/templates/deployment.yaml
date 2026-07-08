@@ -22,6 +22,10 @@ spec:
         {{- include "common.tplvalues.render" (dict "value" .Values.podAnnotations "context" $) | nindent 8 }}
         {{- end }}
     spec:
+      {{- if .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml .Values.nodeSelector | nindent 8 }}
+      {{- end }}
       serviceAccountName: {{ include "common.names.fullname" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
@@ -61,8 +65,13 @@ spec:
           - name: GF_BEARER_TOKEN
             valueFrom:
               secretKeyRef:
-                name: {{ .Values.namespace }}-grafana-secret
-                key: bearer_token
+                name: {{ include "common.names.fullname" . }}-grafana-secret
+                key: grafana_token
+          - name: USER_TOKEN_PRIVATE_KEY
+            valueFrom:
+              secretKeyRef:
+                name: openssl-secrets
+                key: private.pem
           {{- if .Values.configmap.enabled }}
           volumeMounts:
           - name: config

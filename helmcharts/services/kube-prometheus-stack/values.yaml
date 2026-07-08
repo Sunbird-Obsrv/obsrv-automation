@@ -10,7 +10,7 @@ nameOverride: ""
 ##
 namespaceOverride: ""
 
-## Provide a k8s version to auto dashboard import script example: kubeTargetVersionOverride: 1.26.6
+## Provide a k8s version to auto dashboard import script example: kubeTargetVersionOverride: 1.34.0
 ##
 kubeTargetVersionOverride: ""
 
@@ -24,7 +24,7 @@ fullnameOverride: ""
 
 ## Labels to apply to all resources
 ##
-commonLabels: 
+commonLabels:
 system.monitoring: "true"
 
 

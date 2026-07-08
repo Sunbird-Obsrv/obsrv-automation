@@ -10,7 +10,7 @@ global:
 namespace: postgresql
 registry: "docker.io"
 repository: "flyway/flyway"
-tag: "10.1"
+tag: "11"
 digest: ""
 
 imagePullPolicy: IfNotPresent
@@ -130,15 +130,18 @@ migration_folder_list:
   - 02-druid-raw
   - 03-obsrv
   - 04-hms
+  - 05-keycloak
 postgresql_superset_user_password: "{{ .Values.global.postgresql.superset.password }}"
 postgresql_druid_raw_user_password: "{{ .Values.global.postgresql.druid.password }}"
 postgresql_obsrv_user_password: "{{ .Values.global.postgresql.obsrv.password }}"
 postgresql_hms_user_password: "{{ .Values.global.postgresql.hms.password }}"
+postgresql_keycloak_user_password: "{{ .Values.global.postgresql.keycloak.password }}"
 superset_oauth_clientid: ""
 superset_oauth_client_secret: ""
 kong_ingress_domain: ""
 gf_auth_generic_oauth_client_id: ""
 gf_auth_generic_oauth_client_secret: ""
+web_console_user: ""
 web_console_password: ""
 web_console_login: ""
 system_settings:

@@ -3,7 +3,7 @@ fullnameOverride: "kafka-message-exporter"
 
 replicaCount: 1
 
-namespace: kafka
+namespace: kafka40
 global:
   image:
     registry: "sanketikahub"
@@ -61,6 +61,11 @@ config:
   enabled: false
   prefixPath: ''
   prefix: 'wfs'
+- name: obsrv-connectors
+  enabled: true
+  topic: obsrv-connectors-metrics
+  prefixPath: actor.id
+  prefix: ''
 
 exporterEnv: 
   KAFKA_BROKERS: "localhost:9092"
